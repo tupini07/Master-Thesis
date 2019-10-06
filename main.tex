@@ -738,7 +738,7 @@ the latter are referred to as \textbf{exact match} functions.
 When one of the fields being compared has no value then the function treats the
 pair as if it was not a match and returns a similarity of zero.
 
-For example, one such comparison function can be the \textit{Levenshtein distance} \cite{levenshtein1966binary}, which provides the difference between two lists, for this specific case it will be used to see how similar two strings truly are. 
+For example, one such comparison function can be the \textit{Levenshtein distance} \cite{levenshtein1966binary}, which provides the difference between two lists, for this specific case it will be used to see how similar two strings truly are (this distance will be explained more in depth in \autoref{sec:feature-levenshtein-on-name-tokens}). 
 
 Actually the \texttt{Levenshtein} function will show a distance which increases the more two strings are dissimilar, which is not the desired behaviour. What is needed is for the result to be $0$ when the strings are dissimilar, and $1$ when they're the same. So the distance function will neet to be adapted to be the $1 -$ [this value divided by the length of the longest string\footnote{which is also, incidentally, the maximum value the \texttt{Levenshtein} function can return}]. Basically, the new function is just the complement of the percentage of the maximum value that can be returned by \texttt{Levenshtein(a, b)}.
 
@@ -957,21 +957,30 @@ For cases where there are different, but related, entities, a technique called \
 \chapter{Problem Statement}
 \label{chap:problem-statement}
 
-Currently, the latest available snapshot in the Grafana Wikimedia interface\footnote{Snapshot for \textit{2019-09-05} can be seen at \url{https://grafana.wikimedia.org/dashboard/snapshot/jWeAFAg0QczHXK62h7rXvJPH2Zh4D609}} states that there are a total of \textit{744.4 million} \textbf{statements} in Wikidata. Of these, \textit{200.5 million (26.89\%)} are unreferenced, which represent a large chunk of the total statments. This means that a sure way to improve the quality of Wikidata is to develop a way in which these references can be added automatically. This is exactly the objective of \texttt{soweego}: link Wikidata entities to trusted, external catalogs.
+Currently, the latest available snapshot in the Grafana Wikimedia interface\footnote{Snapshot for \textit{2019-09-05} can be seen at \url{https://grafana.wikimedia.org/dashboard/snapshot/jWeAFAg0QczHXK62h7rXvJPH2Zh4D609}} states that there are a total of \textit{744.4 million} \textbf{statements} in Wikidata. Of these, a full \textit{200.5 million (26.89\%)} are un-referenced, which represents a large chunk of the total statments. This means that a sure way to improve the quality of Wikidata is to develop a way in which these references can be populated with its respective reference. This is exactly the objective of \texttt{soweego}: linking Wikidata entities to trusted, external catalogs.
 
-As a starting point, \texttt{soweego} currently focuses specifically on the \textit{people} domain. At the time of this writing, the \textit{Wikidata Statistics} page\footurl{https://www.wikidata.org/wiki/Wikidata:Statistics}, states that there are a total of 61 million entities, of which 5.2 million are people (roughly 10\% of all entities). Besides this fact, there are also many external databases on the web which contain information about people. Of these, the most prolific ones are those about \textit{entertainment}. The next section shows which external catalogs will be used for this project. Note that even though we center the development around \textit{people} the idea is to develop a flexible system which can easily be extended to include external catalogs of different kinds of entities. 
+As a starting point, \texttt{soweego} currently focuses specifically on the \textit{people} domain. At the time of this writing, the \textit{Wikidata Statistics} page\footurl{https://www.wikidata.org/wiki/Wikidata:Statistics}, states that there are a total of 61 million entities, of which 5.2 million are people (roughly 10\% of all entities). 
+
+
+Besides this fact, there are also many external databases on the web which contain information about people. Of these, the most prolific ones are those about \textit{entertainment}. The next section shows which external catalogs will be used for this project. 
+
+
+Note that even though the development is centered around \textit{people} the idea is to develop a flexible system which can easily be extended to include external catalogs containing different kinds of entities and not exclusively centering on people. 
 
 \section{Use Case}
 \label{sec:statement-use-case}
 
-\texttt{soweego} is able to handle any input dataset. However, for the purposes of this project we will be working with the following ones. Note that in this section we'll limit to mention the catalogs and their entities, and a more in depth explanation of each will be done in \autoref{sec:data-preprocessing}. 
+\texttt{soweego} is able to handle any input dataset. However, for the purposes of this project the following ones were selected as a starting point. Note that this section limited to mention the catalogs and their entities, and a more in depth explanation of each will be done in \autoref{sec:data-preprocessing}. 
 
 \subsection{Internet Movie Database (IMDb)}
 \label{sec:catalog-imdb}
 
-IMDb\footurl{https://www.imdb.com/} provides a well maintained list of information about movies and the people that appear in them. They provide a dump of their data which is free to use, although somewhat limited in the information it contains.
+\textbf{IMDb}\footurl{https://www.imdb.com/} provides a complete and up to date list of information about movies and the people that appear in them. They provide a dump of their data which is free to use, although somewhat limited on the information it contains.
 
-The \textit{people dump} from IMDb states the three primary professions of each person, which are actually the three main jobs for which they have appeared in credits of movies. We can leverage this information by separating the incoming data into their corresponding professions. These will come to be the \textit{type of entities} that are provided by the external catalog. In IMDb, these are not mutually exclusive, so we might have a person which is an \textbf{actor} and is also a \textbf{musician}. Following is a list of all the types of entities extracted from IMDb: 
+The \textit{people dump} from IMDb states the three primary professions of each person, which are actually the three main jobs for which they have appeared in credits of movies. 
+
+
+This information may be leveraged by separating the incoming data into their corresponding professions. These professions will come to be the \textit{type of entities} that are provided by the external catalog. In IMDb, these professions are not mutually exclusive, so there might be a person which is an \textbf{actor} and also a \textbf{musician}. The following list contains all the types of entities extracted from IMDb: 
 
 \begin{itemize}
 \item Actor
@@ -981,22 +990,25 @@ The \textit{people dump} from IMDb states the three primary professions of each 
 \item Writer
 \end{itemize}
 
-The dump does not actually provide us with such a clean separation of the different types of entities. This was the result of an analysis made with the scope of finding the best matches between the IMDb professions and Wikidata entities. Said analysis can be found in the appendix, specifically \autoref{sec:imdb-profs-to-wikidata}. 
+IMDb’s dump does not actually provide such a clean separation of the different types of entities. This clear segmentation was the result of an analysis made with the scope of finding the best matches between the IMDb professions and Wikidata entities. Said analysis can be found in the appendix, specifically in \autoref{sec:imdb-profs-to-wikidata}. 
 
-The IMDb data is mostly provided by contributors. However, information like \textit{name}, \textit{description}, \textit{image} (either the profile image of a person or the cover for a movie/TV-Series), are manually curated by the IMDb team. Automated access to the data itself is, as said above, restricted since IMDb only provides a partial dump of their whole database, and using web crawlers to access more information is not permitted by their terms of usage.
+The IMDb’s data is mostly provided by contributors. However, information like \textit{name}, \textit{description}, \textit{image} (either the profile image of a person or the cover for a movie/TV-Series), are manually curated by the IMDb team. Automated access to the data itself is, as said above, restricted since IMDb only provides a partial dump of their whole database, and using web crawlers to access more information is not permitted according to their terms of usage.
 
 
 \subsection{Musicbrainz}
 \label{sec:catalog-musicbrainz}
 
-Musicbrainz\footurl{https://musicbrainz.org/} is a music encyclopedia, which contains metadata about music, musicians, and bands. From this external database we're specially interested in their information regarding \textit{musicians} and \textit{bands}. Note that in the introduction to this chapter we mentioned that \texttt{soweego} works mainly with people, however now we're seeing that we also include \textit{musical bands}. This is because \textit{bands} have very similar fields to people, and it comes as a testament to the flexibility of the project.
+\textbf{Musicbrainz}\footurl{https://musicbrainz.org/} is a music encyclopedia, which contains metadata about music, musicians, and bands. From this external database this project is specially interested in their information regarding \textit{musicians} and \textit{bands}. 
+
+
+Note that on this chapter’s introdution it was mentioned that \texttt{soweego} works mainly with people, however now its possible to see that it also includes \textit{musical bands}. This is because \textit{bands} have very similar fields to people, and it comes as a testament to the flexibility of the project.
 
 The Musicbrainz database is collectively maintained, with the help of the Musicbrainz team. All of Musicbrainz data is in the public domain, and as such it is free to use.
 
-The types of entities we get from the Musicbrainz database are:
+The types of entities utilized for this project from the Musicbrainz database are:
 
 \begin{itemize}
-\item Musican
+\item Musician
 \item Band
 \end{itemize}
 
@@ -1004,12 +1016,14 @@ The types of entities we get from the Musicbrainz database are:
 \subsection{Discogs}
 \label{sec:catalog-discogs}
 
-The Discogs\footurl{https://www.discogs.com} database is also maintained in a crowd sourced way. It contains information about musical records, musicians, and bands. The database is in the public domain, so it can be used freely.
+\todo[inline]{write more!}
 
-From the Discogs database we get information on the following entity types:
+The \textbf{Discogs}\footurl{https://www.discogs.com} database is also maintained in a crowd sourced way. It contains information about musical records, musicians, and bands. The database is in the public domain, so it can be used freely.
+
+From the Discogs database the information retrieved are the following entity types:
 
 \begin{itemize}
-\item Musican
+\item Musician
 \item Band
 \end{itemize}
 
@@ -1027,7 +1041,7 @@ From the Discogs database we get information on the following entity types:
 % models/ ensemble models have their own chapter as well. This is to prevent
 % this section from bloating up too much.
 
-\texttt{soweego} presents a pipeline though which data flows, and is composed of a series of steps which closely resemble the record linkage workflow (explained in depth in \autoref{sec:rl-as-a-workflow}). The pipeline is executed once for each  \textit{concrete entity type}\footnote{Every different combination of \textit{catalog + enitity}  is a concrete entity type, since each represents a different entity type with different provenance. As we'll see later, each is saved as a different \textit{model} in \texttt{soweego}'s internal database}.
+\texttt{soweego} presents a pipeline though which data flows, and is composed of a series of steps which closely resemble the record linkage workflow (explained in depth in \autoref{sec:rl-as-a-workflow}). The pipeline is executed once for each  \textit{concrete entity type}\footnote{Every different combination of \textit{catalog + entity}  is a concrete entity type, since each represents a different entity type with different provenance. As seen later, each is saved as a different \textit{model} in \texttt{soweego}'s internal database}.
 
 Specifically, the \texttt{soweego} pipeline is structured as follows:
 
@@ -1039,36 +1053,43 @@ Specifically, the \texttt{soweego} pipeline is structured as follows:
   \label{fig:soweego-structure}
 \end{figure}
 
-We'll dedicate a section to each step, but just to give an overview, below are brief  descriptions of each.
+A section will be dedicated to each step, but just to give an overview, below is brief description of each one.
 
 \begin{enumerate}
-\item \texttt{importer}: 
+\item \texttt{Importer}: 
 reads the data from both the external databases (target catalogs) and Wikidata (source catalog), and cleans it (the \textit{Data Preprocessing} step in the record linkage workflow).
  
-\item \texttt{blocking}: 
-takes the preprocessed data and clusters each source entity in the Wikidata catalog with potential matches in the target catalogs.
+\item \texttt{Blocking}: 
+takes the preprocessed data and clusters each source entity on the Wikidata catalog with potential matches in the target catalogs.
   
-\item \texttt{feature extractor}: 
-takes the pairs generated in the blocking step and extracts a number of features, as defined in \autoref{sec:rl-workflow-feat-extraction}.
+\item \texttt{Feature extractor}: 
+takes the pairs generated in the blocking step and extracts a number of features, as previously defined in \autoref{sec:rl-workflow-feat-extraction}.
  
-\item \texttt{linker}: 
+\item \texttt{Linker}: 
 uses machine learning algorithms to predict the probability that a given pair of entities is a match or not, given the features extracted for said pair in the previous step.
  
-\item \texttt{ingester}: 
+\item \texttt{Ingester}: 
 is in charge of taking the predicted matches and uploading the confident predictions (those above a threshold) to Wikidata, while potential matches are uploaded to the \texttt{Mix'n'match}\footurl{https://tools.wmflabs.org/mix-n-match} platform to be reviewed manually by the community.
 \end{enumerate}
 
-The current work will be mainly centered around the development of the \texttt{linker} module, and small parts of the \texttt{importer} and \texttt{feature extractor}. Although for the discussion of results  (\autoref{chap:results}) we'll be evaluating only the \texttt{linker}.  The remaining modules were developed by the rest of the team working on \texttt{soweego}\footurl{https://github.com/Wikidata/soweego/}.
+The current work will be mainly centered around the development of the \texttt{linker} module, and small parts of the \texttt{importer} and \texttt{feature extractor}. Although for the discussion of results  (\autoref{chap:results}) only the \texttt{linker} module will be evaluated.  The remaining modules were developed by the rest of the team working on \texttt{soweego}\footurl{https://github.com/Wikidata/soweego/}.
 
 
 \subsection{Importer}
 \label{sec:soweego-st-importer}
 
-The importer is the first step in the pipeline, and is also the one that is in charge of taking an external source of data (for example, a \texttt{csv} file), and then interpret it, clean it, and finally save the results to \texttt{soweego}'s internal database so that it can be easily consumed by the following steps.
+The importer is the first step in the pipeline, and is also the one that is in charge of taking an external source of data (for example, a \texttt{csv} file), and then interpreting it, cleaning it, and finally saving the results to \texttt{soweego}'s internal database so that it can be easily consumed by the following steps.
 
-The importer is composed of one \textit{adapter} for each external catalog. The adapter basically is the \textit{importer} for a specific catalog. It is in charge of downloading the latest available dump for the catalog. Once this is done the adapter reads the obtained data, cleans it by both using procedures which are unique to the specific catalog and shared procedures (the data cleaning part will be covered more in depth in \autoref{sec:data-preprocessing}). The adapter is necessary because the database dump from each catalog contains different fields, in different formats which need to be converted to a common representation. After cleaning, the data is then saved into the database. An important thing to note is that all of the dumps include the ID of each entity in the catalog's database, this is what we will then use as the \textit{target id (TID)}: the id of the target entities used during the  record linkage process.
+The importer is composed of one \textit{adapter} for each external catalog. The adapter basically is the \textit{importer} for a specific catalog and is in charge of downloading the latest available dump for the catalog. 
 
-The importer also defines a series database \textit{models} which are specific to each catalog, one for each concrete entity type. For example, the importer defines an \texttt{ImdbWriter} database model which stands for entities of type \textit{writer} which come from the \textit{IMDb} catalog.
+
+Once this is done the adapter reads the obtained data and cleans it, both by using procedures which are unique to the specific catalog and shared procedures (the data cleaning part will be covered more in depth in \autoref{sec:data-preprocessing}). 
+The adapter is necessary because the database dump from each catalog contains different fields, in different formats which need to be converted to a common representation. 
+
+
+After cleaning, the data is then saved into the database. An important thing to note is that all of the dumps include the ID of each entity in the catalog's database, this is what will then be used as the \textit{target id (TID)}: the id of the target entities used during the  record linkage process.
+
+The importer also defines a series of  database \textit{models} which are specific to each catalog, one for each concrete entity type. For example, the importer defines an \texttt{ImdbWriter} database model which stands for entities of type \textit{writer} which come from the \textit{IMDb} catalog.
 
 This modular design makes it very easy to add new external catalogs to \texttt{soweego}.
 
@@ -1076,7 +1097,7 @@ This modular design makes it very easy to add new external catalogs to \texttt{s
 \subsubsection{Importing data from Wikidata}
 \label{sec:importing-from-wikidata}
 
-We have a special importer for downloading data from Wikidata. This Wikidata importer is in charge of downloading both the training and classification sets, which are downloaded separately for each combination of catalog-entity. These datasets are what we'll use as the \textit{source catalogs} during the record linkage process.
+There is a special importer for downloading data from Wikidata. This Wikidata importer is in charge of downloading both the training and classification sets, which are downloaded separately for each combination of catalog-entity. These datasets will be used as the \textit{source catalogs} during the record linkage process.
 
 Following is an overview of the procedure used in each case. 
 
@@ -1703,7 +1724,7 @@ This feature is exactly the same as the one shown above for birth dates, but is 
 \subsubsection{Levenshtein distance on name tokens}
 \label{sec:feature-levenshtein-on-name-tokens}
 
-Levenshtein distance \cite{levenshtein1966binary} is a string comparison metric which measures how different two given strings are by considering how many insertions, deletions, and updates need to be made to make both strings equal. Formally, the Levenshtein is defined as:
+Levenshtein distance \cite{levenshtein1966binary} is a string comparison metric which measures how different two given strings are by considering how many insertions, deletions, and updates need to be made to make both strings equal. Below is the representation\footnote{Adapted from \url{https://en.wikipedia.org/wiki/Levenshtein_distance}} of the Levenshtein distance as a dynamic programming algorithm:
 
 \begin{equation*}
   lev_{a,b}(i,j) =
@@ -1718,24 +1739,96 @@ Levenshtein distance \cite{levenshtein1966binary} is a string comparison metric 
   \end{cases}
 \end{equation*}
 
-Where $a$ and $b$ are the strings that are currently being compared. $i$ and $j$ are the indices of the characters currently being compared, and initially the process starts from the end of the strings, so $i = |a|$ and $j=|b|$. In the original formulation, the strings are \textit{1-indexed} (\textit{0} means the string has been completely processed). $lev_{a,b}(i,j)$ stands for the distance between the first $i$ characters of $a$, and the $j$ characters of $b$. 
+Where $a$ and $b$ are the strings that are currently being compared. $i$ and $j$ are the indices of the characters currently being compared. Initially the process starts from the end of the strings, so $i = |a|$ and $j=|b|$. In the original formulation, the strings are \textit{1-indexed} (\textit{0} means the string has been completely processed). $lev_{a,b}(i,j)$ stands for the distance between the first $i$ characters of $a$, and the $j$ characters of $b$. 
 
-The calculation of the distance starts by checking if either of $i$ or $j$ are 0. If they are, then the number of changes needed is the same as the number of characters still remaining in the longest string (which are the number of characters that need to be inserted). 
+The calculation of the distance starts by checking if either of $i$ or $j$ are 0. If they are, then the number of changes needed is the same as the number of characters still remaining in the longest string (which are the number of characters that need to be inserted into the shortest one). 
 
 If on the other hand none of $i,j$ are 0, then the function is recursively applied to all possible variations (in the $min$ branch), and the minimum among them is returned. The first variation corresponds to deleting a character from $a$. The second corresponds to inserting a value in $a$. Finally, the thirst stands for a replacement.
 
-Note the $+1$ at the end of all variations. These are the penalty paid each time one of these branches needs to be taken. In the third variation, the penalty is only applied of the characters at positions $i$ and $j$ are different (i.e. there is need to perform an update).
+Note the $+1$ at the end of all variations. These are the penalty paid each time one of these branches needs to be taken. In the third variation, the penalty is only applied of the characters at positions $i$ and $j$ are different (i.e. there is need to perform an update). If the strings are the same then this third branch will be taken for every character comparison, and the penalty will always be \textit{0}.
 
-The resulting score increases the more \textit{dissimilar} two strings are. However, since feature functions need to return 0 when dissimilar and 1 when similar, the result of the Levenshtein function can be adapted in the following way:
+The resulting score increases the more \textit{dissimilar} two strings are. However, since feature functions need to return 0 when dissimilar and 1 when similar, the result of the Levenshtein function is adapted in the following way:
 
 \begin{equation*}
     \frac{Lev(a,b)}{max(|a|,|b|)}
 \end{equation*}
 
-The maximum string length is also the maximum value of $Lev$ (when the strings are completely different), so the division would yield \textit{1}. 
+If the two strings being compared are completely different then every character of the shortest string must be changed, and extra characters need to be inserted to make it equal to the longest string. These changes sum up to maximum string length. In this case, the division would yield \textit{1}, effectively signaling that the strings are completely different. 
 
-%% ^ finish the above , small explanation of what this means
+If the entities have more than one set of name tokens (i.e. they have multiple names associated with them, which have all been tokenized) then the function shown above is applied to all possible combinations and the best result is returned. Note that before comparison, each list of tokens (which corresponds to only one name) is joined into a single string.
 
+
+
+\subsubsection{Cosine similarity on name tokens}
+\label{sec:feature-kernel-similarity-name-tokens}
+
+Cosine similarity has long been used in the field of information retrieval \cite{singhal_modern_information_retrieval} since it allows to measure the distance between two \textit{documents} by checking which words they have in common. This behaviour is similar to what the current function should to, the difference is that instead of names we want to count the occurrence of \textit{bi-grams}. 
+
+More in general, $n$-grams, are defined as all the possible, $n$ sequential elements in a piece of text. The \textit{elements} in question can be letters, words, or etc. For example, taking the name \textit{Sarah}, and considering the possible $n$-grams of characters, the following table can be generated.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{l|l}
+Name                       & sarah                     \\ \hline
+1-gram (uni-gram)          & s-a-r-a-h                 \\ \hline
+2-gram (bi-gram)           & s-sa-ar-ra-ah-h           \\ \hline
+3-gram (tri-gram)          & sa-sar-ara-rah-ah         \\ \hline
+\multicolumn{1}{c|}{\vdots} & \multicolumn{1}{c}{\vdots}
+\end{tabular}
+\label{tab:ngram-generation-example}
+\end{table}
+
+This function compares the names of two entities by first extracting bi-grams from the the names and then constructing a vector specifying which bi-grams are contained in each of the names. These vectors are finally compared using \textit{cosine similarity}. 
+
+For example, suppose the function is being applied to \textit{Sarah} and \textit{Sara}. The corresponding bigrams would be: \textit{s-sa-ar-ra-ah-h} for the first, and \textit{s-sa-ar-ra-a} for the second. These two sets of bi-grams can them be joined into a single set $\beta = \{s, sa, ar, ra, ah, h, a\}$. This last set represents all the possible bi-grams that can be found in any of the two names. 
+
+By traversing this set, a vector $\rho$ can be constructor for each entity $e$, where the the value at index $i$ is defined as. 
+
+\begin{equation*}
+\rho_i = \begin{cases}
+            1, & \text{if } \beta_i \in e.nameBigrams \\
+            0, & \text{otherwise}
+        \end{cases} 
+\end{equation*}
+
+For example, the the resulting vectors for \textit{sarah} and \textit{sara}, considering the $\beta$ defined above would be $\rho_1 = [1, 1, 1, 1, 1, 1, 0]$ and $\rho_2 = [1, 1, 1, 1, 0, 0, 1]$ respectively.
+
+These vectors can then be passed to the cosine similarity function, which is defined as the dot product of the vectors normalized by their lengths:
+
+$$
+\frac{\rho_1 \cdot \rho_2}{\|\rho_1\| \|\rho_2\|} = \frac{
+\sum_{i=1}^n \rho_{1_i} \rho_{2_i}}{
+\sqrt{\sum_{i=1}^n \rho_{1_i}^2}
+\sqrt{\sum_{i=1}^n \rho_{2_i}^2}
+}
+$$
+
+Applying this function to the example above would yield a similarity of 0.73. 
+
+The vectors can be thought of as hyperplanes in an n-dimensional space (where $n$ is the number of extracted bi-grams). As such, the cosine similarity simply measures the angle between these hyperplane. As all the values in the vectors are non-negative (either 0 or 1), the value returned by the cosine similarity is bounded in the range $[0,1]$, \textit{0} when orthogonal and \textit{1} when parallel.
+
+If the entities are associated with more than one name, then this procedure is applied to all possible pairs and the best result is returned.
+
+
+
+\subsubsection{Weighted intersection of name tokens}
+\label{sec:feature-wighted-name-intersection}
+
+This function is similar to \autoref{sec:feature-shared-tokens-plus-urls}, in that the amount of shared tokens are the key part of the feature. This function supposes that both entities have the list of name tokens. It proceeds to transform this lists into a set of all tokens $\tau_e$ for each entity. The common tokens are defined as the set $\iota = \tau_{source} \cap \tau_{target}$, and the set of all tokens is defined as $\upsilon = \tau_{source} \cup \tau_{target}$. 
+
+This function also makes use of a list of words which get penalized. This contains mainly common filler words in the names of bands. For example, words like: \textit{the}, \textit{band}, \textit{orchestra}, \textit{boys}, etc. Using this set $\mu$, it is possible to find how many of the shared words should be penalized: $\phi = |\iota \cap \mu|$.
+
+The final result of this function is defined as:
+
+\begin{equation*}
+    \frac{
+    |\iota| - (\phi * 0.9)
+    }{
+    |\upsilon|
+    }
+\end{equation*}
+
+The 0.9 is just a weighting term to specify how much the penalization should count. If it was 1, then every shared token which is also in the list of penalized words would not be counted as \textit{shared}. The value of 0.9 was decided empirically. The function is basically the percentage of shared tokens among all tokens in both entities.
 
 %%% ------------------
 
