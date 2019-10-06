@@ -767,9 +767,9 @@ and their last name is an exact match. On the other hand \textit{Claudio} and
 \textit{Jane} are very dissimilar, with their last name (\textit{Bari} and
 \textit{Stel} respectively) being as different as possible.
 
-In this example, only two fields and one comparison function, in practice
-however we would use more fields and potentially many different comparison
-functions for the same fields.
+In this example, only two fields were used and one comparison function was applied, in practice
+however more fields and potentially many different comparison
+functions can be used for the same fields.
 
 The aggregation of these features is said to be an intermediary representation
 of the pair of entities, and it has all the information needed for the next step
@@ -779,24 +779,20 @@ of the pair of entities, and it has all the information needed for the next step
 \subsection{Linking/Classification}
 \label{sec:rl-workflow-linking}
 
+In the \textit{linking} (also called \textit{classification}) step, the list of features extracted in the previous part is consequently fed to a decision model which takes the features and then decides whether the said pair is a match or not.
 
-In the linking (also called \textit{classification}) step we get the list of
-features extracted in the previous part and by using a decision model which
-evaluates the features and decides if the pair is a match or not.
-
-There are many decision models we can use \cite{gu06_decis_model_recor_linkag}.
+There are many decision models to choose from and that might be considered to be utilized. \cite{gu06_decis_model_recor_linkag}.
 The go to model for record linkage is the basic probabilistic model defined in
 \cite{fellegi69_theor_recor_linkag}. Other possible models \cite{Elfeky} include
 using the \textit{k-means} \cite{Hartigan1979} clustering algorithm to cluster
 the feature vectors into \textit{matched}, \textit{unmatched} and
-\textit{potential matches} clusters, or if we have labeled data available then
-we can train a supervised machine learning algorithm to learn when to classify
+\textit{potential match} clusters, or if there is labeled data available then
+it is possible to train a supervised machine learning algorithm to learn when to classify
 feature vectors as a match or not.
 
-Regardless of the model used, the output of this step can either two sets
+Regardless of the model used, the output of this step can be either two sets
 (\textit{matches} and \textit{non-matches}) or three sets (\textit{matches},
-\textit{non-matches}, and \textit{potential matches}). The \textit{potential
-  matches} set of pairs can be reviewed manually to define the final matching
+\textit{non-matches}, and \textit{potential matches}). The \textit{potential matches} set of pairs can be reviewed manually to define the final matching
 status.
 
 In probabilistic record linkage \cite{fellegi69_theor_recor_linkag} the
@@ -807,9 +803,9 @@ for which the certainty of the model falls in the interval $[0, 0.4]$ are
 \textit{potential matches}. And those whose certainty is in the range $[0.6,
 1.0]$ are \textit{matches}.
 
-To follow with the previous example, suppose we get as input to the linking step
+To follow with the previous example, consider as input to the linking step
 the feature vectors in \autoref{tab:ex-feature-levens}. And suppose that as a
-decision model we're using a simple rule based model:
+decision model a simple rule based model is being used:
 
 \begin{equation*}
   decision\_model(f_i) =
@@ -834,28 +830,25 @@ feature vectors would yield the following results:
   \label{tab:ex-linking}
 \end{table}
 
-With these results we can now merge the corresponding entities (in this case
+With these results it is now possible to merge the corresponding entities (in this case
 $(A2, B2)$). Just to clarify, the merging procedure itself is not part of the
 record linkage process.
 
 \subsection{Evaluation}
 \label{sec:rl-workflow-evaluation}
 
-As the name suggests, in the evaluation step we evaluate the performance of the
-record linkage procedure. To do this we need to have some already labeled data
-we can use to calculate the metrics given the prediction of the model. This
-\textit{data} is nothing more than the labeled pairs of entities which say if
-they're actually a match or not\footnote{akin to the \textit{training set} when
-  we're talking about supervised machine learning}, and it should be different
-from the one we're interested in classifying\footnote{\textit{classification
+As the name suggests, in the evaluation step, the evaluation of the record linkage procedure performance is made. To do this its necessary to have some previously labeled data that  may  be used to calculate the metrics given the prediction of the model. This
+\textit{data} is nothing more than the labeled pairs of entities which say whether
+they're actually a match or not\footnote{similar to the \textit{training set} when reffering to supervised machine learning}, and it should be different
+from the one that’s currently being classified.\footnote{\textit{classification
     set} in supervised learning}.
 
-The metrics used for evaluating a record linkage pipeline are the commonly used
+The metrics considered when evaluating a record linkage pipeline are the commonly used
 \cite{Powers2011_evaluation} \textit{precision}, \textit{recall}, and
 \textit{$F_1$-Score}.
 
-Before defining the above metrics more in depth, we need to first define the
-concept of \textbf{confusion matrix} from which they derive.
+Before defining the above metrics more in depth, its necessary to firstly define the
+concept of \textbf{confusion matrix} from which they are derived.
 
 \begin{table}[H]
   \centering
@@ -871,31 +864,28 @@ concept of \textbf{confusion matrix} from which they derive.
 \end{table}
 
 \begin{description}
-\item[True Positives (TP)] are the elements we predicted are \textit{positive}
+\item[True Positives (TP)] are the elements predicted as \textit{positive}
   and are labeled as \textit{positive} in the evaluation data.
  
-\item[False Positives (FP)] are the elements we predicted as \textit{positive}
+\item[False Positives (FP)] are the elements predicted as \textit{positive}
   but are really labeled as \textit{negative} in the evaluation data.
  
 \item[False Negatives (FN)] are the elements predicted as \textit{negatives}
   which are really labeled as \textit{positive} in the evaluation data.
  
-\item[True Negatives (TN)] are the elements we predicted as \textit{negative}
+\item[True Negatives (TN)] are the elements predicted as \textit{negative}
   and are really labeled as \textit{negative} in the evaluation data.
 \end{description}
 
 
-The different metrics of \textit{precision}, \textit{recall}, and
-\textit{F1-Score} are computed using the information above. All of the metrics
-used go from $0$ to $1$, where $0$ is the worst score and $1$ the best.
+The \textit{counts} of the different clusters defined above are what is used to compute the metrics of \textit{precision}, \textit{recall}, and \textit{F1-Score}. All of the employed metrics have results in the range $[0,1]$, where $0$ is the worst score and $1$ the best.
 
 
 \subsubsection{Precision}
 \label{sec:evaluation-metric-precision}
 
 Precision is a metric that measures the percentage of \textit{True Positives}
-among all those elements we predicted as \textit{positive}. The less we
-miss-classify \textit{negative examples} as \textit{positive}, the higher our
+amongst all the elements which were predicted as \textit{positive}. The less \textit{negative examples} are miss-classified as \textit{positive}, the higher the
 \textit{Precision} will be. It is defined as:
 
 $$
@@ -908,8 +898,7 @@ $$
 \label{sec:evaluation-metric-recall}
 
 \textit{Recall}, on the other hand, measures the percentage of \textit{True
-  Positives} which we actually classified as \textit{positive}. The less we
-miss-classify \textit{positive} examples as \textit{negative}, the higher our
+  Positives} which were actually classified as \textit{positive}. The less \textit{positive} examples are missclassied as \textit{negative}, the higher the
 \textit{Recall} will be. It is defined as:
 
 $$
@@ -925,7 +914,7 @@ perfect \textit{recall}.
 \subsubsection{$F_1$-Score}
 \label{sec:evaluation-metric-f1}
 
-The $F_1$ score is the \textit{harmonic mean} of the \textit{precision} and
+The $F_1$ score is the \textit{harmonic mean} of the \textit{precision} and the
 \textit{recall}. It is $1$ when both \textit{precision} and \textit{recall} are
 $1$, and it is $0$ when they both are $0$. This metric is commonly used to join
 its two component metrics into one. It is defined as:
@@ -934,13 +923,13 @@ $$
 F_1 = 2 * \frac{Precision * Recall}{Precision + Recall}
 $$
 
-Even though the $F_1$ metrics is commonly used for evaluation machine learning
+Even though the $F_1$ metric is commonly used for evaluating machine learning
 problems, its usage for record linkage has been criticized
 \cite{hand17_note_using_f_measur_evaluat} since it presupposes that both
 \textit{precision} and \textit{recall} are of equal importance. In some record
-linkage scenarios it might be that we value more a higher \textit{recall} than a
+linkage scenarios it might be that a higher \textit{recall} is more valued than a
 higher \textit{precision} (or vice versa). In this cases the $F_1$ metric should
-be used with care, and analyzed together \textit{precision} and \textit{recall}.
+be used with care, and analyzed together with \textit{precision} and \textit{recall}.
 
 
 
@@ -1669,14 +1658,84 @@ Using a set of stop words greatly diminishes the amount of times the function cl
  
  The \textit{date precision} specifies which parts of the dates can be trusted. It goes from less specific to more specific. For example the most general a precision can be is to have only the year as the trusted part of the date. The next, more specific step, is to trust the month, followed by the day, etc. The most specific precision is the nanosecond. 
  
+This feature function supposes that the entities have a birth date $\delta_i$, and also have a specified precision $\phi_i$ for said date. A date has at most 3 parts (year, month, and day), and as such also has a maximum precision of 3, since the most precise part of the date is the day. A given pair of dates can only be compared up to the lowest common precision, this is just $min(\phi_{target}, \phi_{source})$. 
+
+The comparison can start from the lowest precision and keeping a counter $\omega$ to see how many parts of the dates are the same. If after comparing the lowest precision part (the year) yields that they're the same then the counter is increased and the next, most specific part, can be compared. The process is stopped when the maximum precision is reached (\textit{day}) or when the parts currently being compared are not equal.
+
+More formally, the following pseudocode defines the algorithm:
+
+\begin{lstlisting}[language=Python, escapeinside={(*}{*)}]
+max_precision = min((*$\phi_{target}, \phi_{source}$*)) # the maximum precision we can compare
+(*$\omega$*) = 0 # counter to track how many parts the dates have in common
+
+for date_part in 0..max_precision:
+
+    # get the part corresponding to the current precision, starting from the 
+    # lowest, which is the year
+    source_part (*$\leftarrow$*) (*$\delta_{source}$*)[date_part]
+    target_part (*$\leftarrow$*) (*$\delta_{target}$*)[date_part]
+    
+    if source_part == target_part:
+        (*$\omega$*) += 1
+    else:
+        break
+\end{lstlisting}
+
+Finally, the feature is then calculated as follows.
+
+\begin{align*} 
+\frac{\omega}{\text{max\_precision} + 1}
+\end{align*}
+
+Basically, this is just the percentage of sequential parts that are the same among all parts that can be compared. The lowest precision, \textit{year}, corresponds to a precision of \textit{0}, that is why we add the $+1$ in the denominator.
+
+For IMDb dates this function just compares the years, and if they're the same then returns \textit{1}, or \textit{0} if they are different. For \textit{Musicbrainz}, which has more \textit{flexible} dates, this function is much more useful, since it allows the comparison with arbitrary precision values.
  
- 
- If entities have more than one birth date then all the possible pairs are compared and the best result is returned.  
+Note that if entities have more than one birth date then all the possible pairs are compared and the best result is returned.  
  
  
 \subsubsection{Similar Birth Dates}
 \label{sec:feature-similar-death-dates}
  
+This feature is exactly the same as the one shown above for birth dates, but is applied to death dates instead.
+
+
+\subsubsection{Levenshtein distance on name tokens}
+\label{sec:feature-levenshtein-on-name-tokens}
+
+Levenshtein distance \cite{levenshtein1966binary} is a string comparison metric which measures how different two given strings are by considering how many insertions, deletions, and updates need to be made to make both strings equal. Formally, the Levenshtein is defined as:
+
+\begin{equation*}
+  lev_{a,b}(i,j) =
+  \begin{cases}
+    max(i, j), & \text{if}\ min(i,j) = 0  \\
+    min   
+    \begin{cases}
+        lev_{a,b}(i-1,j) + 1  \\
+        lev_{a,b}(i,j-1) + 1  \\
+        lev_{a,b}(i-1,j-1) + 1 * (a_i \neq b_j)  
+    \end{cases} & \text{otherwise}
+  \end{cases}
+\end{equation*}
+
+Where $a$ and $b$ are the strings that are currently being compared. $i$ and $j$ are the indices of the characters currently being compared, and initially the process starts from the end of the strings, so $i = |a|$ and $j=|b|$. In the original formulation, the strings are \textit{1-indexed} (\textit{0} means the string has been completely processed). $lev_{a,b}(i,j)$ stands for the distance between the first $i$ characters of $a$, and the $j$ characters of $b$. 
+
+The calculation of the distance starts by checking if either of $i$ or $j$ are 0. If they are, then the number of changes needed is the same as the number of characters still remaining in the longest string (which are the number of characters that need to be inserted). 
+
+If on the other hand none of $i,j$ are 0, then the function is recursively applied to all possible variations (in the $min$ branch), and the minimum among them is returned. The first variation corresponds to deleting a character from $a$. The second corresponds to inserting a value in $a$. Finally, the thirst stands for a replacement.
+
+Note the $+1$ at the end of all variations. These are the penalty paid each time one of these branches needs to be taken. In the third variation, the penalty is only applied of the characters at positions $i$ and $j$ are different (i.e. there is need to perform an update).
+
+The resulting score increases the more \textit{dissimilar} two strings are. However, since feature functions need to return 0 when dissimilar and 1 when similar, the result of the Levenshtein function can be adapted in the following way:
+
+\begin{equation*}
+    \frac{Lev(a,b)}{max(|a|,|b|)}
+\end{equation*}
+
+The maximum string length is also the maximum value of $Lev$ (when the strings are completely different), so the division would yield \textit{1}. 
+
+%% ^ finish the above , small explanation of what this means
+
 
 %%% ------------------
 
