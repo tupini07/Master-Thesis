@@ -38,27 +38,33 @@
 \definecolor{codegreen}{rgb}{0,0.6,0}
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}
 \definecolor{codepurple}{rgb}{0.58,0,0.82}
-\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.95}
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+\definecolor{mgray}{rgb}{0.5,0.5,0.5}
 
 \lstdefinestyle{mystyle}{
     backgroundcolor=\color{backcolour},   
-    commentstyle=\color{codegreen},
-    keywordstyle=\color{magenta},
-    numberstyle=\tiny\color{codegray},
-    stringstyle=\color{codepurple},
-    basicstyle=\ttfamily\footnotesize,
-    breakatwhitespace=false,         
-    breaklines=true,                 
-    captionpos=b,                    
-    keepspaces=true,                 
-    numbers=left,                    
-    numbersep=5pt,                  
-    showspaces=false,                
+    aboveskip=5mm,
+    belowskip=5mm,
     showstringspaces=false,
-    showtabs=false,                  
-    tabsize=2
+    columns=flexible,
+    basicstyle={\ttfamily},
+    numberstyle=\tiny\color{mgray},
+    numbers=left,
+    numbersep=5pt,
+    keywordstyle=\color{blue},
+    commentstyle=\color{dkgreen},
+    stringstyle=\color{mauve},
+    breaklines=true,
+    breakatwhitespace=true,
+    tabsize=2, 
+    sensitive = true,
+    escapeinside={(*}{*)},
+    frame=single,
+    language=Python,
 }
- 
+
 \lstset{style=mystyle}
 
 \newcommand{\footurl}[1]{\footnote{\url{#1}}}
@@ -1103,9 +1109,21 @@ Following is an overview of the procedure used in each case.
 
 
 \begin{description}
-\item[Downloading training set:] To download the Wikidata training set what we do is that we receive the \textit{QID} of the catalog and of the type of entity. What we do is ask Wikidata, via a \textit{SPARQL} query, to give us all the items it has which are of the specified entity type\footnote{for example, all items which are \textit{directors}} and which also have a \textit{statement} linking them to the specified catalog. All Wikidata items with such statement also include their \textit{ID} in the external database (the target it), meaning that we can use this to easily check which of the items provided by Wikidata have also been included in the catalog's dump. The intersection, those with the same \textit{target id}, between this data and the data we have in our database for the specific catalog-entity defines our labeled data  for said entity that we can use for training and evaluation.
+\item[Downloading training set:] 
+
+
+To download the Wikidata training set what needs to be done is to receive the \textit{QID} of the catalog and of the type of entity. This is achieved by asking Wikidata, via a \textit{SPARQL} query, to provide all the items it has which are of the specified entity type\footnote{for example, all items which are \textit{directors}} and which also have a \textit{statement} linking them to the specified catalog. 
+
+
+All Wikidata items with such statement also include their \textit{ID} in the external database (the target it), meaning that this can be easily used to check which of the items provided by Wikidata have also been included in the catalog's dump. 
+
+
+The intersection, those with the same \textit{target id}, between this data and the data that resides in the project’s database for the specific catalog-entity defines the labeled data  for said entity that can be used for training and evaluation.
  
-\item[Downloading classification set:] The classification set is also downloaded on a per \textit{catalog-entity} basis. The procedure for downloading is very similar to that already mentioned above. The difference is that now we ask Wikidata to only send us the data about items of a specific entity type (for example, all \textit{Musicians}), and that are not already linked with the specified catalog.
+\item[Downloading classification set:] The classification set is also downloaded on a per \textit{catalog-entity} basis. The procedure for downloading it is very similar to that already mentioned above. 
+
+
+The difference is that now Wikidata is asked to only send  the data regarding items of a specific entity type (for example, all \textit{Musicians}), and that are not already linked with the specified catalog.
 \end{description}
 
 
@@ -1113,11 +1131,17 @@ Following is an overview of the procedure used in each case.
 \subsection{Blocking}
 \label{sec:soweego-st-blocking}
 
-Before going into details about the \textit{blocking} step, we need to clarify on which field the blocking happens. We won't explain data preprocessing until \autoref{sec:data-preprocessing}, although for the moment we'll mention that during this process, the names of each entity gets tokenized. This basically means that a new field is created for all entities, \textit{name\_tokens}, which is a list of all the tokens which can be generated from the full name of a person.
+Before going into details about the \textit{blocking} step, its necessary to clarify on which field the blocking happens. There is no need to explain data pre-processing until \autoref{sec:data-preprocessing}, although for the moment its important to mention that during this process, the name of each entity gets tokenized. 
 
-To perform the blocking, we first of all receive a Wikidata set, and the name of the concrete entity type for which we're currently running \texttt{soweego}. Then, for every entity in the Wikidata set we get all items of the specified concrete entity type which contain in their \textit{name\_tokens} field at least one of the tokens coming from the Wikidata entity. To prevent getting too many results we use allow only for a maximum of 10 external entities to be retrieved for each Wikidata entity.
 
-For example, suppose we're currently processing a Wikidata entity that in it's \textit{name\_tokens} field has the following list of tokens: \texttt{[George, Hamilton]}, and suppose that our external catalog dataset for said entity is as follows:
+This basically means that a new field,  \textit{name\_tokens} is created for all entities, this fiel is a list of all the tokens that can be generated from the full name of a person.
+
+To perform the blocking, the fist thing that need to be done is to receive a Wikidata set, and the name of the concrete entity type for which \texttt{soweego} is currently running. Then, for every entity in the Wikidata set, the blocking is made by getting all entities in the external catalog which share \textit{name tokens} with the Wikidata entity. 
+
+
+To prevent getting too many results its allowed for only a maximum of 10 external entities to be retrieved for each Wikidata entity.
+
+For example, suppose a Wikidata entity is  currently processed, and in it's \textit{name\_tokens} field it has the following list of tokens: \texttt{[George, Hamilton]}, and suppose that the external catalog dataset for said entity is as follows:
 
 \begin{table}[H]
 \centering
@@ -1132,27 +1156,42 @@ name\_tokens        & TID   \\ \hline
 \label{tab:soweego-blocking-ex}
 \end{table}
 
-After blocking with the rule mentioned above, we will find that our Wikidata entity may be a possible match with \texttt{[m3289, m2390, and m9932]}, but is not a match with \texttt{n5932}.
+After blocking with the rule mentioned above, its possible to find that the Wikidata entity may be a possible match with \texttt{[m3289, m2390, and m9932]}, but is not a match with \texttt{n5932}.
 
-This might be a very simple blocking rule, and in some cases returns much more matches than stricter rules. However, we've empirically observed that its performance is quite good. The reason this blocking rule was chosen is because all entities have a name field from which the tokens can be derived. Choosing another field (like \textit{birth date + death date}) might yield better results, but some entities do not have said field, which makes the blocking difficult. 
+This might be a very simple blocking rule, and in some cases returns much more matches than stricter rules. However, it may be empirically observed that its performance is quite good. The reason this blocking rule was chosen is because all entities have a name field from which the tokens can be derived. 
+
+
+Choosing another field (like \textit{birth date + death date}) might yield better results, but some entities do not have said field, which makes the blocking difficult. 
 
 
 \subsection{Feature Extractor}
 \label{sec:soweego-st-feature-ext}
 
-\todo[inline]{I feel this is too similar to the record linkage explanation of feature extraction \autoref{sec:rl-workflow-feat-extraction}}
 
-An in depth description of each feature used will be given in \autoref{sec:used-features}, for the moment we'll mention at a high level how the \textit{feature extraction} step works. Consider that this step gets as an input a list of pairs, where each pair is a possible match as specified by the previous \textit{blocking} procedure. An example of such list of pairs can be: 
+
+An in depth description of each feature used will be given in \autoref{sec:used-features}, for the moment it will be mentioned at a high level how the \textit{feature extraction} step works in \texttt{soweego}. 
+
+The project leverages the \texttt{Python Record Linkage Toolkit} \cite{recordlinkage-library} framework to extract the features. By using this framework the process gets simplified, it only needs the definition of which feature functions to use, and to which fields they should be applied. 
+
+
+
+After this is done, the only thing that remains is feeding to the framework the pairs of potential matches as extracted during the blocking step, and it will automatically yield the extracted features for said pairs.
+
+For example, consider that this step gets as an input the list of potential matches extracted during the previous blocking procedure. An example of such list of pairs can be: 
 
 \begin{center}
     \texttt{[('Q185002', 'nm0310359'), ('Q185002', 'nm2242569'), ('Q185002', 'nm0267785')]}
 \end{center}
 
-Where the first element in each pair is the QID of a Wikidata item, and the second element is the ID of the element in an external catalog (in this case, these are the IDs of entities in the IMDb catalog). Besides these pairs, we also have access to the information about each entity (its fields). Finally, the feature extraction procedure also defines a list of which comparison functions to apply to which fields of the target (Wikidata) and source (IMDb in this case) entities.
+Where the first element in each pair is the QID of a Wikidata item, and the second element is the ID of the element in an external catalog (in this case, these are the IDs of entities in the IMDb catalog). Besides these pairs, there is also access to the information about each entity (its fields). 
 
-The feature extraction proceeds in such a way that for each pair of entities we apply the list of comparison functions mentioned above. Each of these \textit{function applications} will generate a value which will come to be a \textit{feature} that characterizes the relationship between the two entities.
 
-For example, say we are using only one comparison function: the same modified \textit{Levenshtein} distance that was exposed in \autoref{sec:rl-workflow-feat-extraction}. We specify that we want to apply this function to the fields with the following names: \textit{[(source.name, target.name), (source.description, target.description)]}. Below is a figure which shows better how this application happens.
+
+Finally, the feature extraction procedure also defines a list of which comparison functions to apply to which fields of the target (Wikidata) and source (IMDb in this case) entities.
+
+The feature extraction proceeds in such a way that for every pair of entities the list of comparison functions mentioned above gets applied to each them. Each one of these \textit{function applications} will generate a value which will come to be a \textit{feature} that characterizes the relationship between the two entities.
+
+For example, consider using only one comparison function: the same modified \textit{Levenshtein} distance that was exposed in \autoref{sec:rl-workflow-feat-extraction}. Its specified that this function should be applied to the fields with the following names: \textit{[(source.name, target.name), (source.description, target.description)]}. Below is a figure which might help explain how this application happens.
 
 \begin{figure}[H]
   \centering \includegraphics[width=.6\textwidth]{feature_extraction}
@@ -1160,7 +1199,7 @@ For example, say we are using only one comparison function: the same modified \t
   \label{fig:feature-extractions-flow-ex}
 \end{figure}
 
-If apply the procedure mentioned above to all the pairs in the list we'll end up with a table where each rows contains the \textit{feature vector} characterizing every pair:
+If the procedure mentioned above is applied to all the pairs in the list, in the end there should be a table where each row contains the \textit{feature vector} characterizing every pair:
 
 \begin{table}[H]
 \centering
@@ -1175,22 +1214,25 @@ Pair                     & Lev\_name             & Lev\_description      \\ \hli
 \label{tab:soweego-feature-extraction-example-results}
 \end{table}
 
-For \texttt{soweego}, the list of functions we apply may change depending on which fields are available in the target and source catalogs. For example, we extract a feature that compares the \texttt{description} of both entities only if both have said field. This means that the amount of feature vectors extracted for different concrete entities may be different. 
 
-Once we have the feature vectors for all pairs we go can feed them to the linker. 
+For \texttt{soweego}, the list of functions applied may change depending on which fields are available in the target and source catalogs. For example, extracting a feature that compares the \texttt{description} of both entities only if both have said field. This means that the amount of feature vectors extracted for different concrete entities may be different. 
+
+Once the feature vectors for all pairs become available, they may be fed to the linker. 
 
 
 \subsection{Linker}
 \label{sec:soweego-st-linker}
 
-The linker receive the matrix of feature vectors from the previous step and feed it to one of the machine learning algorithms presented in \autoref{chap:algorithms}, which will in turn tell the linker what is the probability, according to that algorithm, that each pair is a match.
+The linker receives the matrix of feature vectors from the previous step and feeds it to one of the machine learning algorithms presented in \autoref{chap:algorithms}, which will in turn tell the linker what is the probability, according to that algorithm, that each pair is a match.
 
-Besides this, the linker also those a couple of \textit{post-classification} on the predictions. Specifically, what it does is apply the following \textit{linking rules} to each result in turn.
+Besides this, the linker also applies a couple of \textit{post-classification} steps on the predictions. Specifically, what it does is apply the following \textit{linking rules} to each result in turn.
 
 \begin{description}
-\item[Wikidata URL] if the target in the corresponding pair we're currently processing has a URL, and said URL points to a Wikipedia/Wikidata page then we can automatically extract from said URL which Wikidata entity the target should be associated with. If this extracted entity is the same as the source entity in the pair then the probability that they match is automatically changed to 1. 
+\item[Wikidata URL] if the target in the corresponding pair thats currently processing has a URL, and said URL points to a Wikipedia/Wikidata page then it can automatically extract from said URL which Wikidata entity the target should be associated with. 
 
-\item[Name Rule] this rule can be optionally activated when one desires more confident results, and by default is turned off. What it does is that, taking the current pair, it checks all possible fields which may be a name, and if there is no intersection among the tokenized contents of these fields then the probability of a match is decreased to 0.
+If this extracted entity is the same as the source entity in the pair then the probability that they match is automatically changed to 1. 
+
+\item[Name Rule] this rule can be optionally activated when more confident results are desired, and by default is turned off. What it does is that, taking the current pair, it checks all possible fields which may be a name, and if there is no intersection among the tokenized contents of these fields then the probability of a match is decreased to 0.
 \end{description}
 
 
@@ -1198,24 +1240,36 @@ Besides this, the linker also those a couple of \textit{post-classification} on 
 \subsection{Ingester}
 \label{sec:soweego-st-ingester}
 
-The first step performed by the ingester is to separate the given predictions into \textit{non-matches}, \textit{potential-matches}, and \textit{confident-matches}. This is done by simply separating the predictions according to some threshold. For example, all predictions below 0.4 are \textit{non-matches}, above 0.4 but below 0.7 are \textit{potential-matches}, and everything above that are matches. The reason for this separation is because \texttt{soweego} uploads directly to Wikidata only those predictions which are very likely to be true, whilst the \textit{potential-matches} are uploaded to a service called \textit{Mix'n'match}, where the Wikidata community can check manually each proposed pair and define if it is actually a match or not.
+The first step performed by the ingester is to separate the given predictions into \textit{non-matches}, \textit{potential-matches}, and \textit{confident-matches}. This is done by simply separating the predictions according to some threshold. 
 
-Confident results are \textit{uploaded} by editing the relevant stamement of each Wikidata item. For exmaple, if QID \textit{Q185002} is a match with IMDb TID \textit{nm0310359} then the ingester will proceed to create or update a statement on the item with the given QID, using the property \textit{P345}\footurl{https://www.wikidata.org/wiki/Property:P345} and using as a value the given TID. The mentioned property is used to link an item with an IMDb ID (similar properties exist in Wikidata for all the other external catalogs used).
+
+
+For example, all predictions below 0.4 are \textit{non-matches}, above 0.4 but below 0.7 are \textit{potential-matches}, and everything above that are matches. 
+
+
+The reason for this separation is because \texttt{soweego} uploads directly to Wikidata only those predictions which are very likely to be true, whilst the \textit{potential-matches} are uploaded to a service called \textit{Mix'n'match}, where the Wikidata community can check manually each proposed pair and define if it is actually a match or not.
+
+Confident results are \textit{uploaded} by editing the relevant stamement of each Wikidata item. For examaple, if QID \textit{Q185002} is a match with IMDb TID \textit{nm0310359} then the ingester will proceed to create or update a statement on the item with the given QID, using the property \textit{P345}\footurl{https://www.wikidata.org/wiki/Property:P345} and using as a value the given TID. 
+
+
+
+The mentioned property is used to link an item with an IMDb ID (similar properties exist in Wikidata for all the other external catalogs used).
 
 \todo[inline]{Should talk about the validator and other funcitons? At the time it seems better to just keep related things}
 
 \section{Implementation Details}
 \label{sec:soweego-implementation-details}
 
-All of the development of \texttt{soweego} was made with the Python \cite{python-tutorial} programming language. To run the internal database we use MariaDB\footurl{https://mariadb.com/} (which is the same as that used by Wikidata, so there is minimum friction when moving the application from development to production). We abstract away the details of communicating with the database we use \texttt{SQLAlchemy} ORM \cite{sqlalchemy}, which provides an object like interface it.
+All the development of \texttt{soweego} was made with the Python \cite{python-tutorial} programming language. To run the internal database  MariaDB\footurl{https://mariadb.com/} was used.(which is the same as that used by Wikidata, so there is minimum friction when moving the application from development to production). 
+The details of communicating with the database were abstracted away with the use of \texttt{SQLAlchemy} ORM \cite{sqlalchemy}, which provides an object like interface.
 
 To simplify the implementation of the record linkage workflow we also use the \texttt{Python Record Linkage Toolkit} \cite{recordlinkage-library} framework, which implements many useful functionalities for this goal. Mainly it eases the feature extraction and linking procedure. We also use the library \texttt{Pandas} \cite{mckinney-proc-scipy-2010} to make it easier to handle the data.
 
-We leverage some of the machine learning models provided by \texttt{Scikit-Learn} \cite{scikit-learn} to use in our linker, as well as their \textit{grid search} functionality to find the optimal hyperparameters.
+Some of the machine learning models provided were leveraged by \texttt{Scikit-Learn} \cite{scikit-learn} to be used in the linker, as well as their \textit{grid search} functionality to find the optimal hyperparameters.
 
-???All the visualizations in this work have been done by using the tools \textit{Matplotlib} \cite{Hunter_Matplotlib}, and \textit{Seaborn} \cite{Seaborn}.% not really an implementation detail
+All the visualizations in this work have been done by using the tools \textit{Matplotlib} \cite{Hunter_Matplotlib}, and \textit{Seaborn} \cite{Seaborn}.% not really an implementation detail
 
-Finally, we use the \texttt{ML-Ensemble} \cite{flennerhag:2017mlens} framework to make it easier to implement the different ensemble models used.
+Finally, the \texttt{ML-Ensemble} \cite{flennerhag:2017mlens} framework was used to make it easier to implement the different ensemble models used.
 
 
 Development of \texttt{soweego} happens locally and new releases are uploaded to a virtual private server which is provided by Wikimedia for that purpose. 
@@ -1226,15 +1280,22 @@ Development of \texttt{soweego} happens locally and new releases are uploaded to
 \section{Data Exploration}
 \label{sec:data-exploration}
 
-This section will be dedicated to showing and exploring the data we're going to work with (next section), then we'll mention which preprocessing steps the data undergoes and what it's final shape is (\autoref{sec:data-preprocessing}). Finally we'll talk about the list of features extracted during the \textit{feature extraction} step of \texttt{soweego}.
+This section will be dedicated to showing and exploring the data that was used (next section), then mentioning which pre-processing steps the data undergoes and what it's final shape is (\autoref{sec:data-preprocessing}). Finally the list of features extracted during the \textit{feature extraction} step of \texttt{soweego} will be discussed.
 
 
 \subsection{Original Shape of the Data}
 \label{sec:orig-shape-of-data}
 
-In this section we'll take a look at which shape the data we receive from the external catalogs, as well as that received from Wikidata, takes. Since they're all different, a section will be dedicated to each catalog. 
+This section will explore which shape the data received from the external catalogs, as well as that received from Wikidata, takes. Since they're all different, a section will be dedicated to each catalog. 
 
-It must be pointed out for the external catalogs, that even though they're maintained by a group of contributors and, in some cases, also by dedicated teams, it does not mean that the data is 100\% clean. During development we've seen multiple times impossible values (like birth or death dates in the future), spelling errors in  names, missing values (most commonly, missing birth and death dates), among others. As such, it must be kept in mind that the information coming from the external catalogs should not be considered the absolute truth.
+It must be pointed out for the external catalogs, that even though they're maintained by a group of contributors and, in some cases, also by dedicated teams, it does not mean that the data is 100\% clean. 
+
+
+During development there have been multiple encounters with impossible values (like birth or death dates in the future), spelling errors in  names, missing values (most commonly, missing birth and death dates), among others. 
+
+
+
+As such, it must be kept in mind that the information coming from the external catalogs should not be considered the absolute truth.
 
 \todo[inline]{add more? maybe about common points, TIDs, QIDs, and etc}
 
@@ -1242,7 +1303,7 @@ It must be pointed out for the external catalogs, that even though they're maint
 \subsubsection{IMDb}
 \label{sec:shape-imdb}
 
-IMDb provides multiple dumps of their data\footurl{https://www.imdb.com/interfaces/}, each is a snapshot of the database up until the current date, containing different information. The one we use, which is the one that contains information about the people in IMDb's database, is \texttt{name.basics}\footurl{https://datasets.imdbws.com/name.basics.tsv.gz}. The specific dump we'll be talking about was downloaded from the site on \textit{3 October 2019}.
+IMDb provides multiple dumps of their data\footurl{https://www.imdb.com/interfaces/}, each is a snapshot of the database up until the current date, containing different information. The one used in this project, which is the one that contains information about the people in IMDb's database, is \texttt{name.basics}\footurl{https://datasets.imdbws.com/name.basics.tsv.gz}. The specific dump that is going to be discussed was downloaded from the site on \textit{3 October 2019}.
 
 The data dump is one single tab separated file. It contains 6 different columns. An example of some rows, and explanation of each field are mentioned below.
 
@@ -1259,15 +1320,15 @@ nm0000003 & Brigitte Bardot & 1934      & \textbackslash{}N & actress,producer  
 \end{table}
 
 \begin{description}
-\item[nconst] This is the column which holds the ID of the person in IMDb's internal database. This ID is what we'll later use as the TID to identify a target entity from this catalog.
+\item[nconst] This is the column which holds the ID of the person in IMDb's internal database. This ID is what will later be used as the TID to identify a target entity from this catalog.
 
-\item[primaryName] Is the full name of the person. Usually consists of a first name followed by a last name, but may include the initials of middle names as well. As we'll see later, there are even some entities which have more than 3 parts to their name.
+\item[primaryName] Is the full name of the person. Usually consists of a first name followed by a last name, but may include the initials of middle names as well. As will be shown later, there are even some entities which have more than 3 parts to their name.
 
 \item[birthYear] The year in which the person was born.
 
-\item[deathYear] The year in which the person died, or \textbackslash{}N if it hasn't died yet.
+\item[deathYear] The year in which the person died.
 
-\item[primaryProfession] This field contains a comma separated list of at most the main three professions of the person. These \textit{professions} are names which describe the profession the person is known for, that is, reasons for which the person appeared in the credits of a movie or TV-series. 
+\item[primaryProfession] This field contains a comma separated list of main professions each person has, this list may contain a maximm of three professions. These \textit{professions} are names which describe the profession the person is known for, that is, reasons for which the person appeared in the credits of a movie or TV-series. 
 
 These professions are not always specific, and sometimes act like clusters of similar, and more specific, professions.
 
@@ -1637,7 +1698,7 @@ This feature is extracted by taking the \textit{name} fields of both entities an
 
 For clarification, below is the algorithm used to find the perfect match. Note that this same procedure can be applied when performing \textit{perfect match} on any two lists of values.
 
-\begin{lstlisting}[language=Python]
+\begin{lstlisting}
 def exact_match_name(source_entity, target_entity):
     for source_name in source_entity.names:
         for target_name in target_entity.names:
@@ -1685,7 +1746,7 @@ The comparison can start from the lowest precision and keeping a counter $\omega
 
 More formally, the following pseudocode defines the algorithm:
 
-\begin{lstlisting}[language=Python, escapeinside={(*}{*)}]
+\begin{lstlisting}
 max_precision = min((*$\phi_{target}, \phi_{source}$*)) # the maximum precision we can compare
 (*$\omega$*) = 0 # counter to track how many parts the dates have in common
 
@@ -1832,23 +1893,62 @@ The 0.9 is just a weighting term to specify how much the penalization should cou
 
 %%% ------------------
 
+\subsubsection{Cosine similarity on description}
+\label{sec:feature-cosine-similarity-description}
+
+Similarly to \autoref{sec:feature-kernel-similarity-name-tokens}, this function leverages the cosine similarity function. The difference is that the function does not count the number of bi-grams. Instead, what is done is that a vocabulary composed of all the words in the description coming from both entities is constructed. Then a vector is created for each entities that specifies if a certain word in the vocabulary is in that entity's description (same as with bi-grams but with words intead). The cosine similarity is then calculated on these two vectors.
 
 
+\subsubsection{Match on occupation QIDs}
+\label{sec:feature-occupations}
 
-Description and listing of all the features used in the project
+This feature function is currently only used for IMDb entities since those are the only which have an \textit{occupation} field. Remember that \autoref{sec:shape-imdb} mentioned how IMDb provided information about the three most profession each entity is associated with, and that these \textit{imdb-professions} can be mapped to the QIDs of professions in Wikidata. This function leverages this relation. 
 
-add a subsection which lists and explains all the features
-% Average quality of the dates for birth and for death
+Data coming from Wikidata, when downloaded for IMDb entities, contains all the occupation QIDs associated with the entity. These might not always be the same as those saved in IMDb. For example, the occupation for the Wikidata entity might be a more specific occupation than that in IMDb, or on the other hand it may be less specific. A concrete example of this might be the occupation \textit{voice actor (Q2405480)} in Wikidata. There is no profession in IMDb which matches \textit{voice actor}, however it could be considered as a kind of \textit{actor}, and someone with profession \textit{actor} in IMDb should be considered as a positive match with a Wikidata entity who is a \textit{voice actor} (at least when considering the occupations).
+
+For this reason, this function does not compare the occupations directly, instead it also considers all \textit{sub} and \textit{super} classes of said occupations (more specific and more general versions, respectively). For example, the occupation \textit{voice actor (Q2405480)} is a sub-class of \textit{actor (Q33999)}, and this is turn is a sub-class of \textit{artist (Q483501)}. 
+
+The information about which are the super and sub-classes is obtained directly from Wikidata by means of queries to it's SPARQL API. Note that this proceedure gets \textit{all} sub and super classes not only the immediately super or sub. For example, the result of getting the sub-classes of \textit{artist (Q483501)} will include both \textit{actor} and \textit{voice actor}. The process can also be thought of as getting the elements from a tree, where the root is the more general super-class, and the leafs are the most specific sub-classes. 
+
+The function starts by getting the occupation sets from two entities, these are then extended to include all the sub and super \textit{occupations} of the original occupations in those sets, creating one $\omega_e$ for each entity. The result of the function is then calculated as:
+
+\begin{equation*}
+    \frac{
+        | \omega_{source} \cap \omega_{target} | 
+    }{
+        min(| \omega_{source} | , | \omega_{target} | )
+    }
+\end{equation*}
+
+This is basically the percentage of the smallest set of occupations which is contained in the largest set. If the base occupations are the same then the sets will also be the same. If the base occupations are the same, but one of the entities has one extra (or more) different occupations, then the smallest set will still be contained in the largest one, and it will be considered as a perfect match. When the base occupations are different, but related (e.g. all occupations are related with music) then it is expected that some non-negligible subset of the super classes will be the same.
+
+Currently, the smallest set is usually IMDb. As seen in \autoref{fig:imdb-profession-count-pie}, most IMDb entities only have only one occupation associated with them, and they can have at most three. On the other hand, Wikidata entities have no limit as to how many entities they can be associated with. 
+
+% GENRES - not describing it since it's not used for people nor bands
 
 
-\subsubsection{Visualization of Features}
+\subsubsection{Feature Exploration}
 \label{sec:feature-viz}
+
+To understand the features exposed in the last function better, and to learn what is their behaviour in a real world scenario, this section will proceed to mention some basic statistical information about them. Of special interest is: which is the average value for a feature, which features are always zero, and knowledge of the features that are applied for a specific catalog. This information will be separated by concrete entity and also by whether the feature comes from a training set or a classification set. 
+
+It is also interesting to see how the features for training samples vary if they're labelled possitively or negatively. A hypothesis is that, as stated in \autoref{sec:training-real-data-difference}, already labeled items are more likely to have the rest of their information filled out, so the expected output is that features for this items are more informative.
+
+> note, separate trainingin positive and negative
+
+TABLE
+
+PCA of features
+
+
+
 
 \subsubsection{Feature Correlation}
 \label{sec:feature-correlation}
 
 Maybe also show correlation between features and output? Use predictions of base
 classifiers to keep it simple. Maybe one example.
+
 
 \subsection{Difference between training and real world data}
 \label{sec:training-real-data-difference}
@@ -1857,6 +1957,14 @@ Consider including a visualization of the classification features. Compare it
 with the visualization done in \pageref{sec:feature-viz} which is about
 \ref{sec:feature-viz} the visualization of features obtained from training data.
 
+
+A potential problem with classification data coming from Wikidata is that the classification data is usually worst quality data than the training one. Elements in the training data, are probably more \textit{important} since somebody took the time to link them to the external catalog, and it can be reasonably believed that the other statements of these items have been filled as well. This makes the 
+
+
+Consider an horizontal bar plot, showing the average values for features in classifications and in training.
+% \^-- consider also make comparative distplots of each feature. There are many, 10 features to be exact, which could be separated into 2x5 subplots? .. Just compare all entities with the feature, no need to separate amongst catalogs and etc.
+
+Also show if some are NaN in classification while not-nan in training (doubt it) 
 
 % \subsection{Example of a including data}
 % \label{sec:ex-include-data}
@@ -1871,39 +1979,63 @@ with the visualization done in \pageref{sec:feature-viz} which is about
 \chapter{Algorithms}
 \label{chap:algorithms}
 
+This chapter will cover the machine learning algorithms used in the project. The first section will talk about the \textit{baseline} classifiers, which are just normal classification algorithms. \autoref{sec:hyperpar-optimization} will talk about how and according to which procedures the hyperparameters for these baseline algorithms were chosen. Following that, \autoref{sec:ensemble-models} will talk about ensemble models, the motivation for using them, and which were employed in the project.
+
+As said in \autoref{sec:rl-workflow-linking}, the linking process is one of the main processes in the record linkage workflow. This linking can either be done using a rule based approach, or a machine learning algorithm can be used to learn when to mark a pair as a match based on the features extracted for that pair. As such, having a well tuned and well performing algorithm is essential for an effective record linkage.
+
+% need to include introduction to what ML algorithms are and how they are trained? Most importantly, if this is done then take time to explain *generalization*
+
 \section{Baseline Classifiers}
 \label{sec:baseline-classifiers}
+
+This section mentions the basic machine learning algorithms used in the project. There are the algorithms that are used as a \textit{baseline} to measure the performance of the ensemble algorithms presented in the next section. 
+
+
+\todo[inline]{check if we can say which algorithms tend to have high variance and high bias. So that we can give a motivation for why which chose each for the ensemble part}
+
 
 \subsection{Linear SVM}
 \label{sec:clf-lsvm}
 
+Implemented in record linkage library \cite{recordlinkage-library}
+
+Check if this and SVM are acually going to be used at the end. If both remain then in the ensemble part will need to mention why they're not used as part of the ensemble.
+
 \subsection{SVM}
 \label{sec:clf-svm}
+
+also implemented in record linkage library \cite{recordlinkage-library} 
+
 
 \subsection{Naive Bayes}
 \label{sec:clf-nb}
 
+also implemented in  \cite{recordlinkage-library}
+
 \subsection{Logistic Regression}
 \label{sec:clf-lr}
+
+implemented by sklear \cite{scikit-learn}
 
 \subsection{Random Forest}
 \label{sec:clf-rgc}
 
-Mention that we added this and logistic regression as an extra because SVM was
-too slow and LSVM didn't give probabilities. (maybe this can be said in the
-ensemble models section).
+implemented by sklear \cite{scikit-learn}
 
 \subsection{Single Layer Perceptron}
 \label{sec:clf-slp}
 
+implemented by keras \cite{chollet2015keras}
+
 \subsection{Multi-Layer Perceptron}
 \label{sec:clf-mlp}
+
+implemented by keras \cite{chollet2015keras}
 
 \subsubsection{Universal approximation principle}
 \label{sec:universal-apprx-principle}
 
-
-
+Not sure if we're going to leave this... might be unnecessary
 
 \section{Baseline Hyperparameter Optimization}
 \label{sec:hyperpar-optimization}
@@ -1914,15 +2046,36 @@ completeness
 this was done only on one catalog/entity (discogs/musician) and the
 hyperparameters are not optimal for all
 
+for this we're using the functionality already implemented in implemented by sklear \cite{scikit-learn}
 
 
 \section{Ensemble Models}
-\label{chap:ensemble-models}
+\label{sec:ensemble-models}
 
-Exaplin which base classifiers used and why (to have more diversity).
+All of the baseline classifiers presented in the previous section are able to capture specific facets of the data. For example, some may perform better for certain distribution of features and some for others. But as they currently are, the opinions of one model may not be joined with that of another, and as such we're forced to decide on which is the best, and the one we want to use. This decision is quite difficult, and potentially impossible, since no model may perform better in all cases. 
+
+Luckily there is the possibility to use more than one model at once, and join the opinion of these \textit{base classifiers} in some way. This is called an \textit{ensemble classifier}. As shown in this section, there are multiple kinds of ensemble classifiers, with the difference being mainly on how they're constructed and how the predictions of the base classifiers are joined.
+
+%Awesome ensembles page on GH has some nice links
+
+% Should mention boosting even if're we're not using it?
 
 \subsection{Motivation} 
 \label{sec:motivation-ensemble}
+
+Ensemble classifiers were originally introduced in CITE, and have since seen widespread usage in many areas CITE(OVERVIEW ENSEMBLE MODELS). It is quite common to see ensemble models win machine learning competitions on Kaggle CITE. 
+
+As said in the introduction to this section, different base models may capture different aspects of particular problem. This means that some models may work better than others in some situations. Using an ensemble allows us to mix all of the base model's predictions so that the final classification is as good as possible. 
+
+Another way this can be seen is that the base classifiers may have a high bias, or high variance, and joining them (e.g. averaging the results) reduces said bias/variance \cite{Breiman1996_bagging_predictors}. As a side note, it is desirable of a machine learning algorithm for it to have a low \textit{variance} and a low \textit{bias} \cite{Munro2011_bias_variance_decomp}. However, obtaining both of these is very difficult. A model with high variance \textit{variance} typically overfits the noise in the data, and a model with a high bias tends to underfit the data. 
+
+From the above also follows that a good ensemble is one where the base classifiers are as diverse as possible CITE. However, it has been shown CITE, that the performance of the ensemble starts increasing asymptotically after a number of base classifiers. 
+
+
+Even though the performance increases, and predictions from the various base classifiers can be joined, there is now the problem of training multiple algorithms. In some cases, especially when the datasets are very large, or/and the algorithms used are complex, the training can take quite some time.
+
+
+% --- 
 
 Principles of ensembles reduce variance, join predictive stuff, etc (although
 this is probably talked about in the previous section)
@@ -1932,12 +2085,18 @@ this is probably talked about in the previous section)
 \subsection{Bagging}
 \label{sec:ens-bagging}
 
+% interesting notions https://towardsdatascience.com/ensemble-methods-bagging-boosting-and-stacking-c9214a10a205
+The name of bagging is short for \textit{bootstrapping} and \textit{aggregating}
+
+\cite{Breiman1996_bagging_predictors}
+
 \subsection{Gating}
 \label{sec:ens-gating}
 
+A specialization of \textit{bagging}, it uses a meta layer
+
 \subsection{Stacking}
 \label{sec:ens-stacking}
-
 
 
 \chapter{Results}
