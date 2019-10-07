@@ -30,6 +30,9 @@
 \usepackage{makecell}
 \usepackage[capitalise]{cleveref}
 
+\usepackage{longtable}
+\usepackage{lscape}
+
 \usepackage[inline]{enumitem}
 
 \usepackage{listings}
@@ -1328,14 +1331,14 @@ nm0000003 & Brigitte Bardot & 1934      & \textbackslash{}N & actress,producer  
 
 \item[deathYear] The year in which the person died.
 
-\item[primaryProfession] This field contains a comma separated list of main professions each person has, this list may contain a maximm of three professions. These \textit{professions} are names which describe the profession the person is known for, that is, reasons for which the person appeared in the credits of a movie or TV-series. 
+\item[primaryProfession] This field contains a comma separated list of main professions each person has, this list may contain a maximm of three professions. These \textit{professions} are names which describe the ocupation the person is known for, that is, reasons for which the person appeared in the credits of a movie or TV-series. 
 
 These professions are not always specific, and sometimes act like clusters of similar, and more specific, professions.
 
-\item[knownForTitles] List of movie/TV-series IDs the person is known for. We currently don't use this information in our project. 
+\item[knownForTitles] List of movie/TV-series IDs the person is known for. This information is not currently used in our project. 
 \end{description}
 
-The interpretation of most fields is very straightforward. The only exception is the \textit{primaryProfession} field, which we'll explain a bit more here. IMDb defines a series of \textit{clusters of professions}, or \textit{occupations}, which group together the accepted professions in the database. The most common professions have their own cluster (like \textit{actor}), while less common ones are clustered together (for example, \textit{music\_department} which stands for all occupations related to making music for a movie or TV-series).
+The interpretation of most fields is very straightforward. The only exception is the \textit{primaryProfession} field, which will be explained a bit more here. IMDb defines a series of \textit{clusters of professions}, or \textit{occupations}, which group together the accepted professions in the database. The most common professions have their own cluster (like \textit{actor}), while less common ones are clustered together (for example, \textit{music\_department} which stands for all occupations related to making music for a movie or TV-series).
 
 The actual possible values for the \textit{primaryProfession} field are: 
 
@@ -1380,9 +1383,9 @@ The actual possible values for the \textit{primaryProfession} field are:
     \end{itemize*}
 \end{quote}
 
-All the items in the this list correspond to respective professions in Wikidata, meaning we can later compare these with the profession associated with a Wikidata item, and from the comparison derive a feature. The mapping from these professions to Wikidata professions is explained in \autoref{sec:imdb-profs-to-wikidata}, the feature mentioned will be explained later in \autoref{sec:used-features}.
+All the items in the this list correspond to respective professions in Wikidata, meaning its possible to later compare these with the profession associated with a Wikidata item, and from the comparison derive a feature. The mapping from these professions to Wikidata professions is explained in \autoref{sec:imdb-profs-to-wikidata}, the feature mentioned will be explained later in \autoref{sec:used-features}.
 
-There are a total of 9,613,243 entries in the dump. Of these, all of them have some value in their \textit{primaryName} field. There are 194,469 entries which have a single word in as the name, all the other have 2 or more. In \autoref{fig:imdb-num-tokens-name-pie} we can see that the great majority of entities have names composed of two tokens, and the next most common amount of tokens is 3 (possibly those with a middle name), followed by those with only one token, and finally all those entities with names containing 4 or more token.
+There are a total of 9,613,243 entries in the dump. Of these, all of them have some value in their \textit{primaryName} field. There are 194,469 entries which have a single word in as the name, all the other have 2 or more. In \autoref{fig:imdb-num-tokens-name-pie} its possible to see that the great majority of entities have names composed of two tokens, and the next most common amount of tokens is 3 (possibly those with a middle name), followed by those with only one token, and finally all those entities with names containing 4 or more token.
 
 \begin{figure}[]
   \centering \includegraphics[width=.6\textwidth]{imdb_num_tokens_names}
@@ -1391,15 +1394,15 @@ There are a total of 9,613,243 entries in the dump. Of these, all of them have s
 \end{figure}
 
 
-Of all the entires, there only are 488,727 which have a \textit{birthDate}, and 170,613 have a \textit{deathDate}. The distplots in \autoref{fig:imdb-years-distplot} show us the distributions of birth and death dates for IMDb. We see that most of the entities were born around the 1900, and there are less entities from closer years (possibly because those persons are still too young to have any reason to have a page in IMDb). On the other hand, death dates behave in the inverse manner: the greatest amount of deceased entities seems to have died in the last years.
+Of all the entires, there are only 488,727 which have a \textit{birthDate}, and 170,613 have a \textit{deathDate}. The distplots in \autoref{fig:imdb-years-distplot} show the distributions of birth and death dates for IMDb. It can be noted that most of the entities were born around the 1900, and there are less entities from closer years (possibly because those individuals are still too young to have any reason to posses a page in IMDb). On the other hand, death dates behave in the inverse manner: the greatest amount of deceased entities seems to have died in the last years.
 
 \begin{figure}[]
   \centering \includegraphics[width=.9\textwidth]{birth_and_death_frequencies_imdb}
-  \caption{Birth (top) and death dates (bottom) for IMDb entities. Note that to generate this figure only dates later than 1800 were considered. There are 568 entities who were born earlier than 1800, and 305 entities who died before the same data. We're not considering these entities for the graphs above to make them easier to interpret, but we do consider them during the record linkage process.}
+  \caption{Birth (top) and death dates (bottom) for IMDb entities. Note that to generate this figure only dates later than 1800 were considered. There are 568 entities who were born earlier than 1800, and 305 entities who died before the same date. These entities are not being considered for the graphs above, in an effort to make them easier to interpret, but we do consider them during the record linkage process.}
   \label{fig:imdb-years-distplot}
 \end{figure}
 
-The professions field is quite good: only 1,881,284 don't have a profession. The remaining 7,731,959 entities either have 1, 2 or 3 professions listed. \autoref{fig:imdb-profession-count-pie} is a pie chart showing their distribution. We can see that roughly $3/4$ of the entities have only one profession, and the last quarter seems to be equally shared by entities with 2 and 3 professions.
+The professions field is quite good: only 1,881,284 don't have a profession. The remaining 7,731,959 entities either have 1, 2 or 3 professions listed. \autoref{fig:imdb-profession-count-pie} is a pie chart showing their distribution. Its possible to see that roughly $3/4$ of the entities have only one profession, and the last quarter seems to be equally shared by entities with 2 and 3 professions.
 
 \begin{figure}[]
   \centering \includegraphics[width=.6\textwidth]{profession_counts_imdb}
@@ -1407,7 +1410,7 @@ The professions field is quite good: only 1,881,284 don't have a profession. The
   \label{fig:imdb-profession-count-pie}
 \end{figure}
 
-In \autoref{fig:imdb-profession-raw-counts} we see a barplot that shows us the amount of times each profession appeared in the dump. And \autoref{fig:imdb-profession-single-percentage} shows us the percentage of entities which only had one of the professions.
+In \autoref{fig:imdb-profession-raw-counts} a barplot can be seen that shows the amount of times each profession appeared in the dump. And \autoref{fig:imdb-profession-single-percentage} shows the percentage of entities which only had one of the professions.
 
 \begin{figure}[]
   \centering \includegraphics[width=\textwidth]{raw_profession_counts_imdb}
@@ -1423,7 +1426,7 @@ In \autoref{fig:imdb-profession-raw-counts} we see a barplot that shows us the a
 \end{figure}
 
 
-By looking at \autoref{fig:imdb-profession-coocurrence-heatmap} we can see a heatmap that describes the co-occurrence of the different professions (how frequent is it that an entity has them listed together in its \textit{primarProfessions} field). We can see some interesting correlations among them, for example, that the \textit{director} profession almost always appears together with the \textit{writer} profession. This shows that there is an underlying structure in the professions, which is another motivation to create a feature that leverages this field.
+By looking at \autoref{fig:imdb-profession-coocurrence-heatmap} a heatmap can be seen that describes the co-occurrence of the different professions (how frequent is it that an entity has them listed together in its \textit{primarProfessions} field). Its possible to see there are some interesting correlations among them, for example, that the \textit{director} profession almost always appears together with the \textit{writer} profession. This shows that there is an underlying structure in the professions, which is another motivation to create a feature that leverages this field.
 
 \begin{figure}[]
   \centering \includegraphics[width=\textwidth]{imdb_profession_coorcurrence}
@@ -1431,23 +1434,23 @@ By looking at \autoref{fig:imdb-profession-coocurrence-heatmap} we can see a hea
   \label{fig:imdb-profession-coocurrence-heatmap}
 \end{figure}
 
-We can see that the IMDb dump does not provide much information for us to use. The name fields seem to be the one with the highest quality (no empty values). Birth and death dates are quite informative but sadly only few entities have values there. The remaining field, \textit{primaryProfessions}, is also quite good in terms of data quality, and its underlying structure will let us derive an effective feature from it.
+Its evident that the IMDb dump does not provide much information that can be used. The name fields seem to be the ones with the highest quality (no empty values). Birth and death dates are quite informative but sadly only few entities have values there. The remaining field, \textit{primaryProfessions}, is also quite good in terms of data quality, and its underlying structure will allow the creation of an effective feature from it.
 
 
 
 \subsubsection{Discogs}
 \label{sec:shape-discogs}
 
-Discogs provides multiple data dumps\footurl{https://data.discogs.com/}, and maintain records of dumps released in different dates. The ones we use is:
+Discogs provides multiple data dumps\footurl{https://data.discogs.com/}, and maintains records of dumps released in different dates. The ones used for this project are:
 
 \begin{itemize}
-    \item \textit{discogs\_20190901\_artists}, whose last revision \textit{2019-09-08T13:03:25.000Z}
+    \item \textit{discogs\_20190901\_artists}, whose last revision was on \textit{2019-09-08T13:03:25.000Z}
 \end{itemize}
 
 This dump contains information about artists, which can be either a single musicians or music groups. The dump is an XML file and for each entity (either band or musician) provides the following information:
 
 \begin{description}
-\item[identifier] This is the ID of the entity in the Discogs database. It will be the field we use as the TID for this catalog.
+\item[identifier] This is the ID of the entity in the Discogs database. It will be the field used as the TID for this catalog.
 
 \item[name] The main artistic name associated with the entity.
 
@@ -1455,7 +1458,7 @@ This dump contains information about artists, which can be either a single music
 
 \item[namevariations] Possible different artist names for this entity.
 
-\item[data\_quality] Discogs specific metric that tells us how good the data is. It's possible values are 
+\item[data\_quality] Discogs specific metric that shows how good the data is. It's possible values are 
 \begin{itemize*}
     \item Correct
     \item Complete and Correct
@@ -1469,15 +1472,15 @@ This dump contains information about artists, which can be either a single music
 
 \item[living\_links] This field holds a list of hyperlinks associated with the entity. They are usually links that go to external sites (for example, Twitter, Wikipedia, YouTube, etc).
 
-\item[group] This field is specified for entities which are a musician. It specifies which groups the musician belongs to. We only consider \textit{musicians} as those who have some value in this field. This relational information is currently not used in the project. 
+\item[group] This field is specified for entities which are a musician. It specifies which groups the musician belongs to. This project only considers \textit{musicians} as those who have some value in this field. This information is only used to determine which entries are \textit{musicians}, and is not otherwise leveraged in the project. 
 
-\item[members] This field is specified for bands, and tells us which musicians are associated with said band. We only consider \textit{bands} those entities which have some value in this field. This relational information is also not currently used in the project.
+\item[members] This field is specified for bands, and shows which musicians are associated with which bands. This project  only considers as \textit{bands} those entities which have some value in this field. This information is only used to determine which entries are \textit{bands}, and is not otherwise leveraged in the project.
 
 \end{description}
 
-There are a total of 6,432,264 entities in the Discogs dump. Of these, 1,129,711 have a value in either the \textit{band} or \textit{members} field. This is the final number of entities \texttt{soweego} will import into its database, so these are the ones for which we'll derive all the next metrics.
+There are a total of 6,432,264 entities in the Discogs dump. Of these, 1,129,711 have a value in either the \textit{band} or \textit{members} field. This is the final number of entities \texttt{soweego} will import into its database, so these are the ones for which all the next metrics will be derived.
 
-There are 384,352 entities which have some value in the \textit{members} field, meaning that these are the bands in the data dump. And there are 749,499 which have a value in the \textit{groups} field (these are the musicians). There are also 4,140 entities which have \textit{both} members and groups. \autoref{fig:discogs-band-member-commonality} show us the most common number of bands a musician belongs to, and the most common number of members a band has. We can see that it is more common for bands to have multiple members, whilst it is not very common for a musician to be part of more than one band.
+There are 384,352 entities which have some value in the \textit{members} field, meaning that these are the bands in the data dump. And there are 749,499 which have a value in the \textit{groups} field (these are the musicians). There are also 4,140 entities which have \textit{both} members and groups. \autoref{fig:discogs-band-member-commonality} shows the most common number of bands a musician belongs to, and the most common number of members a band has. It can be seen that it is more common for bands to have multiple members, whilst it is not very common for a musician to be part of more than one band.
 
 \begin{figure}[]
   \centering \includegraphics[width=\textwidth]{discogs_band_belonging_barplots} 
@@ -1494,7 +1497,7 @@ Of all the entities, 935,456 are not associated with a real name. However, all o
   \label{fig:discogs-num-name-tokens-distplot}
 \end{figure}
 
-There are 492,315 entities which have at least one value in the \textit{namevariations} field. \autoref{fig:discogs-num-name-variations-barplot} shows which are the most common number of alternative names, among entities who actuall have alternative names. We can notice that it is much more likely to have only one name variation, with the likelihood of having another decreasing almost by half with each extra alternative name.
+There are 492,315 entities which have at least one value in the \textit{namevariations} field. \autoref{fig:discogs-num-name-variations-barplot} shows which are the most common number of alternative names, among entities who actually have alternative names. Notice that it is much more likely to have only one name variation, with the likelihood of having another decreasing almost by half with each extra alternative name.
 
 \begin{figure}[]
   \centering \includegraphics[width=\textwidth]{discogs_num_name_variations} 
@@ -1503,7 +1506,7 @@ There are 492,315 entities which have at least one value in the \textit{namevari
 \end{figure}
 
 
-Regarding the \textit{profile} field, which comes to be like the description of the entity, 487,588 have any value in it. \autoref{fig:discogs-num-words-profile-barplot} shows the distribution of how many words can we expect to find in such description (among entities who do have one). We can notice that if an entity has a profile description then the most likely scenario is that it will have one composed of only two words. It's interesting to notice that having only one word in the description is almost as likely as having 7 of them. 
+Regarding the \textit{profile} field, which comes to be like the description of the entity, 487,588 have some kind of value in it. \autoref{fig:discogs-num-words-profile-barplot} shows the distribution of how many words can be expected to be found in such description (among entities who do have one). Notice that if an entity has a profile description then the most likely scenario is that it will have one composed of only two words. It's interesting to notice that having only one word in the description is almost as likely as having 7 of them. 
 
 \begin{figure}[]
   \centering \includegraphics[width=\textwidth]{discogs_num_words_profile} 
@@ -1512,7 +1515,7 @@ Regarding the \textit{profile} field, which comes to be like the description of 
 \end{figure}
 
 
-Discogs also tells us how many entities are associated with links to external pages. In the dump there are 243,757 entities with external links. \autoref{fig:discogs-external-links-counts-barplot} shows which amount of links is the most common among entities which do have links. We can see that it is very common, if an entity has at least one link, that it actually has only one. We still find entities with 3 and 4 links, but 5 or more are much less common.
+Discogs also provides how many entities are associated with links to external pages. In the dump there are 243,757 entities with external links. \autoref{fig:discogs-external-links-counts-barplot} shows which amount of links is the most common among entities which do have links. It seems to be very common, if an entity has at least one link, that it actually has only one. Entities with 3 and 4 links can be found, but 5 or more are much less common.
 
 \begin{figure}[]
   \centering \includegraphics[width=\textwidth]{discogs_external_links_counts} 
@@ -1520,7 +1523,7 @@ Discogs also tells us how many entities are associated with links to external pa
   \label{fig:discogs-external-links-counts-barplot}
 \end{figure}
 
-The \textit{data\_quality} field tells us how good the data about a certain entity is. All entities have a value in this field. \autoref{fig:discogs-data-quality-distribution-pie} shows us the distribution of the various data quality labels. We can see that more than half of them are marked as \textit{Needs Vote}, little less than a quarter are \textit{Correct}, and the rest are labelled as incorrect (in different degrees).
+The \textit{data\_quality} field shows how good the data about a certain entity is. All entities have a value in this field. \autoref{fig:discogs-data-quality-distribution-pie} provides the distribution of the various data quality labels. Its possible to see that more than half of them are marked as \textit{Needs Vote}, little less than a quarter are \textit{Correct}, and the rest are labelled as incorrect (in different degrees).
 
 \begin{figure}[]
   \centering \includegraphics[width=\textwidth]{discogs_data_quality_distribution} 
@@ -1532,7 +1535,7 @@ The \textit{data\_quality} field tells us how good the data about a certain enti
 \subsubsection{Musicbrainz}
 \label{sec:shape-musicbrainz}
 
-The Musicbrainz dump\footurl{https://musicbrainz.org/doc/MusicBrainz_Database/Download} is a snapshot of the whole dataset. As such, it contains a lot of data we're not really interested in. The dump used for this catalog is the following:
+The Musicbrainz dump\footurl{https://musicbrainz.org/doc/MusicBrainz_Database/Download} is a snapshot of the whole dataset. As such, it contains a lot of data which is not of any interest for this project. The dump used for this catalog is the following:
 
 \begin{itemize}
     \item 20191002-001702/mbdump.tar.bz2
@@ -1545,11 +1548,11 @@ In the dump there are a total of 1,003,366 musicians and 437,287 bands. The dump
 
 \item[name] Name of the entity.
 
-\item[born day, born month, born year] Define individually which is the day, month, and year a person was born in. If one of these is unknown then the value is \textit{NULL}. By having this separate, the \textit{precision} with which a date is known can be derived. This will be useful later when deriving features from said dates. 
+\item[birth day, birth month, birth year] Define individually which is the day, month, and year a person was born in. If one of these is unknown then the value is \textit{NULL}. By having this separate, the \textit{precision} with which a date is known can be derived. This will be useful later when deriving features from said dates. 
 
 \item[death day, death month, death year] Same as the fields mentioned above, but for death dates.
 
-\item[birth place, death place] Specify information on where the person was born, and/or died. For bands, the birth and death dates symbolyze when the band was formed and when it separated.
+\item[birth place, death place] Specify information on where the person was born, and/or died. For bands, the birth and death dates symbolyze where the band was formed and where it separated.
 
 \item[gender] Specifies the gender of the entity (\textit{male} / \textit{female}).
 
@@ -1560,7 +1563,7 @@ In the dump there are a total of 1,003,366 musicians and 437,287 bands. The dump
 \item[relations with bands] It specifies the relation among artists and bands, specifically, the list of bands to which they belong. 
 \end{description}
 
-All entities have a name associated with them. Most musicians have names composed of only two tokens, while band's names are mostly composed of only one. \autoref{fig:musicbrainz-name-tokens-pie} shows the distributions for said number of tokens. It is interesting to note that most people have names composed of two tokens, but bands are almost as likely to have a name of a single token than they are to have one with two. Another interesting thing is that name of bands are more commonly longer than two, than are names of people.
+All entities have a name associated to them. \autoref{fig:musicbrainz-name-tokens-pie} shows the distributions for said number of tokens. It is interesting to note that most people have names composed of two tokens, and bands are almost as likely to have a name composed by a single token than they are to have one with two. Another interesting thing is that names of bands are more likely than those of people to contain more than two tokens.
 
 \begin{figure}[]
   \centering \includegraphics[width=\textwidth]{musicbrainz_token_names_entities} 
@@ -1577,11 +1580,11 @@ As per gender distribution, there are much more \textit{males} than \textit{fema
 \end{figure}
 
 
-There are 297,011 musicians and 164,060 bands which are associates with a birth date. There are also 88,191 musicians and 34,213 bands who have a death date defined. The distribution of the frequency of said dates can be seen in \autoref{fig:musicbrainz-dates-distplot}. Notice how the curve symbolizing the birth date of musicians is much more smooth than that of groups, and there seems to have been a peak in the amount of groups created in the latest years. Also death years seem to follow this same behaviour.
+There are 297,011 musicians and 164,060 bands which are associated with a birth date. There are also 88,191 musicians and 34,213 bands who have a death date defined. The distribution of the frequency of said dates can be seen in \autoref{fig:musicbrainz-dates-distplot}. Notice how the curve symbolizing the birth date of musicians is much more smooth than that of groups, and there seems to have been a peak in the amount of groups created in the latest years. This suggests the adaptation of this digital platform is more common for the newer generation of bands. Also death years seem to follow this same behaviour.
 
 \begin{figure}[]
   \centering \includegraphics[width=\textwidth]{musicbrainz_birth_death_dates_distplot} 
-  \caption{Distribution plot of the years musicians were born or died; and years in which bands were created or dissolved. Top shows the distribution of birth/creation years, while bottom shows the \textit{death}/\textit{dissolve} years. Dates for musicians are in \textit{blue}, and those for and bands are \textit{green}. Note that both graphs were created by considering dates later than \textit{1800} and earlier than \textit{2020} (which at the time of this writing is in the future). However, dates outside this range, are used to perform record linkage.}
+  \caption{Distribution plot of the years musicians were born or died; and years in which bands were created or dissolved. Top shows the distribution of birth/creation years, while bottom shows the \textit{death}/\textit{dissolve} years. Dates for musicians are in \textit{blue}, and those for and bands are \textit{green}. Note that both graphs were created by considering dates later than \textit{1800} and earlier than \textit{2020} (which at the time of this writing is in the future). However, dates outside this range, were used during the performance of record linkage.}
   \label{fig:musicbrainz-dates-distplot}
 \end{figure}
 
@@ -1932,15 +1935,34 @@ Currently, the smallest set is usually IMDb. As seen in \autoref{fig:imdb-profes
 
 To understand the features exposed in the last function better, and to learn what is their behaviour in a real world scenario, this section will proceed to mention some basic statistical information about them. Of special interest is: which is the average value for a feature, which features are always zero, and knowledge of the features that are applied for a specific catalog. This information will be separated by concrete entity and also by whether the feature comes from a training set or a classification set. 
 
-It is also interesting to see how the features for training samples vary if they're labelled possitively or negatively. A hypothesis is that, as stated in \autoref{sec:training-real-data-difference}, already labeled items are more likely to have the rest of their information filled out, so the expected output is that features for this items are more informative.
+It is also interesting to see how the features for training samples vary if they're labelled positively or negatively. A hypothesis is that, as stated in \autoref{sec:training-real-data-difference}, already labeled items are more likely to have the rest of their information filled out, so the expected output is that features for this items are more informative.
+
+The first case that will be analyzed is the training set as a whole vs the classification set. Later a new table will be presented that shows the positive examples vs the negative examples in the training set 
+
+
+
+\begin{figure}[]
+  \centering \includegraphics[width=\textwidth]{classification_feature_distribution} 
+  \caption{Feature distribution for the classification set.}
+  \label{fig:distribution-of-classification-features}
+\end{figure}
+
+\begin{figure}[]
+  \centering \includegraphics[width=\textwidth]{training_feature_distribution} 
+  \caption{Feature distribution for the training set.}
+  \label{fig:distribution-of-training-features}
+\end{figure}
 
 > note, separate trainingin positive and negative
 
 TABLE
 
 PCA of features
+% https://mlens.readthedocs.io/en/0.1.x/getting_started/
 
+% https://www.cs.cmu.edu/~elaw/papers/pca.pdf
 
+%  "On Lines and Planes of Closest Fit to Systems of Points in Space". Philosophical Magazine. 2 (11): 559–572. doi:10.1080/14786440109462720.
 
 
 \subsubsection{Feature Correlation}
@@ -2105,11 +2127,153 @@ A specialization of \textit{bagging}, it uses a meta layer
 \section{Baseline Evaluation}
 \label{sec:baseline-evaluation}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{table}[H]
+\centering
+\begin{tabular}{l|l|l|l|l|l|l}
+Model                             & Avg. F1 & Avg. F1.STD & Avg. Prec & Avg. Prec.STD & Avg. Recall & Avg. Recall.STD \\ \hline
+mlp          & 0.925556   & 0.001667       & 0.916643     & 0.003465         & 0.934975       & 0.003420           \\
+random\_forest                    & 0.922377   & 0.001877       & 0.914570     & 0.003453         & 0.930726       & 0.002655           \\
+logistic\_regression              & 0.921507   & 0.001621       & 0.912116     & 0.002734         & 0.931414       & 0.002349           \\
+slp         & 0.921208   & 0.001514       & 0.914556     & 0.002894         & 0.928427       & 0.002555           \\
+lsvm & 0.921080   & 0.001693       & 0.909367     & 0.003293         & 0.934240       & 0.002548           \\
+naive\_bayes                      & 0.915145   & 0.003473       & 0.886305     & 0.009108         & 0.949023       & 0.005462          
+\end{tabular}
+\caption{Aferage metrics obtained for the baseline classifiers.}
+\label{tab:metrics-summary-baselin}
+\end{table}
+
+
+In the table below are presented the individual results for the baseline algorithms, for each catalog and entity. Note that the names of the algorithms have been shortened to make the table fit nicely in the page. The abbreviations are as follow:
+
+\begin{itemize}
+    \item Linear Support Vector Machine: lsvm
+    \item Logistic Regression: lr
+    \item Multi layer perceptron: mlp
+    \item Naive Bayes: nb
+    \item Random Forest: rf
+    \item Single layer perceptron: s;p
+\end{itemize}
+
+
+\begin{longtable}{|l|l|l|l|l|l|l|l|l|}
+\hline
+Catalog     & Entity   & Model                & F1.Mean  & F1.STD   & Prec.Mean & Prec.STD & Rec.Mean & Rec.STD \\ \hline
+discogs     & band     & lsvm                 & 0.925262 & 0.001267 & 0.896373  & 0.002110 & 0.956090    & 0.003388   \\
+discogs     & musician & lsvm                 & 0.936944 & 0.001224 & 0.905424  & 0.002080 & 0.970741    & 0.000880   \\
+imdb        & writer   & lsvm                 & 0.928606 & 0.001983 & 0.919005  & 0.002274 & 0.938421    & 0.003574   \\
+imdb        & actor    & lsvm                 & 0.894011 & 0.000789 & 0.875260  & 0.002088 & 0.913592    & 0.001998   \\
+imdb        & director & lsvm                 & 0.912727 & 0.001597 & 0.880551  & 0.005850 & 0.947397    & 0.003670   \\
+imdb        & producer & lsvm                 & 0.905975 & 0.003885 & 0.894173  & 0.006799 & 0.918114    & 0.001219   \\
+imdb        & musician & lsvm                 & 0.917906 & 0.001399 & 0.909440  & 0.002345 & 0.926534    & 0.001067   \\
+musicbrainz & band     & lsvm                 & 0.913877 & 0.001689 & 0.961199  & 0.003976 & 0.871046    & 0.006050   \\
+musicbrainz & musician & lsvm                 & 0.954410 & 0.001406 & 0.942882  & 0.002112 & 0.966225    & 0.001090   \\ \hline
+discogs     & musician & lr & 0.938138 & 0.001693 & 0.917022  & 0.002191 & 0.960250    & 0.001370   \\
+discogs     & band     & lr & 0.924791 & 0.001550 & 0.908952  & 0.001476 & 0.941198    & 0.003025   \\
+imdb        & director & lr & 0.913846 & 0.000694 & 0.892154  & 0.004468 & 0.936658    & 0.003834   \\
+imdb        & producer & lr & 0.906045 & 0.002643 & 0.898064  & 0.005640 & 0.914192    & 0.000826   \\
+imdb        & actor    & lr & 0.893573 & 0.000579 & 0.878388  & 0.001838 & 0.909299    & 0.001406   \\
+imdb        & musician & lr & 0.917958 & 0.001717 & 0.908442  & 0.002911 & 0.927680    & 0.001280   \\
+imdb        & writer   & lr & 0.928108 & 0.002082 & 0.924621  & 0.001792 & 0.931635    & 0.004264   \\
+musicbrainz & band     & lr & 0.918022 & 0.002327 & 0.937643  & 0.002251 & 0.899217    & 0.003973   \\
+musicbrainz & musician & lr & 0.953083 & 0.001301 & 0.943755  & 0.002042 & 0.962600    & 0.001165   \\ \hline
+discogs     & band     & mlp                  & 0.928931 & 0.001310 & 0.915249  & 0.001875 & 0.943032    & 0.001727   \\
+discogs     & musician & mlp                  & 0.940715 & 0.001443 & 0.921507  & 0.001770 & 0.960754    & 0.003867   \\
+imdb        & director & mlp                  & 0.919340 & 0.000980 & 0.899994  & 0.002724 & 0.939548    & 0.002002   \\
+imdb        & actor    & mlp                  & 0.896922 & 0.000400 & 0.880657  & 0.003412 & 0.913832    & 0.004129   \\
+imdb        & producer & mlp                  & 0.909398 & 0.002913 & 0.894253  & 0.007249 & 0.925119    & 0.003188   \\
+imdb        & musician & mlp                  & 0.925888 & 0.001165 & 0.942860  & 0.001545 & 0.909520    & 0.001863   \\
+imdb        & writer   & mlp                  & 0.930302 & 0.002571 & 0.924571  & 0.003714 & 0.936149    & 0.006365   \\
+musicbrainz & band     & mlp                  & 0.921134 & 0.002588 & 0.926546  & 0.004402 & 0.915818    & 0.004989   \\
+musicbrainz & musician & mlp                  & 0.957375 & 0.001629 & 0.944146  & 0.004491 & 0.971004    & 0.002647   \\ \hline
+discogs     & musician & nb         & 0.931622 & 0.001314 & 0.903489  & 0.002155 & 0.961565    & 0.000812   \\
+discogs     & band     & nb         & 0.922386 & 0.001457 & 0.891462  & 0.001633 & 0.955542    & 0.003274   \\
+imdb        & musician & nb         & 0.904327 & 0.013959 & 0.868388  & 0.055110 & 0.948158    & 0.033475   \\
+imdb        & producer & nb         & 0.898657 & 0.004254 & 0.842785  & 0.008230 & 0.962525    & 0.001450   \\
+imdb        & director & nb         & 0.907755 & 0.002541 & 0.855312  & 0.005063 & 0.967075    & 0.001997   \\
+imdb        & writer   & nb         & 0.922121 & 0.002580 & 0.882778  & 0.004051 & 0.965145    & 0.002172   \\
+imdb        & actor    & nb         & 0.889563 & 0.001311 & 0.825956  & 0.002002 & 0.963789    & 0.001153   \\
+musicbrainz & musician & nb         & 0.952783 & 0.001847 & 0.953561  & 0.002394 & 0.952008    & 0.001847   \\
+musicbrainz & band     & nb         & 0.907094 & 0.001994 & 0.953012  & 0.001335 & 0.865401    & 0.002974   \\ \hline
+discogs     & band     & rf       & 0.921673 & 0.001084 & 0.909216  & 0.002648 & 0.934490    & 0.002988   \\
+discogs     & musician & rf       & 0.933460 & 0.002427 & 0.917496  & 0.003021 & 0.949992    & 0.002296   \\
+imdb        & musician & rf       & 0.922135 & 0.000594 & 0.932216  & 0.000733 & 0.912272    & 0.001018   \\
+imdb        & producer & rf       & 0.906239 & 0.004720 & 0.895270  & 0.008984 & 0.917553    & 0.005214   \\
+imdb        & director & rf       & 0.916903 & 0.000940 & 0.892806  & 0.003096 & 0.942355    & 0.002601   \\
+imdb        & writer   & rf       & 0.929301 & 0.002919 & 0.922216  & 0.004160 & 0.936508    & 0.003393   \\
+imdb        & actor    & rf       & 0.899161 & 0.000836 & 0.879621  & 0.001427 & 0.919592    & 0.001620   \\
+musicbrainz & band     & rf       & 0.918844 & 0.002231 & 0.938321  & 0.005419 & 0.900192    & 0.003714   \\
+musicbrainz & musician & rf       & 0.953673 & 0.001146 & 0.943972  & 0.001591 & 0.963577    & 0.001052   \\ \hline
+discogs     & band     & slp                  & 0.925647 & 0.001462 & 0.908264  & 0.001465 & 0.943716    & 0.003188   \\
+discogs     & musician & slp                  & 0.938168 & 0.001664 & 0.917755  & 0.002291 & 0.959510    & 0.001258   \\
+imdb        & actor    & slp                  & 0.893205 & 0.000591 & 0.881499  & 0.001829 & 0.905232    & 0.001676   \\
+imdb        & musician & slp                  & 0.917503 & 0.001383 & 0.909845  & 0.002659 & 0.925296    & 0.000865   \\
+imdb        & director & slp                  & 0.914070 & 0.000545 & 0.895414  & 0.003822 & 0.933551    & 0.003516   \\
+imdb        & producer & slp                  & 0.905526 & 0.002380 & 0.903146  & 0.006456 & 0.907958    & 0.001993   \\
+imdb        & writer   & slp                  & 0.927724 & 0.001915 & 0.924983  & 0.002891 & 0.930499    & 0.003970   \\
+musicbrainz & musician & slp                  & 0.953054 & 0.001383 & 0.943662  & 0.002094 & 0.962638    & 0.001341   \\
+musicbrainz & band     & slp                  & 0.915977 & 0.002302 & 0.946439  & 0.002538 & 0.887441    & 0.005184  \\ \hline
+\end{longtable}
+
 
 
 \section{Ensemble Evaluation}
 \label{sec:ensemble-evaluation}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{l|l|l|l|l|l|l}
+Model                    & Avg. F1 & Avg. F1.STD & Average Prec & Avg. Prec.STD & Avg. Recall & Avg. Recall.STD \\ \hline
+VC Soft & 0.924879   & 0.001803       & 0.919919     & 0.004678         & 0.930801       & 0.004579           \\
+gated\_classifier        & 0.924502   & 0.002473       & 0.922766     & 0.006448         & 0.926848       & 0.007868           \\
+VC Hard & 0.923946   & 0.002026       & 0.914540     & 0.007172         & 0.934405       & 0.006780           \\
+stacked\_classifier      & 0.923439   & 0.003534       & 0.923585     & 0.008592         & 0.924264       & 0.013082          
+\end{tabular}
+\caption{}
+\label{tab:metrics-summary-for-ensembles}
+\end{table}
+
+metnion abbreviations here
+
+\begin{longtable}{|l|l|l|l|l|l|l|l|l|}
+\hline
+Catalog     & Entity   & Model                    & F1.Mean  & F1.STD   & Prec.Mean & Prec.STD & Recall.Mean & Recall.STD \\ \hline
+discogs     & musician & gated\_classifier        & 0.936638 & 0.002652 & 0.922472  & 0.004920 & 0.951308    & 0.006874   \\
+discogs     & band     & gated\_classifier        & 0.927455 & 0.001522 & 0.912845  & 0.002324 & 0.942566    & 0.004981   \\
+imdb        & director & gated\_classifier        & 0.918505 & 0.001411 & 0.900678  & 0.002997 & 0.937067    & 0.003067   \\
+imdb        & musician & gated\_classifier        & 0.924625 & 0.002018 & 0.943199  & 0.010644 & 0.906929    & 0.007107   \\
+imdb        & producer & gated\_classifier        & 0.910555 & 0.003934 & 0.902453  & 0.007668 & 0.918955    & 0.010547   \\
+imdb        & writer   & gated\_classifier        & 0.931719 & 0.002789 & 0.928561  & 0.007822 & 0.934984    & 0.005804   \\
+imdb        & actor    & gated\_classifier        & 0.897257 & 0.002191 & 0.895105  & 0.003315 & 0.899486    & 0.007650   \\
+musicbrainz & band     & gated\_classifier        & 0.918238 & 0.003816 & 0.948221  & 0.012288 & 0.890520    & 0.016863   \\
+musicbrainz & musician & gated\_classifier        & 0.955526 & 0.001926 & 0.951364  & 0.006050 & 0.959821    & 0.007915   \\ \hline
+discogs     & band     & stacked\_classifier      & 0.927771 & 0.001080 & 0.911809  & 0.006866 & 0.944456    & 0.009776   \\
+discogs     & musician & stacked\_classifier      & 0.938836 & 0.002473 & 0.917001  & 0.002568 & 0.961746    & 0.003667   \\
+imdb        & musician & stacked\_classifier      & 0.924930 & 0.001915 & 0.947724  & 0.003561 & 0.903238    & 0.004935   \\
+imdb        & actor    & stacked\_classifier      & 0.890012 & 0.007978 & 0.907933  & 0.016179 & 0.873941    & 0.029767   \\
+imdb        & producer & stacked\_classifier      & 0.904998 & 0.008882 & 0.899323  & 0.020682 & 0.912508    & 0.035943   \\
+imdb        & writer   & stacked\_classifier      & 0.931043 & 0.003075 & 0.929588  & 0.007946 & 0.932652    & 0.009692   \\
+imdb        & director & stacked\_classifier      & 0.917923 & 0.001777 & 0.901563  & 0.004736 & 0.934969    & 0.007596   \\
+musicbrainz & musician & stacked\_classifier      & 0.955643 & 0.001373 & 0.955374  & 0.003750 & 0.955933    & 0.003327   \\
+musicbrainz & band     & stacked\_classifier      & 0.919791 & 0.003254 & 0.941948  & 0.011043 & 0.898935    & 0.013037   \\ \hline
+discogs     & band     & voting\_classifier\_hard & 0.926795 & 0.001145 & 0.905189  & 0.001827 & 0.949465    & 0.002661   \\
+discogs     & musician & voting\_classifier\_hard & 0.939658 & 0.001932 & 0.913881  & 0.002899 & 0.966938    & 0.002004   \\
+imdb        & director & voting\_classifier\_hard & 0.918177 & 0.001400 & 0.890278  & 0.004667 & 0.947915    & 0.003379   \\
+imdb        & producer & voting\_classifier\_hard & 0.907517 & 0.004611 & 0.901155  & 0.004867 & 0.914052    & 0.009619   \\
+imdb        & actor    & voting\_classifier\_hard & 0.897184 & 0.000752 & 0.882077  & 0.009962 & 0.913098    & 0.012148   \\
+imdb        & writer   & voting\_classifier\_hard & 0.931065 & 0.002249 & 0.920422  & 0.007199 & 0.942038    & 0.005549   \\
+imdb        & musician & voting\_classifier\_hard & 0.921577 & 0.002711 & 0.918733  & 0.022289 & 0.925297    & 0.017423   \\
+musicbrainz & musician & voting\_classifier\_hard & 0.956088 & 0.001293 & 0.946047  & 0.003334 & 0.966356    & 0.001537   \\
+musicbrainz & band     & voting\_classifier\_hard & 0.917456 & 0.002139 & 0.953082  & 0.007505 & 0.884490    & 0.006698   \\ \hline
+discogs     & band     & voting\_classifier\_soft & 0.927576 & 0.001300 & 0.904116  & 0.002522 & 0.952312    & 0.004592   \\
+discogs     & musician & voting\_classifier\_soft & 0.938896 & 0.001494 & 0.909274  & 0.004537 & 0.970543    & 0.003097   \\
+imdb        & actor    & voting\_classifier\_soft & 0.899699 & 0.001028 & 0.887665  & 0.005118 & 0.912139    & 0.006529   \\
+imdb        & director & voting\_classifier\_soft & 0.919262 & 0.001497 & 0.894902  & 0.008123 & 0.945108    & 0.006606   \\
+imdb        & producer & voting\_classifier\_soft & 0.909610 & 0.003182 & 0.905090  & 0.005243 & 0.914192    & 0.002709   \\
+imdb        & musician & voting\_classifier\_soft & 0.926019 & 0.001244 & 0.939099  & 0.007632 & 0.913418    & 0.007684   \\
+imdb        & writer   & voting\_classifier\_soft & 0.931617 & 0.002161 & 0.929887  & 0.004030 & 0.933369    & 0.002867   \\
+musicbrainz & musician & voting\_classifier\_soft & 0.954936 & 0.001831 & 0.955208  & 0.002438 & 0.954666    & 0.001676   \\
+musicbrainz & band     & voting\_classifier\_soft & 0.916297 & 0.002493 & 0.954029  & 0.002458 & 0.881462    & 0.005454   \\ \hline
+\end{longtable}
 
 
 Compare with the results exposed before, without ensemble (only the base models)
