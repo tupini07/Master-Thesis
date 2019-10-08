@@ -33,6 +33,7 @@
 
 \usepackage{longtable}
 \usepackage{lscape}
+\usepackage{subcaption}
 
 \usepackage[inline]{enumitem}
 
@@ -1922,32 +1923,46 @@ Currently, the smallest set is usually IMDb. As seen in \autoref{fig:imdb-profes
 \subsubsection{Feature Exploration}
 \label{sec:feature-viz}
 
-To understand the features exposed in the last function better, and to learn what is their behaviour in a real world scenario, this section will proceed to mention some basic statistical information about them. Of special interest is: which is the average value for a feature, which features are always zero, and knowledge of the features that are applied for a specific catalog. This information will be separated by concrete entity and also by whether the feature comes from a training set or a classification set. 
+To understand the features exposed in the last function better, and to learn what is their behaviour in a real world scenario, this section will proceed to mention some basic statistical information about them. Of special interest is: which is the average value for a feature, which features are always zero, and knowledge of the features that are extracted for a specific catalog. It would also be interesting to see if the features extracted vary between the classification and training sets, or between the positive and negative examples in the training set. This section strives to answer all these questions.
 
-It is also interesting to see how the features for training samples vary if they're labelled positively or negatively. A hypothesis is that, as stated in \autoref{sec:training-real-data-difference}, already labeled items are more likely to have the rest of their information filled out, so the expected output is that features for this items are more informative.
+The table below presents the features extracted for a specific concrete entity in the classification set. The first number in each cell is the average value, and the number below it, in parenthesis, is the standard deviation. If a cell has no value then it means that specific concrete entity does not have the required fields to extract said features and so it was not used. An example of this is the \textit{born\_similar} which was not applied to entities of \textit{Discogs} catalog since they do not have birth dates. Note that to make the tables fit nicely in the page, the names of the features have been shortened. Below is a mapping from the complete feature name to its shortened version:
 
-The first case that will be analyzed is the training set as a whole vs the classification set. Later a new table will be presented that shows the positive examples vs the negative examples in the training set 
+\begin{itemize}
+    \item born\_similar : brn.sim
+    \item description\_cosine : des.cos
+    \item died\_similar : die.sim
+    \item name\_exact : nm.exct
+    \item name\_tokens\_levenshtein : nmt.lev 
+    \item name\_tokens\_shared : nmt.shr
+    \item name\_tokens\_string\_kernel\_cosine : nmt.cos
+    \item occupations\_shared : occ.shr
+    \item url\_exact : url.exct
+    \item url\_tokens\_shared : utl.shr 
+\end{itemize}
 
+The first thing one can notice from the table below is that all catalogs have seven features, except for \textit{Musicbrainz} which has eight. As shown later in \autoref{chap:results}, this might be one of the reasons why \textit{Musicbrianz} is almost always the best predicted catalog.
 
 
 
 \begin{table}[H]
 \centering
-\begin{tabular}{llllllllll}
-                                     & D/band & D/musician & I/actor & I/director & I/musician & I/producer & I/writer & M/band & M/musician \\
-born\_similar                        &              &                  & 0.005      & 0.006         & 0.003         & 0.005         & 0.005       & 0.000            & 0.006                \\
-description\_cosine                  & 0.010        & 0.013            &            &               &               &               &             &                  &                      \\
-died\_similar                        &              &                  & 0.001      & 0.001         & 0.001         & 0.002         & 0.003       & 0.000            & 0.001                \\
-name\_exact                          & 0.077        & 0.040            & 0.107      & 0.091         & 0.042         & 0.122         & 0.070       & 0.140            & 0.051                \\
-name\_levenshtein            & 0.544        & 0.658            & 0.467      & 0.457         & 0.452         & 0.465         & 0.452       & 0.489            & 0.470                \\
-name\_tokens\_shared                 & 0.307        & 0.197            & 0.306      & 0.321         & 0.278         & 0.317         & 0.265       & 0.402            & 0.285                \\
-name\_cosine & 0.527        & 0.437            & 0.554      & 0.549         & 0.510         & 0.551         & 0.511       & 0.608            & 0.515                \\
-occupations\_shared                  &              &                  & 0.014      & 0.123         & 0.103         & 0.033         & 0.017       &                  &                      \\
-url\_exact                           & 0.001        & 0.001            &            &               &               &               &             & 0.035            & 0.006                \\
-url\_tokens\_shared                  & 0.012        & 0.004            &            &               &               &               &             & 0.047            & 0.008               
+\begin{tabular}{l|c|c|c|c|c|c|c|c|c|}
+\cline{2-10}
+                                                           & \multicolumn{2}{c|}{discogs} & \multicolumn{5}{c|}{imdb}                                                & \multicolumn{2}{c|}{musicbrainz} \\ \cline{2-10} 
+                                                           & band          & musician     & actor        & director     & musician     & producer     & writer       & band            & musician       \\ \hline
+\multicolumn{1}{|l|}{brn.sim}                        &               &              & \makecell{0.005 \\ (0.067)} & \makecell{0.006 \\ (0.076)} & \makecell{0.003 \\ (0.050)} & \makecell{0.005 \\ (0.073)} & \makecell{0.005 \\ (0.068)} & \makecell{0.000 \\ (0.000)}    & \makecell{0.006 \\ (0.076)}   \\ \hline
+\multicolumn{1}{|l|}{des.cos}                  & \makecell{0.010 \\ (0.042)}  & \makecell{0.013 \\ (0.040)} &              &              &              &              &              &                 &                \\ \hline
+\multicolumn{1}{|l|}{die.sim}                        &               &              & \makecell{0.001 \\ (0.032)} & \makecell{0.001 \\ (0.037)} & \makecell{0.001 \\ (0.029)} & \makecell{0.002 \\ (0.046)} & \makecell{0.003 \\ (0.053)} & \makecell{0.000 \\ (0.000)}    & \makecell{0.001 \\ (0.037)}   \\ \hline
+\multicolumn{1}{|l|}{nm.exct}                          & \makecell{0.077 \\ (0.266)}  & \makecell{0.040 \\ (0.197)} & \makecell{0.107 \\ (0.308)} & \makecell{0.091 \\ (0.288)} & \makecell{0.042 \\ (0.200)} & \makecell{0.122 \\ (0.328)} & \makecell{0.070 \\ (0.254)} & \makecell{0.140 \\ (0.347)}    & \makecell{0.051 \\ (0.220)}   \\ \hline
+\multicolumn{1}{|l|}{nmt.lev}            & \makecell{0.544 \\ (0.271)}  & \makecell{0.658 \\ (0.272)} & \makecell{0.467 \\ (0.131)} & \makecell{0.457 \\ (0.130)} & \makecell{0.452 \\ (0.128)} & \makecell{0.465 \\ (0.124)} & \makecell{0.452 \\ (0.123)} & \makecell{0.489 \\ (0.261)}    & \makecell{0.470 \\ (0.163)}   \\ \hline
+\multicolumn{1}{|l|}{nmt.shr}                 & \makecell{0.307 \\ (0.215)}  & \makecell{0.197 \\ (0.132)} & \makecell{0.306 \\ (0.197)} & \makecell{0.321 \\ (0.205)} & \makecell{0.278 \\ (0.140)} & \makecell{0.317 \\ (0.217)} & \makecell{0.265 \\ (0.173)} & \makecell{0.402 \\ (0.260)}    & \makecell{0.285 \\ (0.162)}   \\ \hline
+\multicolumn{1}{|l|}{nmt.cos} & \makecell{0.527 \\ (0.252)}  & \makecell{0.437 \\ (0.207)} & \makecell{0.554 \\ (0.177)} & \makecell{0.549 \\ (0.180)} & \makecell{0.510 \\ (0.147)} & \makecell{0.551 \\ (0.186)} & \makecell{0.511 \\ (0.166)} & \makecell{0.608 \\ (0.215)}    & \makecell{0.515 \\ (0.162)}   \\ \hline
+\multicolumn{1}{|l|}{occ.shr}                  &               &              & \makecell{0.014 \\ (0.103)} & \makecell{0.123 \\ (0.289)} & \makecell{0.103 \\ (0.271)} & \makecell{0.033 \\ (0.119)} & \makecell{0.017 \\ (0.084)} &                 &                \\ \hline
+\multicolumn{1}{|l|}{url.exct}                           & \makecell{0.001 \\ (0.037)}  & \makecell{0.001 \\ (0.026)} &              &              &              &              &              & \makecell{0.035 \\ (0.183)}    & \makecell{0.006 \\ (0.078)}   \\ \hline
+\multicolumn{1}{|l|}{utl.shr}                  & \makecell{0.012 \\ (0.091)}  & \makecell{0.004 \\ (0.049)} &              &              &              &              &              & \makecell{0.047 \\ (0.191)}    & \makecell{0.008 \\ (0.077)}   \\ \hline
 \end{tabular}
-\caption{Features extracted for classification dumps.}
-\label{tab:my-table}
+\caption{Average features and their standard deviation. Extracted for classification dumps.}
+\label{tab:features-viz-average-std-classification}
 \end{table}
 
 
@@ -1955,66 +1970,91 @@ url\_tokens\_shared                  & 0.012        & 0.004            &        
 
 \begin{table}[H]
 \centering
-\begin{tabular}{llllllllll}
-                                     & discogs/band & discogs/musician & imdb/actor & imdb/director & imdb/musician & imdb/producer & imdb/writer & musicbrainz/band & musicbrainz/musician \\
-born\_similar                        &              &                  & 0.121      & 0.090         & 0.089         & 0.088         & 0.112       & 0.000            & 0.175                \\
-description\_cosine                  & 0.028        & 0.037            &            &               &               &               &             &                  &                      \\
-died\_similar                        &              &                  & 0.043      & 0.036         & 0.038         & 0.032         & 0.053       & 0.000            & 0.060                \\
-name\_exact                          & 0.316        & 0.247            & 0.205      & 0.183         & 0.177         & 0.177         & 0.186       & 0.285            & 0.234                \\
-name\_tokens\_levenshtein            & 0.622        & 0.732            & 0.475      & 0.462         & 0.468         & 0.466         & 0.464       & 0.547            & 0.511                \\
-name\_tokens\_shared                 & 0.457        & 0.264            & 0.291      & 0.290         & 0.262         & 0.234         & 0.246       & 0.447            & 0.303                \\
-name\_tokens\_string\_kernel\_cosine & 0.641        & 0.494            & 0.541      & 0.526         & 0.506         & 0.484         & 0.499       & 0.641            & 0.535                \\
-occupations\_shared                  &              &                  & 0.028      & 0.209         & 0.185         & 0.137         & 0.141       &                  &                      \\
-url\_exact                           & 0.065        & 0.038            &            &               &               &               &             & 0.195            & 0.157                \\
-url\_tokens\_shared                  & 0.127        & 0.078            &            &               &               &               &             & 0.122            & 0.108               
+\begin{tabular}{l|c|c|c|c|c|c|c|c|c|}
+\cline{2-10}
+                                                           & \multicolumn{2}{c|}{discogs} & \multicolumn{5}{c|}{imdb}                                                & \multicolumn{2}{c|}{musicbrainz} \\ \cline{2-10} 
+                                                           & band          & musician     & actor        & director     & musician     & producer     & writer       & band            & musician       \\ \hline
+\multicolumn{1}{|l|}{brn.sim}                        &               &              & \makecell{0.121 \\ (0.326)} & \makecell{0.090 \\ (0.286)} & \makecell{0.089 \\ (0.285)} & \makecell{0.088 \\ (0.283)} & \makecell{0.112 \\ (0.315)} & \makecell{0.000 \\ (0.004)}    & \makecell{0.175 \\ (0.378)}   \\ \hline
+\multicolumn{1}{|l|}{des.cos}                  & \makecell{0.028 \\ (0.074)}  & \makecell{0.037 \\ (0.077)} &              &              &              &              &              &                 &                \\ \hline
+\multicolumn{1}{|l|}{die.sim}                        &               &              & \makecell{0.043 \\ (0.203)} & \makecell{0.036 \\ (0.186)} & \makecell{0.038 \\ (0.191)} & \makecell{0.032 \\ (0.177)} & \makecell{0.053 \\ (0.225)} & \makecell{0.000 \\ (0.010)}    & \makecell{0.060 \\ (0.236)}   \\ \hline
+\multicolumn{1}{|l|}{nm.exct}                          & \makecell{0.316 \\ (0.465)}  & \makecell{0.247 \\ (0.431)} & \makecell{0.205 \\ (0.403)} & \makecell{0.183 \\ (0.387)} & \makecell{0.177 \\ (0.382)} & \makecell{0.177 \\ (0.382)} & \makecell{0.186 \\ (0.389)} & \makecell{0.285 \\ (0.452)}    & \makecell{0.234 \\ (0.423)}   \\ \hline
+\multicolumn{1}{|l|}{nmt.lev}            & \makecell{0.622 \\ (0.280)}  & \makecell{0.732 \\ (0.274)} & \makecell{0.475 \\ (0.127)} & \makecell{0.462 \\ (0.123)} & \makecell{0.468 \\ (0.132)} & \makecell{0.466 \\ (0.122)} & \makecell{0.464 \\ (0.123)} & \makecell{0.547 \\ (0.276)}    & \makecell{0.511 \\ (0.185)}   \\ \hline
+\multicolumn{1}{|l|}{nmt.shr}                 & \makecell{0.457 \\ (0.330)}  & \makecell{0.264 \\ (0.254)} & \makecell{0.291 \\ (0.244)} & \makecell{0.290 \\ (0.243)} & \makecell{0.262 \\ (0.223)} & \makecell{0.234 \\ (0.222)} & \makecell{0.246 \\ (0.222)} & \makecell{0.447 \\ (0.303)}    & \makecell{0.303 \\ (0.241)}   \\ \hline
+\multicolumn{1}{|l|}{nmt.cos} & \makecell{0.641 \\ (0.291)}  & \makecell{0.494 \\ (0.272)} & \makecell{0.541 \\ (0.210)} & \makecell{0.526 \\ (0.210)} & \makecell{0.506 \\ (0.201)} & \makecell{0.484 \\ (0.203)} & \makecell{0.499 \\ (0.203)} & \makecell{0.641 \\ (0.244)}    & \makecell{0.535 \\ (0.216)}   \\ \hline
+\multicolumn{1}{|l|}{occ.shr}                  &               &              & \makecell{0.028 \\ (0.129)} & \makecell{0.209 \\ (0.308)} & \makecell{0.185 \\ (0.321)} & \makecell{0.137 \\ (0.229)} & \makecell{0.141 \\ (0.225)} &                 &                \\ \hline
+\multicolumn{1}{|l|}{url.exct}                           & \makecell{0.065 \\ (0.246)}  & \makecell{0.038 \\ (0.191)} &              &              &              &              &              & \makecell{0.195 \\ (0.396)}    & \makecell{0.157 \\ (0.363)}   \\ \hline
+\multicolumn{1}{|l|}{utl.shr}                  & \makecell{0.127 \\ (0.295)}  & \makecell{0.078 \\ (0.245)} &              &              &              &              &              & \makecell{0.122 \\ (0.239)}    & \makecell{0.108 \\ (0.242)}   \\ \hline
 \end{tabular}
-\caption{Features extracted for training dumps.}
-\label{tab:my-table}
+\caption{Average features and their standard deviation. Extracted for training dumps.}
+\label{tab:features-viz-average-std-training}
 \end{table}
+
+
+
+% -------------
+
+\begin{table}[H]
+\centering
+\begin{tabular}{l|c|c|c|c|c|c|c|c|c|}
+\cline{2-10}
+                                                           & \multicolumn{2}{c|}{discogs} & \multicolumn{5}{c|}{imdb}                                                & \multicolumn{2}{c|}{musicbrainz} \\ \cline{2-10} 
+                                                           & band          & musician     & actor        & director     & musician     & producer     & writer       & band            & musician       \\ \hline
+\multicolumn{1}{|l|}{brn.sim}                        &               &              & \makecell{0.683 \\ (0.465)} & \makecell{0.538 \\ (0.499)} & \makecell{0.588 \\ (0.492)} & \makecell{0.581 \\ (0.493)} & \makecell{0.659 \\ (0.474)} & \makecell{0.000 \\ (0.008)}    & \makecell{0.800 \\ (0.395)}   \\ \hline
+\multicolumn{1}{|l|}{des.cos}                  & \makecell{0.057 \\ (0.108)}  & \makecell{0.102 \\ (0.121)} &              &              &              &              &              &                 &                \\ \hline
+\multicolumn{1}{|l|}{die.sim}                        &               &              & \makecell{0.244 \\ (0.430)} & \makecell{0.218 \\ (0.413)} & \makecell{0.253 \\ (0.435)} & \makecell{0.217 \\ (0.412)} & \makecell{0.318 \\ (0.466)} & \makecell{0.000 \\ (0.020)}    & \makecell{0.278 \\ (0.446)}   \\ \hline
+\multicolumn{1}{|l|}{nm.exct}                          & \makecell{0.945 \\ (0.228)}  & \makecell{0.987 \\ (0.112)} & \makecell{0.953 \\ (0.211)} & \makecell{0.955 \\ (0.207)} & \makecell{0.966 \\ (0.182)} & \makecell{0.964 \\ (0.185)} & \makecell{0.963 \\ (0.190)} & \makecell{0.968 \\ (0.175)}    & \makecell{0.977 \\ (0.150)}   \\ \hline
+\multicolumn{1}{|l|}{nmt.lev}            & \makecell{0.758 \\ (0.252)}  & \makecell{0.885 \\ (0.203)} & \makecell{0.527 \\ (0.087)} & \makecell{0.525 \\ (0.093)} & \makecell{0.541 \\ (0.109)} & \makecell{0.529 \\ (0.089)} & \makecell{0.525 \\ (0.090)} & \makecell{0.729 \\ (0.257)}    & \makecell{0.609 \\ (0.193)}   \\ \hline
+\multicolumn{1}{|l|}{nmt.shr}                 & \makecell{0.774 \\ (0.306)}  & \makecell{0.584 \\ (0.319)} & \makecell{0.589 \\ (0.341)} & \makecell{0.606 \\ (0.351)} & \makecell{0.549 \\ (0.349)} & \makecell{0.495 \\ (0.353)} & \makecell{0.511 \\ (0.343)} & \makecell{0.786 \\ (0.298)}    & \makecell{0.590 \\ (0.326)}   \\ \hline
+\multicolumn{1}{|l|}{nmt.cos} & \makecell{0.883 \\ (0.224)}  & \makecell{0.816 \\ (0.218)} & \makecell{0.813 \\ (0.184)} & \makecell{0.819 \\ (0.186)} & \makecell{0.785 \\ (0.193)} & \makecell{0.755 \\ (0.201)} & \makecell{0.774 \\ (0.188)} & \makecell{0.895 \\ (0.184)}    & \makecell{0.802 \\ (0.194)}   \\ \hline
+\multicolumn{1}{|l|}{occ.shr}                  &               &              & \makecell{0.073 \\ (0.188)} & \makecell{0.458 \\ (0.341)} & \makecell{0.470 \\ (0.390)} & \makecell{0.369 \\ (0.279)} & \makecell{0.324 \\ (0.269)} &                 &                \\ \hline
+\multicolumn{1}{|l|}{url.exct}                           & \makecell{0.218 \\ (0.413)}  & \makecell{0.172 \\ (0.377)} &              &              &              &              &              & \makecell{0.819 \\ (0.385)}    & \makecell{0.732 \\ (0.443)}   \\ \hline
+\multicolumn{1}{|l|}{utl.shr}                  & \makecell{0.398 \\ (0.418)}  & \makecell{0.328 \\ (0.425)} &              &              &              &              &              & \makecell{0.468 \\ (0.255)}    & \makecell{0.488 \\ (0.289)}   \\ \hline
+\end{tabular}
+\caption{Average features and their standard deviation extracted for positive training samples (those labelled as matches).}
+\label{tab:features-viz-average-std-positive}
+\end{table}
+
 
 
 
 \begin{table}[H]
 \centering
-\begin{tabular}{llllllllll}
-                                     & discogs/band & discogs/musician & imdb/actor & imdb/director & imdb/musician & imdb/producer & imdb/writer & musicbrainz/band & musicbrainz/musician \\
-born\_similar                        &              &                  & 0.683      & 0.538         & 0.588         & 0.581         & 0.659       & 0.000            & 0.800                \\
-description\_cosine                  & 0.057        & 0.102            &            &               &               &               &             &                  &                      \\
-died\_similar                        &              &                  & 0.244      & 0.218         & 0.253         & 0.217         & 0.318       & 0.000            & 0.278                \\
-name\_exact                          & 0.945        & 0.987            & 0.953      & 0.955         & 0.966         & 0.964         & 0.963       & 0.968            & 0.977                \\
-name\_tokens\_levenshtein            & 0.758        & 0.885            & 0.527      & 0.525         & 0.541         & 0.529         & 0.525       & 0.729            & 0.609                \\
-name\_tokens\_shared                 & 0.774        & 0.584            & 0.589      & 0.606         & 0.549         & 0.495         & 0.511       & 0.786            & 0.590                \\
-name\_tokens\_string\_kernel\_cosine & 0.883        & 0.816            & 0.813      & 0.819         & 0.785         & 0.755         & 0.774       & 0.895            & 0.802                \\
-occupations\_shared                  &              &                  & 0.073      & 0.458         & 0.470         & 0.369         & 0.324       &                  &                      \\
-url\_exact                           & 0.218        & 0.172            &            &               &               &               &             & 0.819            & 0.732                \\
-url\_tokens\_shared                  & 0.398        & 0.328            &            &               &               &               &             & 0.468            & 0.488               
+\begin{tabular}{l|c|c|c|c|c|c|c|c|c|}
+\cline{2-10}
+                                                           & \multicolumn{2}{c|}{discogs} & \multicolumn{5}{c|}{imdb}                                                & \multicolumn{2}{c|}{musicbrainz} \\ \cline{2-10} 
+                                                           & band          & musician     & actor        & director     & musician     & producer     & writer       & band            & musician       \\ \hline
+\multicolumn{1}{|l|}{brn.sim}                        &               &              & \makecell{0.005 \\ (0.067)} & \makecell{0.004 \\ (0.064)} & \makecell{0.004 \\ (0.061)} & \makecell{0.003 \\ (0.059)} & \makecell{0.005 \\ (0.068)} & \makecell{0.000 \\ (0.000)}    & \makecell{0.007 \\ (0.078)}   \\ \hline
+\multicolumn{1}{|l|}{des.cos}                  & \makecell{0.016 \\ (0.049)}  & \makecell{0.019 \\ (0.045)} &              &              &              &              &              &                 &                \\ \hline
+\multicolumn{1}{|l|}{die.sim}                        &               &              & \makecell{0.001 \\ (0.034)} & \makecell{0.001 \\ (0.032)} & \makecell{0.001 \\ (0.032)} & \makecell{0.001 \\ (0.029)} & \makecell{0.001 \\ (0.037)} & \makecell{0.000 \\ (0.000)}    & \makecell{0.001 \\ (0.029)}   \\ \hline
+\multicolumn{1}{|l|}{nm.exct}                          & \makecell{0.057 \\ (0.231)}  & \makecell{0.045 \\ (0.207)} & \makecell{0.050 \\ (0.217)} & \makecell{0.036 \\ (0.186)} & \makecell{0.042 \\ (0.202)} & \makecell{0.043 \\ (0.202)} & \makecell{0.034 \\ (0.181)} & \makecell{0.075 \\ (0.263)}    & \makecell{0.033 \\ (0.179)}   \\ \hline
+\multicolumn{1}{|l|}{nmt.lev}            & \makecell{0.566 \\ (0.272)}  & \makecell{0.691 \\ (0.277)} & \makecell{0.464 \\ (0.131)} & \makecell{0.450 \\ (0.125)} & \makecell{0.456 \\ (0.132)} & \makecell{0.456 \\ (0.123)} & \makecell{0.452 \\ (0.125)} & \makecell{0.491 \\ (0.256)}    & \makecell{0.484 \\ (0.174)}   \\ \hline
+\multicolumn{1}{|l|}{nmt.shr}                 & \makecell{0.327 \\ (0.238)}  & \makecell{0.176 \\ (0.137)} & \makecell{0.229 \\ (0.159)} & \makecell{0.230 \\ (0.155)} & \makecell{0.213 \\ (0.145)} & \makecell{0.190 \\ (0.151)} & \makecell{0.194 \\ (0.138)} & \makecell{0.343 \\ (0.217)}    & \makecell{0.226 \\ (0.129)}   \\ \hline
+\multicolumn{1}{|l|}{nmt.cos} & \makecell{0.541 \\ (0.254)}  & \makecell{0.407 \\ (0.212)} & \makecell{0.485 \\ (0.166)} & \makecell{0.471 \\ (0.162)} & \makecell{0.458 \\ (0.159)} & \makecell{0.437 \\ (0.164)} & \makecell{0.445 \\ (0.156)} & \makecell{0.563 \\ (0.203)}    & \makecell{0.462 \\ (0.157)}   \\ \hline
+\multicolumn{1}{|l|}{occ.shr}                  &               &              & \makecell{0.018 \\ (0.111)} & \makecell{0.162 \\ (0.277)} & \makecell{0.136 \\ (0.280)} & \makecell{0.097 \\ (0.193)} & \makecell{0.105 \\ (0.197)} &                 &                \\ \hline
+\multicolumn{1}{|l|}{url.exct}                           & \makecell{0.001 \\ (0.035)}  & \makecell{0.002 \\ (0.040)} &              &              &              &              &              & \makecell{0.002 \\ (0.047)}    & \makecell{0.001 \\ (0.035)}   \\ \hline
+\multicolumn{1}{|l|}{utl.shr}                  & \makecell{0.015 \\ (0.090)}  & \makecell{0.010 \\ (0.072)} &              &              &              &              &              & \makecell{0.015 \\ (0.079)}    & \makecell{0.005 \\ (0.048)}   \\ \hline
 \end{tabular}
-\caption{Features extracted for positive training samples (those labelled as matches).}
-\label{tab:my-table}
-\end{table}
-
-
-\begin{table}[H]
-\centering
-\begin{tabular}{llllllllll}
-                                     & discogs/band & discogs/musician & imdb/actor & imdb/director & imdb/musician & imdb/producer & imdb/writer & musicbrainz/band & musicbrainz/musician \\
-born\_similar                        &              &                  & 0.005      & 0.004         & 0.004         & 0.003         & 0.005       & 0.000            & 0.007                \\
-description\_cosine                  & 0.016        & 0.019            &            &               &               &               &             &                  &                      \\
-died\_similar                        &              &                  & 0.001      & 0.001         & 0.001         & 0.001         & 0.001       & 0.000            & 0.001                \\
-name\_exact                          & 0.057        & 0.045            & 0.050      & 0.036         & 0.042         & 0.043         & 0.034       & 0.075            & 0.033                \\
-name\_tokens\_levenshtein            & 0.566        & 0.691            & 0.464      & 0.450         & 0.456         & 0.456         & 0.452       & 0.491            & 0.484                \\
-name\_tokens\_shared                 & 0.327        & 0.176            & 0.229      & 0.230         & 0.213         & 0.190         & 0.194       & 0.343            & 0.226                \\
-name\_tokens\_string\_kernel\_cosine & 0.541        & 0.407            & 0.485      & 0.471         & 0.458         & 0.437         & 0.445       & 0.563            & 0.462                \\
-occupations\_shared                  &              &                  & 0.018      & 0.162         & 0.136         & 0.097         & 0.105       &                  &                      \\
-url\_exact                           & 0.001        & 0.002            &            &               &               &               &             & 0.002            & 0.001                \\
-url\_tokens\_shared                  & 0.015        & 0.010            &            &               &               &               &             & 0.015            & 0.005               
-\end{tabular}
-\caption{Features extracted for negative training samples (those labelled as not matches).}
-\label{tab:my-table}
+\caption{Average features and their standard deviation extracted for negative training samples (those labelled as not matches).}
+\label{tab:features-viz-average-std-negative}
 \end{table}
 
 
 
+\begin{figure}[]
+  \centering \includegraphics[width=.8\textwidth]{feature_heatmap_classification_and_training} 
+  \caption{Average values of the features obtained for each concrete entity. Separated by classification and training datasets.}
+  \label{fig:average-features-classification-training}
+\end{figure}
+
+\begin{figure}[]
+  \centering \includegraphics[width=.8\textwidth]{feature_heatmap_training_positive_and_negative} 
+  \caption{Average values of the features obtained for each concrete entity. Separated by positive (matches) and negative (non-matches) labelled points in the training data.}
+  \label{fig:average-features-positive-negative}
+\end{figure}
+
+
+
+\todo[inline]{\textit{name exact} causes oter features to look a bit squashed. Consider representing it in some other way}
 
 \begin{figure}[]
   \centering \includegraphics[width=\textwidth]{classification_feature_distribution} 
@@ -2023,9 +2063,26 @@ url\_tokens\_shared                  & 0.015        & 0.010            &        
 \end{figure}
 
 \begin{figure}[]
-  \centering \includegraphics[width=\textwidth]{training_feature_distribution} 
-  \caption{Feature distribution for the training set.}
-  \label{fig:distribution-of-training-features}
+  \centering \includegraphics[width=\textwidth]{classification_feature_distribution_2} 
+  \caption{Feature distribution for the classification set.}
+  \label{fig:distribution-of-classification-features}
+\end{figure}
+
+
+
+
+\begin{figure}[]
+      \centering
+      \includegraphics[width=\linewidth]{training_feature_distribution}
+      \caption{Feature distribution for the training set (1).}
+      \label{fig:distribution-of-training-features-1}
+\end{figure}
+
+\begin{figure}[]
+      \centering
+      \includegraphics[width=\linewidth]{training_feature_distribution_2}
+      \caption{Feature distribution for the training set (2).}
+      \label{fig:distribution-of-training-features-2}
 \end{figure}
 
 > note, separate trainingin positive and negative
