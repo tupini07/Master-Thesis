@@ -29,6 +29,7 @@
 \usepackage{float}
 \usepackage{makecell}
 \usepackage[capitalise]{cleveref}
+\usepackage{amssymb}
 
 \usepackage{longtable}
 \usepackage{lscape}
@@ -232,7 +233,7 @@ using QIDs and PIDs.
   \label{tab:intro-wikidata-douglas42}
 \end{table}
 
-Here it is possible to see that this way of expressing information is very
+Here it is possible to see that this way of expressinug information is very
 flexible and allows for a quick and rich construction of knowledge. 
 
 
@@ -680,7 +681,7 @@ contains the \textit{academic title} of each person.
   \label{tab:blocking-ex-target}
 \end{table}
 
-Suppose the goal is to perform blocking on the \textit{Zip Code} field, and to achieve that, an
+Suppose the goal is to perform blocking on the \textit{Zip Code} field, and to achieve that, 
 \textit{exact match} strategy is used. Its possible to see that in total there are only two zip
 codes (\textit{27321} and \textit{34918}), so after blocking there will end up being two sets. The first one (for zip code \textit{27321}) will contain the pair
 $[(A1, B1)]$, both of which could arguably be the same person. In the second set the remaining pairs $[(A2, B2), (A2, B3)]$ can be found.
@@ -1929,6 +1930,92 @@ The first case that will be analyzed is the training set as a whole vs the class
 
 
 
+
+\begin{table}[H]
+\centering
+\begin{tabular}{llllllllll}
+                                     & D/band & D/musician & I/actor & I/director & I/musician & I/producer & I/writer & M/band & M/musician \\
+born\_similar                        &              &                  & 0.005      & 0.006         & 0.003         & 0.005         & 0.005       & 0.000            & 0.006                \\
+description\_cosine                  & 0.010        & 0.013            &            &               &               &               &             &                  &                      \\
+died\_similar                        &              &                  & 0.001      & 0.001         & 0.001         & 0.002         & 0.003       & 0.000            & 0.001                \\
+name\_exact                          & 0.077        & 0.040            & 0.107      & 0.091         & 0.042         & 0.122         & 0.070       & 0.140            & 0.051                \\
+name\_levenshtein            & 0.544        & 0.658            & 0.467      & 0.457         & 0.452         & 0.465         & 0.452       & 0.489            & 0.470                \\
+name\_tokens\_shared                 & 0.307        & 0.197            & 0.306      & 0.321         & 0.278         & 0.317         & 0.265       & 0.402            & 0.285                \\
+name\_cosine & 0.527        & 0.437            & 0.554      & 0.549         & 0.510         & 0.551         & 0.511       & 0.608            & 0.515                \\
+occupations\_shared                  &              &                  & 0.014      & 0.123         & 0.103         & 0.033         & 0.017       &                  &                      \\
+url\_exact                           & 0.001        & 0.001            &            &               &               &               &             & 0.035            & 0.006                \\
+url\_tokens\_shared                  & 0.012        & 0.004            &            &               &               &               &             & 0.047            & 0.008               
+\end{tabular}
+\caption{Features extracted for classification dumps.}
+\label{tab:my-table}
+\end{table}
+
+
+
+
+\begin{table}[H]
+\centering
+\begin{tabular}{llllllllll}
+                                     & discogs/band & discogs/musician & imdb/actor & imdb/director & imdb/musician & imdb/producer & imdb/writer & musicbrainz/band & musicbrainz/musician \\
+born\_similar                        &              &                  & 0.121      & 0.090         & 0.089         & 0.088         & 0.112       & 0.000            & 0.175                \\
+description\_cosine                  & 0.028        & 0.037            &            &               &               &               &             &                  &                      \\
+died\_similar                        &              &                  & 0.043      & 0.036         & 0.038         & 0.032         & 0.053       & 0.000            & 0.060                \\
+name\_exact                          & 0.316        & 0.247            & 0.205      & 0.183         & 0.177         & 0.177         & 0.186       & 0.285            & 0.234                \\
+name\_tokens\_levenshtein            & 0.622        & 0.732            & 0.475      & 0.462         & 0.468         & 0.466         & 0.464       & 0.547            & 0.511                \\
+name\_tokens\_shared                 & 0.457        & 0.264            & 0.291      & 0.290         & 0.262         & 0.234         & 0.246       & 0.447            & 0.303                \\
+name\_tokens\_string\_kernel\_cosine & 0.641        & 0.494            & 0.541      & 0.526         & 0.506         & 0.484         & 0.499       & 0.641            & 0.535                \\
+occupations\_shared                  &              &                  & 0.028      & 0.209         & 0.185         & 0.137         & 0.141       &                  &                      \\
+url\_exact                           & 0.065        & 0.038            &            &               &               &               &             & 0.195            & 0.157                \\
+url\_tokens\_shared                  & 0.127        & 0.078            &            &               &               &               &             & 0.122            & 0.108               
+\end{tabular}
+\caption{Features extracted for training dumps.}
+\label{tab:my-table}
+\end{table}
+
+
+
+\begin{table}[H]
+\centering
+\begin{tabular}{llllllllll}
+                                     & discogs/band & discogs/musician & imdb/actor & imdb/director & imdb/musician & imdb/producer & imdb/writer & musicbrainz/band & musicbrainz/musician \\
+born\_similar                        &              &                  & 0.683      & 0.538         & 0.588         & 0.581         & 0.659       & 0.000            & 0.800                \\
+description\_cosine                  & 0.057        & 0.102            &            &               &               &               &             &                  &                      \\
+died\_similar                        &              &                  & 0.244      & 0.218         & 0.253         & 0.217         & 0.318       & 0.000            & 0.278                \\
+name\_exact                          & 0.945        & 0.987            & 0.953      & 0.955         & 0.966         & 0.964         & 0.963       & 0.968            & 0.977                \\
+name\_tokens\_levenshtein            & 0.758        & 0.885            & 0.527      & 0.525         & 0.541         & 0.529         & 0.525       & 0.729            & 0.609                \\
+name\_tokens\_shared                 & 0.774        & 0.584            & 0.589      & 0.606         & 0.549         & 0.495         & 0.511       & 0.786            & 0.590                \\
+name\_tokens\_string\_kernel\_cosine & 0.883        & 0.816            & 0.813      & 0.819         & 0.785         & 0.755         & 0.774       & 0.895            & 0.802                \\
+occupations\_shared                  &              &                  & 0.073      & 0.458         & 0.470         & 0.369         & 0.324       &                  &                      \\
+url\_exact                           & 0.218        & 0.172            &            &               &               &               &             & 0.819            & 0.732                \\
+url\_tokens\_shared                  & 0.398        & 0.328            &            &               &               &               &             & 0.468            & 0.488               
+\end{tabular}
+\caption{Features extracted for positive training samples (those labelled as matches).}
+\label{tab:my-table}
+\end{table}
+
+
+\begin{table}[H]
+\centering
+\begin{tabular}{llllllllll}
+                                     & discogs/band & discogs/musician & imdb/actor & imdb/director & imdb/musician & imdb/producer & imdb/writer & musicbrainz/band & musicbrainz/musician \\
+born\_similar                        &              &                  & 0.005      & 0.004         & 0.004         & 0.003         & 0.005       & 0.000            & 0.007                \\
+description\_cosine                  & 0.016        & 0.019            &            &               &               &               &             &                  &                      \\
+died\_similar                        &              &                  & 0.001      & 0.001         & 0.001         & 0.001         & 0.001       & 0.000            & 0.001                \\
+name\_exact                          & 0.057        & 0.045            & 0.050      & 0.036         & 0.042         & 0.043         & 0.034       & 0.075            & 0.033                \\
+name\_tokens\_levenshtein            & 0.566        & 0.691            & 0.464      & 0.450         & 0.456         & 0.456         & 0.452       & 0.491            & 0.484                \\
+name\_tokens\_shared                 & 0.327        & 0.176            & 0.229      & 0.230         & 0.213         & 0.190         & 0.194       & 0.343            & 0.226                \\
+name\_tokens\_string\_kernel\_cosine & 0.541        & 0.407            & 0.485      & 0.471         & 0.458         & 0.437         & 0.445       & 0.563            & 0.462                \\
+occupations\_shared                  &              &                  & 0.018      & 0.162         & 0.136         & 0.097         & 0.105       &                  &                      \\
+url\_exact                           & 0.001        & 0.002            &            &               &               &               &             & 0.002            & 0.001                \\
+url\_tokens\_shared                  & 0.015        & 0.010            &            &               &               &               &             & 0.015            & 0.005               
+\end{tabular}
+\caption{Features extracted for negative training samples (those labelled as not matches).}
+\label{tab:my-table}
+\end{table}
+
+
+
+
 \begin{figure}[]
   \centering \includegraphics[width=\textwidth]{classification_feature_distribution} 
   \caption{Feature distribution for the classification set.}
@@ -2101,35 +2188,209 @@ The name of bagging is short for \textit{bootstrapping} and \textit{aggregating}
 
 \cite{Breiman1996_bagging_predictors}
 
-\subsection{Gating}
-\label{sec:ens-gating}
+% this is implemented by the sklearn library
 
-A specialization of \textit{bagging}, it uses a meta layer
+\subsection{Gated}
+\label{sec:ens-gated}
+
+Gated ensembles can be thought of as a mix between a stacked and a bagging ensembles. As in the bagging ensemble, the \textit{gated} ones also have a single pool of classifier whose predictions are joined to together. However, unlike with bagging, the gated ensemble uses a meta layer to weight this predictions (as does the stacked ensemble).
+
+Recall that with bagging there are two options to mix the \textit{opinions} of the base classifiers: either their predictions get averaged and the highest of this is chosen as the final prediction, or a \textit{majority vote} is held and the class with more votes is the final chosen one. The approach taken with gated ensembles is very similar to the \textit{averaging} case presented above. However, before averaging, the predictions of the base classifiers are weighted, so the final operation is just a weighted average.
+
+However, finding this weights manually can be quite hard. That is why it is best to delegate this task to another machine learning algorithm. In principle any learning algorithm can be used to as this final meta layer (which is the same term also used for the final layer of stacked ensembles). 
+
+% Note that both stacked and gated are instances of superlearner, which is a stacking algorithm
+
+% this is implemented by the mlens library
 
 \subsection{Stacking}
 \label{sec:ens-stacking}
 
+% http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.56.1533
+% http://statistics.berkeley.edu/sites/default/files/tech-reports/367.pdf
+% Doc diss on super learnear https://www.stat.berkeley.edu/~ledell/papers/ledell-phd-thesis.pdf
+
+% this is implemented by the mlens library
 
 \chapter{Results}
 \label{chap:results}
 
-The evaluation results for both the baseline and ensemble classifiers presented in this section have been obtained by performing a 5-fold cross validation \cite{Kohavi:1995_study_of_cross_validation} procedure on the training data. 
+This chapter presents the results obtained when evaluating the different model used, both baseline and ensembles. The evaluation results for both the baseline and ensemble classifiers presented in this section have been obtained by performing a 5-fold cross validation procedure on the training data. This process will be explained in the following section. The data used to generate this results was the Wikidata training dumps and the external catalog dumps mentioned in \autoref{sec:orig-shape-of-data}.
 
-The evaluation results for all models for each specific concrete entity can be found in \autoref{sec:apx-ensemble-eval-results}.
+The metrics measured during evaluation are: \textit{F1 score}, \textit{Precision}, and \textit{Recall}. These have been previously explained in \autoref{sec:rl-workflow-evaluation}. 
+
+Note that this section includes only the results obtained during evaluation. \autoref{sec:apx-classification-results} contains information on the distributions obtained when predicting the classification sets.
+
 
 \section{Cross Validation}
 \label{sec:cross-validation}
 
-% maybe own section for explaining what cross validation is
+When evaluating the performance of a given machine learning algorithm, it is desirable to know what the performance of said algorithm will be on the real world data\footnote{also known as \textit{classification} data, of classification set} the one for which the final values want to be known. However, it is impossible to do so, because this would require to have a labelled version of this real world data, and if that were the case then there would be no sense in trying to predict the labels. 
+
+The training data must come from a similar distribution from the classification data, if not the performance of the algorithm will be very poor when applied to the classification set. This assumption, that the training and classification datasets are \textbf{i.i.d.}\footnote{Independent and identically distributed.} \cite{clauset2011brief}, allows us to take a piece of the training set and set it aside to act as an \textit{approximation} of the classification set. This piece we set aside is called the \textit{validation set}. 
+
+The way this can be used is that we separate the whole training data $D$ into a \textit{validation set} $V$ and a \textit{training set} $T$ such that.
+
+\begin{align*}
+    V &\in D \\
+    T &\in D \\\\
+    \text{subject to:}& \\
+    V &\cup T = D \\ 
+    V &\cap T = \varnothing
+\end{align*}
+
+The learning algorithm is then trained only on $T$, and finally an estimate of the error the algorithm will get when predicting the real classification data can be obtained by measuring the error obtained when predicting $V$. 
+
+It is important that for this to work, the conditions mentioned above are respected. Especially $V \cap T = \varnothing$, since if any element $V_i \in T$ then the algorithm will have seen the actual label of said element during training, and this affects the supposition that the classification set is unknown to the algorithm at prediction time. The algorithm may have learned the label for said item, and as such will affect the final error measure on the validation set by making it look better than it actually is.
+
+Another consideration to keep in mind is that the actual validation set should not be used to tune the hyperaparameters of the algorithm, since this will only make the algorithm perform better in the validation data, but not necessarily better in the classification data. Once again, this may cause the performance of the algorithm to seem better than it actually is. To tune hyperparameters what can be done is separating the training data into a further third set, called the \textit{test set} $S$, which is also subject to $S \cap T \cap V = \varnothing$. With this, now the training can be done on $T$, hyperparameters can be tuned to minimize the error on $V$, and finally the estimate of the classification set error can be obtained by evaluating the algorithm on $S$.
+
+In some cases, however, this is not desirable since it means the training data will be split three ways, and a big part of it will not be actually seen by the model at all. An example case may be when there is only a small training set, or the algorithm being used needs a lot of data to be trained properly (e.g. when using a neural network).
+
+Another possible problem may be that the error metrics obtained may be dependent on the specific separation of the dataset that was made to create $T$, $V$, and $S$. For example, the algorithm may appear to have a great performance on $S$, but if the training set were to be shuffled and split again then the performance would be much worse.
+
+A better approach, which permits the use of most of the training data, and also provide an approximation of a \textit{split independent} error value is to use k-fold cross validation \cite{Kohavi:1995_study_of_cross_validation,Cawley:2010_crossval_model_selection}. In this process, we repeatedly ($k$ times) split the training set $D$ into $T$ and $V$ as mentioned above, train on the current split $T$, measure the error on $V$ and then average all the error measures to get a final error. Using a $k > 1$ reduces variability in the final error metric since these get averaged over many possible ways of splitting the training data.
+
+The algorithm for $k$-fold cross validation is as follows:
+
+\begin{lstlisting}
+errors = [] # list that will hold the errors obtained during each fold
+for i in 0..(*$k$*):
+    (*$T, V$*) (*$\leftarrow$*) splitTrainingData((*$D$*))
+    
+    (*$V_{features}, V_{labels}$*) (*$\leftarrow$*) getFeaturesAndLabels((*$V$*))
+    
+    model = initializeClassifier()
+    model.fit((*$T$*)) # train the classifier
+    
+    predictions = model.predict((*$V_{features}$*))
+    
+    error = measureError(predictions, (*$V_{labels}$*))
+    errors.append(error)
+    
+finalError = average(errors)
+\end{lstlisting}
+
+Note that in this example \textit{error} was mentioned as the metric that is being extracted. However, any metric which depends on $V$ can be extracted in such a way. For this work, the metrics obtained during the cross validation procedure are \textit{F1-Score}, \textit{Precision}, and \textit{Recall}.
+
 
 \section{Baseline Evaluation}
 \label{sec:baseline-evaluation}
 
+This section presents the results of performing a 5-fold cross validation on the baseline models presented in \autoref{sec:baseline-classifiers}. 
+
+In the table below are presented the performance metrics for each classifier applied to each concrete entity. Note that the names of the algorithms have been shortened to make the table fit nicely in the page. The abbreviations are as follow:
+
+\begin{itemize}
+    \item Linear Support Vector Machine: lsvm
+    \item Logistic Regression: lr
+    \item Multi layer perceptron: mlp
+    \item Naive Bayes: nb
+    \item Random Forest: rf
+    \item Single layer perceptron: s;p
+\end{itemize}
+
+
+\begin{longtable}{|l|l|l|l|l|l|l|l|l|}
+\hline
+Catalog     & Entity   & Model                & F1.Mean  & F1.STD   & Prec.Mean & Prec.STD & Rec.Mean & Rec.STD \\ \hline
+discogs     & band     & lsvm                 & 0.925262 & 0.001267 & 0.896373  & 0.002110 & 0.956090    & 0.003388   \\
+discogs     & musician & lsvm                 & 0.936944 & 0.001224 & 0.905424  & 0.002080 & 0.970741    & 0.000880   \\
+imdb        & writer   & lsvm                 & 0.928606 & 0.001983 & 0.919005  & 0.002274 & 0.938421    & 0.003574   \\
+imdb        & actor    & lsvm                 & 0.894011 & 0.000789 & 0.875260  & 0.002088 & 0.913592    & 0.001998   \\
+imdb        & director & lsvm                 & 0.912727 & 0.001597 & 0.880551  & 0.005850 & 0.947397    & 0.003670   \\
+imdb        & producer & lsvm                 & 0.905975 & 0.003885 & 0.894173  & 0.006799 & 0.918114    & 0.001219   \\
+imdb        & musician & lsvm                 & 0.917906 & 0.001399 & 0.909440  & 0.002345 & 0.926534    & 0.001067   \\
+musicbrainz & band     & lsvm                 & 0.913877 & 0.001689 & 0.961199  & 0.003976 & 0.871046    & 0.006050   \\
+musicbrainz & musician & lsvm                 & 0.954410 & 0.001406 & 0.942882  & 0.002112 & 0.966225    & 0.001090   \\ \hline
+discogs     & musician & lr & 0.938138 & 0.001693 & 0.917022  & 0.002191 & 0.960250    & 0.001370   \\
+discogs     & band     & lr & 0.924791 & 0.001550 & 0.908952  & 0.001476 & 0.941198    & 0.003025   \\
+imdb        & director & lr & 0.913846 & 0.000694 & 0.892154  & 0.004468 & 0.936658    & 0.003834   \\
+imdb        & producer & lr & 0.906045 & 0.002643 & 0.898064  & 0.005640 & 0.914192    & 0.000826   \\
+imdb        & actor    & lr & 0.893573 & 0.000579 & 0.878388  & 0.001838 & 0.909299    & 0.001406   \\
+imdb        & musician & lr & 0.917958 & 0.001717 & 0.908442  & 0.002911 & 0.927680    & 0.001280   \\
+imdb        & writer   & lr & 0.928108 & 0.002082 & 0.924621  & 0.001792 & 0.931635    & 0.004264   \\
+musicbrainz & band     & lr & 0.918022 & 0.002327 & 0.937643  & 0.002251 & 0.899217    & 0.003973   \\
+musicbrainz & musician & lr & 0.953083 & 0.001301 & 0.943755  & 0.002042 & 0.962600    & 0.001165   \\ \hline
+discogs     & band     & mlp                  & 0.928931 & 0.001310 & 0.915249  & 0.001875 & 0.943032    & 0.001727   \\
+discogs     & musician & mlp                  & 0.940715 & 0.001443 & 0.921507  & 0.001770 & 0.960754    & 0.003867   \\
+imdb        & director & mlp                  & 0.919340 & 0.000980 & 0.899994  & 0.002724 & 0.939548    & 0.002002   \\
+imdb        & actor    & mlp                  & 0.896922 & 0.000400 & 0.880657  & 0.003412 & 0.913832    & 0.004129   \\
+imdb        & producer & mlp                  & 0.909398 & 0.002913 & 0.894253  & 0.007249 & 0.925119    & 0.003188   \\
+imdb        & musician & mlp                  & 0.925888 & 0.001165 & 0.942860  & 0.001545 & 0.909520    & 0.001863   \\
+imdb        & writer   & mlp                  & 0.930302 & 0.002571 & 0.924571  & 0.003714 & 0.936149    & 0.006365   \\
+musicbrainz & band     & mlp                  & 0.921134 & 0.002588 & 0.926546  & 0.004402 & 0.915818    & 0.004989   \\
+musicbrainz & musician & mlp                  & 0.957375 & 0.001629 & 0.944146  & 0.004491 & 0.971004    & 0.002647   \\ \hline
+discogs     & musician & nb         & 0.931622 & 0.001314 & 0.903489  & 0.002155 & 0.961565    & 0.000812   \\
+discogs     & band     & nb         & 0.922386 & 0.001457 & 0.891462  & 0.001633 & 0.955542    & 0.003274   \\
+imdb        & musician & nb         & 0.904327 & 0.013959 & 0.868388  & 0.055110 & 0.948158    & 0.033475   \\
+imdb        & producer & nb         & 0.898657 & 0.004254 & 0.842785  & 0.008230 & 0.962525    & 0.001450   \\
+imdb        & director & nb         & 0.907755 & 0.002541 & 0.855312  & 0.005063 & 0.967075    & 0.001997   \\
+imdb        & writer   & nb         & 0.922121 & 0.002580 & 0.882778  & 0.004051 & 0.965145    & 0.002172   \\
+imdb        & actor    & nb         & 0.889563 & 0.001311 & 0.825956  & 0.002002 & 0.963789    & 0.001153   \\
+musicbrainz & musician & nb         & 0.952783 & 0.001847 & 0.953561  & 0.002394 & 0.952008    & 0.001847   \\
+musicbrainz & band     & nb         & 0.907094 & 0.001994 & 0.953012  & 0.001335 & 0.865401    & 0.002974   \\ \hline
+discogs     & band     & rf       & 0.921673 & 0.001084 & 0.909216  & 0.002648 & 0.934490    & 0.002988   \\
+discogs     & musician & rf       & 0.933460 & 0.002427 & 0.917496  & 0.003021 & 0.949992    & 0.002296   \\
+imdb        & musician & rf       & 0.922135 & 0.000594 & 0.932216  & 0.000733 & 0.912272    & 0.001018   \\
+imdb        & producer & rf       & 0.906239 & 0.004720 & 0.895270  & 0.008984 & 0.917553    & 0.005214   \\
+imdb        & director & rf       & 0.916903 & 0.000940 & 0.892806  & 0.003096 & 0.942355    & 0.002601   \\
+imdb        & writer   & rf       & 0.929301 & 0.002919 & 0.922216  & 0.004160 & 0.936508    & 0.003393   \\
+imdb        & actor    & rf       & 0.899161 & 0.000836 & 0.879621  & 0.001427 & 0.919592    & 0.001620   \\
+musicbrainz & band     & rf       & 0.918844 & 0.002231 & 0.938321  & 0.005419 & 0.900192    & 0.003714   \\
+musicbrainz & musician & rf       & 0.953673 & 0.001146 & 0.943972  & 0.001591 & 0.963577    & 0.001052   \\ \hline
+discogs     & band     & slp                  & 0.925647 & 0.001462 & 0.908264  & 0.001465 & 0.943716    & 0.003188   \\
+discogs     & musician & slp                  & 0.938168 & 0.001664 & 0.917755  & 0.002291 & 0.959510    & 0.001258   \\
+imdb        & actor    & slp                  & 0.893205 & 0.000591 & 0.881499  & 0.001829 & 0.905232    & 0.001676   \\
+imdb        & musician & slp                  & 0.917503 & 0.001383 & 0.909845  & 0.002659 & 0.925296    & 0.000865   \\
+imdb        & director & slp                  & 0.914070 & 0.000545 & 0.895414  & 0.003822 & 0.933551    & 0.003516   \\
+imdb        & producer & slp                  & 0.905526 & 0.002380 & 0.903146  & 0.006456 & 0.907958    & 0.001993   \\
+imdb        & writer   & slp                  & 0.927724 & 0.001915 & 0.924983  & 0.002891 & 0.930499    & 0.003970   \\
+musicbrainz & musician & slp                  & 0.953054 & 0.001383 & 0.943662  & 0.002094 & 0.962638    & 0.001341   \\
+musicbrainz & band     & slp                  & 0.915977 & 0.002302 & 0.946439  & 0.002538 & 0.887441    & 0.005184  \\ \hline
+\end{longtable}
+
+The columns name \textit{*.Mean} are the mean value of the relative metric obtained during the cross validation procedure. Similarly, the columns named \textit{*.STD} are the standard deviation of said metrics. 
+
+It's interesting to note that the best \textit{F1.Mean} for all models seems to have been obtained on the entity \textit{Musicbrainz/Musician}, and the second best for \textit{Discogs/Musician}. For most of the models, the third best \textit{F1.Mean} is obtained on \textit{IMDb/Writer} (only Naive Bayes has \textit{Discogs/Band} as the third best, although the values are very similar with \textit{Writer}).
+
+When it comes to \textit{precision} things are less \textit{unanimous}. Most models still have \textit{Musicbrainz/Musician} as their best precision, except for \textit{lsvm}, and \textit{slp}, who oboth have \textit{Musicbrainz/Band}, although for this the second best is also \textit{Musicbrainz/Musician}. The place of second best precision among the first set of classifiers is \textit{Musicbrainz/Band}, except for \textit{mlp}, who has \textit{IMDb/Musician} in the second place. 
+
+For \textit{Recall}, all models except for \textit{lsvm} and \textit{Naive Bayes} have \textit{Musicbrainz/Musician} as their top concrete entity. \textit{lsvm} and \textit{naive bayes} have \textit{Discogs/Musician} and \textit{IMDb/Director} respectively. All models except \textit{lsvm} and \textit{Naive Bayes} have \textit{Discogs/Musician} as their second best. \textit{lsvm} and \textit{naive bayes} have \textit{Musicbrainz/Musician} and \textit{IMDb/Writer} respectively.
+
+The results presented above are quite interesting since they show that features extracted for \textit{Musicbrainz/Musicians} are most definitely more informative than those for other concrete entities. This makes sense when one looks at (plot of features), it is clear that the information available for this case is much more than in others.
+
+
+\begin{longtable}{|l|l|l|l|l|l|l|l|}
+\hline
+Catalog     & Model                             & Average F1 & Average F1.STD & Average Prec & Average Prec.STD & Average Recall & Average Recall.STD \\ \hline
+musicbrainz & mlp          & 0.939254   & 0.002109       & 0.935346     & 0.004446         & 0.943411       & 0.003818           \\
+musicbrainz & rf                    & 0.936259   & 0.001688       & 0.941146     & 0.003505         & 0.931885       & 0.002383           \\
+musicbrainz & lr              & 0.935553   & 0.001814       & 0.940699     & 0.002146         & 0.930909       & 0.002569           \\
+musicbrainz & slp         & 0.934516   & 0.001842       & 0.945051     & 0.002316         & 0.925040       & 0.003263           \\
+musicbrainz & lsvm & 0.934144   & 0.001548       & 0.952041     & 0.003044         & 0.918635       & 0.003570           \\
+musicbrainz & nb                      & 0.929939   & 0.001920       & 0.953287     & 0.001865         & 0.908705       & 0.002410           \\ \hline
+imdb        & mlp          & 0.916370   & 0.001606       & 0.908467     & 0.003729         & 0.924834       & 0.003509           \\
+imdb        & rf                    & 0.914748   & 0.002002       & 0.904426     & 0.003680         & 0.925656       & 0.002769           \\
+imdb        & lr              & 0.911906   & 0.001543       & 0.900334     & 0.003330         & 0.923893       & 0.002322           \\
+imdb        & lsvm & 0.911845   & 0.001931       & 0.895686     & 0.003871         & 0.928812       & 0.002306           \\
+imdb        & slp         & 0.911606   & 0.001363       & 0.902977     & 0.003531         & 0.920507       & 0.002404           \\
+imdb        & nb                      & 0.904485   & 0.004929       & 0.855044     & 0.014891         & 0.961338       & 0.008049           \\ \hline
+discogs     & mlp          & 0.934823   & 0.001377       & 0.918378     & 0.001822         & 0.951893       & 0.002797           \\
+discogs     & slp         & 0.931907   & 0.001563       & 0.913009     & 0.001878         & 0.951613       & 0.002223           \\
+discogs     & lr              & 0.931464   & 0.001622       & 0.912987     & 0.001833         & 0.950724       & 0.002197           \\
+discogs     & lsvm & 0.931103   & 0.001246       & 0.900899     & 0.002095         & 0.963415       & 0.002134           \\
+discogs     & rf                    & 0.927566   & 0.001755       & 0.913356     & 0.002835         & 0.942241       & 0.002642           \\
+discogs     & nb                      & 0.927004   & 0.001386       & 0.897476     & 0.001894         & 0.958554       & 0.002043           \\ \hline
+\end{longtable}
+
+
+The table below contains a summary of the metrics obtained by each classifier, these were obtained by averaging the metrics obtained for each concrete entity.  
 
 \begin{table}[H]
 \centering
 \begin{tabular}{l|l|l|l|l|l|l}
-Model                             & Avg. F1 & Avg. F1.STD & Avg. Prec & Avg. Prec.STD & Avg. Recall & Avg. Recall.STD \\ \hline
+Model                             & Avg.F1 & Avg.F1.STD & Avg.Prec & Avg.Prec.STD & Avg.Recall & Avg.Recall.STD \\ \hline
 mlp          & 0.925556   & 0.001667       & 0.916643     & 0.003465         & 0.934975       & 0.003420           \\
 random\_forest                    & 0.922377   & 0.001877       & 0.914570     & 0.003453         & 0.930726       & 0.002655           \\
 logistic\_regression              & 0.921507   & 0.001621       & 0.912116     & 0.002734         & 0.931414       & 0.002349           \\
@@ -2137,8 +2398,8 @@ slp         & 0.921208   & 0.001514       & 0.914556     & 0.002894         & 0.
 lsvm & 0.921080   & 0.001693       & 0.909367     & 0.003293         & 0.934240       & 0.002548           \\
 naive\_bayes                      & 0.915145   & 0.003473       & 0.886305     & 0.009108         & 0.949023       & 0.005462          
 \end{tabular}
-\caption{Aferage metrics obtained for the baseline classifiers.}
-\label{tab:metrics-summary-baselin}
+\caption{Average metrics obtained for the baseline classifiers.}
+\label{tab:metrics-summary-baseline}
 \end{table}
 
 
@@ -2259,83 +2520,6 @@ bibliografia in formato bibtex
 
 almost everything said in https://github.com/Wikidata/soweego/issues/165
 
-\section{Evaluation results for each model and concrete entity}
-
-This section presents the evaluation results obtained by each model when applied to a specific concrete entity. The first section shows the results of the baseline classifiers, while the second shows those for the ensemble classifiers. The data used to generate this results was the Wikidata training dumps and the external catalog dumps mentioned in \autoref{sec:orig-shape-of-data}.
-
-\subsubsection{Baseline Evaluation Results}
-\label{sec:apx-baseline-eval-results}
-
-In the table below are presented the individual results for the baseline algorithms, for each catalog and entity. Note that the names of the algorithms have been shortened to make the table fit nicely in the page. The abbreviations are as follow:
-
-\begin{itemize}
-    \item Linear Support Vector Machine: lsvm
-    \item Logistic Regression: lr
-    \item Multi layer perceptron: mlp
-    \item Naive Bayes: nb
-    \item Random Forest: rf
-    \item Single layer perceptron: s;p
-\end{itemize}
-
-
-\begin{longtable}{|l|l|l|l|l|l|l|l|l|}
-\hline
-Catalog     & Entity   & Model                & F1.Mean  & F1.STD   & Prec.Mean & Prec.STD & Rec.Mean & Rec.STD \\ \hline
-discogs     & band     & lsvm                 & 0.925262 & 0.001267 & 0.896373  & 0.002110 & 0.956090    & 0.003388   \\
-discogs     & musician & lsvm                 & 0.936944 & 0.001224 & 0.905424  & 0.002080 & 0.970741    & 0.000880   \\
-imdb        & writer   & lsvm                 & 0.928606 & 0.001983 & 0.919005  & 0.002274 & 0.938421    & 0.003574   \\
-imdb        & actor    & lsvm                 & 0.894011 & 0.000789 & 0.875260  & 0.002088 & 0.913592    & 0.001998   \\
-imdb        & director & lsvm                 & 0.912727 & 0.001597 & 0.880551  & 0.005850 & 0.947397    & 0.003670   \\
-imdb        & producer & lsvm                 & 0.905975 & 0.003885 & 0.894173  & 0.006799 & 0.918114    & 0.001219   \\
-imdb        & musician & lsvm                 & 0.917906 & 0.001399 & 0.909440  & 0.002345 & 0.926534    & 0.001067   \\
-musicbrainz & band     & lsvm                 & 0.913877 & 0.001689 & 0.961199  & 0.003976 & 0.871046    & 0.006050   \\
-musicbrainz & musician & lsvm                 & 0.954410 & 0.001406 & 0.942882  & 0.002112 & 0.966225    & 0.001090   \\ \hline
-discogs     & musician & lr & 0.938138 & 0.001693 & 0.917022  & 0.002191 & 0.960250    & 0.001370   \\
-discogs     & band     & lr & 0.924791 & 0.001550 & 0.908952  & 0.001476 & 0.941198    & 0.003025   \\
-imdb        & director & lr & 0.913846 & 0.000694 & 0.892154  & 0.004468 & 0.936658    & 0.003834   \\
-imdb        & producer & lr & 0.906045 & 0.002643 & 0.898064  & 0.005640 & 0.914192    & 0.000826   \\
-imdb        & actor    & lr & 0.893573 & 0.000579 & 0.878388  & 0.001838 & 0.909299    & 0.001406   \\
-imdb        & musician & lr & 0.917958 & 0.001717 & 0.908442  & 0.002911 & 0.927680    & 0.001280   \\
-imdb        & writer   & lr & 0.928108 & 0.002082 & 0.924621  & 0.001792 & 0.931635    & 0.004264   \\
-musicbrainz & band     & lr & 0.918022 & 0.002327 & 0.937643  & 0.002251 & 0.899217    & 0.003973   \\
-musicbrainz & musician & lr & 0.953083 & 0.001301 & 0.943755  & 0.002042 & 0.962600    & 0.001165   \\ \hline
-discogs     & band     & mlp                  & 0.928931 & 0.001310 & 0.915249  & 0.001875 & 0.943032    & 0.001727   \\
-discogs     & musician & mlp                  & 0.940715 & 0.001443 & 0.921507  & 0.001770 & 0.960754    & 0.003867   \\
-imdb        & director & mlp                  & 0.919340 & 0.000980 & 0.899994  & 0.002724 & 0.939548    & 0.002002   \\
-imdb        & actor    & mlp                  & 0.896922 & 0.000400 & 0.880657  & 0.003412 & 0.913832    & 0.004129   \\
-imdb        & producer & mlp                  & 0.909398 & 0.002913 & 0.894253  & 0.007249 & 0.925119    & 0.003188   \\
-imdb        & musician & mlp                  & 0.925888 & 0.001165 & 0.942860  & 0.001545 & 0.909520    & 0.001863   \\
-imdb        & writer   & mlp                  & 0.930302 & 0.002571 & 0.924571  & 0.003714 & 0.936149    & 0.006365   \\
-musicbrainz & band     & mlp                  & 0.921134 & 0.002588 & 0.926546  & 0.004402 & 0.915818    & 0.004989   \\
-musicbrainz & musician & mlp                  & 0.957375 & 0.001629 & 0.944146  & 0.004491 & 0.971004    & 0.002647   \\ \hline
-discogs     & musician & nb         & 0.931622 & 0.001314 & 0.903489  & 0.002155 & 0.961565    & 0.000812   \\
-discogs     & band     & nb         & 0.922386 & 0.001457 & 0.891462  & 0.001633 & 0.955542    & 0.003274   \\
-imdb        & musician & nb         & 0.904327 & 0.013959 & 0.868388  & 0.055110 & 0.948158    & 0.033475   \\
-imdb        & producer & nb         & 0.898657 & 0.004254 & 0.842785  & 0.008230 & 0.962525    & 0.001450   \\
-imdb        & director & nb         & 0.907755 & 0.002541 & 0.855312  & 0.005063 & 0.967075    & 0.001997   \\
-imdb        & writer   & nb         & 0.922121 & 0.002580 & 0.882778  & 0.004051 & 0.965145    & 0.002172   \\
-imdb        & actor    & nb         & 0.889563 & 0.001311 & 0.825956  & 0.002002 & 0.963789    & 0.001153   \\
-musicbrainz & musician & nb         & 0.952783 & 0.001847 & 0.953561  & 0.002394 & 0.952008    & 0.001847   \\
-musicbrainz & band     & nb         & 0.907094 & 0.001994 & 0.953012  & 0.001335 & 0.865401    & 0.002974   \\ \hline
-discogs     & band     & rf       & 0.921673 & 0.001084 & 0.909216  & 0.002648 & 0.934490    & 0.002988   \\
-discogs     & musician & rf       & 0.933460 & 0.002427 & 0.917496  & 0.003021 & 0.949992    & 0.002296   \\
-imdb        & musician & rf       & 0.922135 & 0.000594 & 0.932216  & 0.000733 & 0.912272    & 0.001018   \\
-imdb        & producer & rf       & 0.906239 & 0.004720 & 0.895270  & 0.008984 & 0.917553    & 0.005214   \\
-imdb        & director & rf       & 0.916903 & 0.000940 & 0.892806  & 0.003096 & 0.942355    & 0.002601   \\
-imdb        & writer   & rf       & 0.929301 & 0.002919 & 0.922216  & 0.004160 & 0.936508    & 0.003393   \\
-imdb        & actor    & rf       & 0.899161 & 0.000836 & 0.879621  & 0.001427 & 0.919592    & 0.001620   \\
-musicbrainz & band     & rf       & 0.918844 & 0.002231 & 0.938321  & 0.005419 & 0.900192    & 0.003714   \\
-musicbrainz & musician & rf       & 0.953673 & 0.001146 & 0.943972  & 0.001591 & 0.963577    & 0.001052   \\ \hline
-discogs     & band     & slp                  & 0.925647 & 0.001462 & 0.908264  & 0.001465 & 0.943716    & 0.003188   \\
-discogs     & musician & slp                  & 0.938168 & 0.001664 & 0.917755  & 0.002291 & 0.959510    & 0.001258   \\
-imdb        & actor    & slp                  & 0.893205 & 0.000591 & 0.881499  & 0.001829 & 0.905232    & 0.001676   \\
-imdb        & musician & slp                  & 0.917503 & 0.001383 & 0.909845  & 0.002659 & 0.925296    & 0.000865   \\
-imdb        & director & slp                  & 0.914070 & 0.000545 & 0.895414  & 0.003822 & 0.933551    & 0.003516   \\
-imdb        & producer & slp                  & 0.905526 & 0.002380 & 0.903146  & 0.006456 & 0.907958    & 0.001993   \\
-imdb        & writer   & slp                  & 0.927724 & 0.001915 & 0.924983  & 0.002891 & 0.930499    & 0.003970   \\
-musicbrainz & musician & slp                  & 0.953054 & 0.001383 & 0.943662  & 0.002094 & 0.962638    & 0.001341   \\
-musicbrainz & band     & slp                  & 0.915977 & 0.002302 & 0.946439  & 0.002538 & 0.887441    & 0.005184  \\ \hline
-\end{longtable}
 
 \subsubsection{Ensembles Evaluation Results}
 \label{sec:apx-ensemble-eval-results}
