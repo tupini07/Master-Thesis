@@ -1925,7 +1925,7 @@ Currently, the smallest set is usually IMDb. As seen in \autoref{fig:imdb-profes
 
 To understand the features exposed in the last function better, and to learn what is their behaviour in a real world scenario, this section will proceed to mention some basic statistical information about them. Of special interest is: which is the average value for a feature, which features are always zero, and knowledge of the features that are extracted for a specific catalog. It would also be interesting to see if the features extracted vary between the classification and training sets, or between the positive and negative examples in the training set. This section strives to answer all these questions.
 
-The table below presents the features extracted for a specific concrete entity in the classification set. The first number in each cell is the average value, and the number below it, in parenthesis, is the standard deviation. If a cell has no value then it means that specific concrete entity does not have the required fields to extract said features and so it was not used. An example of this is the \textit{born\_similar} which was not applied to entities of \textit{Discogs} catalog since they do not have birth dates. Note that to make the tables fit nicely in the page, the names of the features have been shortened. Below is a mapping from the complete feature name to its shortened version:
+\autoref{tab:features-viz-average-std-classification}, presents the features extracted for a specific concrete entity in the \textit{classification set}. The first number in each cell is the average value, and the number below it, in parenthesis, is the standard deviation. If a cell has no value then it means that specific concrete entity does not have the required fields to extract said features and so it was not used. An example of this is the \textit{born\_similar} which was not applied to entities of \textit{Discogs} catalog since they do not have birth dates. Note that to make the tables fit nicely in the page, the names of the features have been shortened. Below is a mapping from the complete feature name to its shortened version:
 
 \begin{itemize}
     \item born\_similar : brn.sim
@@ -1937,14 +1937,19 @@ The table below presents the features extracted for a specific concrete entity i
     \item name\_tokens\_string\_kernel\_cosine : nmt.cos
     \item occupations\_shared : occ.shr
     \item url\_exact : url.exct
-    \item url\_tokens\_shared : utl.shr 
+    \item url\_tokens\_shared : url.shr 
 \end{itemize}
 
-The first thing one can notice from the table below is that all catalogs have seven features, except for \textit{Musicbrainz} which has eight. As shown later in \autoref{chap:results}, this might be one of the reasons why \textit{Musicbrianz} is almost always the best predicted catalog.
+By looking at \autoref{tab:features-viz-average-std-classification}, the first thing one can notice is that all catalogs have seven features, except for \textit{Musicbrainz} which has eight. It is also clear which features were extracted from which catalogs. 
+
+The mean for some features seem to be maintained similar across each concrete entity. For example the born similarity is \textit{0.005 +- 0.001} in 5 our of 7 concrete entities that have it. However, \textit{nm.exct} varies a bit more, with it going from \textit{0.04} for \textit{Discogs/Musician} to \textit{0.14} for \textit{Musicbrainz/Band}. For some features it also seems that the the mean values are lower than for others. An example of this is the feature \textit{die.sim} whose mean is $\leq 0.003$ for all concrete entities, while \textit{nmt.cos} is always above \textit{0.5}. 
+
+Among these features, those associated with flexible name similarities (\textit{nmt.lev}, \textit{nmt.shr}, \textit{nmt.cos}) seem to be the ones with the higher average value. \textit{url.exct} has a lower average, in all cases, than \textit{url.shr}, and it's mean is quite low for almost all concrete entities. 
+
+When it comes to \textit{standard deviation}, it seems that all name similarity measures and \textit{occ.shr} are those with the highest variation. 
 
 
-
-\begin{table}[H]
+\begin{table}[h]
 \centering
 \begin{tabular}{l|c|c|c|c|c|c|c|c|c|}
 \cline{2-10}
@@ -1959,16 +1964,16 @@ The first thing one can notice from the table below is that all catalogs have se
 \multicolumn{1}{|l|}{nmt.cos} & \makecell{0.527 \\ (0.252)}  & \makecell{0.437 \\ (0.207)} & \makecell{0.554 \\ (0.177)} & \makecell{0.549 \\ (0.180)} & \makecell{0.510 \\ (0.147)} & \makecell{0.551 \\ (0.186)} & \makecell{0.511 \\ (0.166)} & \makecell{0.608 \\ (0.215)}    & \makecell{0.515 \\ (0.162)}   \\ \hline
 \multicolumn{1}{|l|}{occ.shr}                  &               &              & \makecell{0.014 \\ (0.103)} & \makecell{0.123 \\ (0.289)} & \makecell{0.103 \\ (0.271)} & \makecell{0.033 \\ (0.119)} & \makecell{0.017 \\ (0.084)} &                 &                \\ \hline
 \multicolumn{1}{|l|}{url.exct}                           & \makecell{0.001 \\ (0.037)}  & \makecell{0.001 \\ (0.026)} &              &              &              &              &              & \makecell{0.035 \\ (0.183)}    & \makecell{0.006 \\ (0.078)}   \\ \hline
-\multicolumn{1}{|l|}{utl.shr}                  & \makecell{0.012 \\ (0.091)}  & \makecell{0.004 \\ (0.049)} &              &              &              &              &              & \makecell{0.047 \\ (0.191)}    & \makecell{0.008 \\ (0.077)}   \\ \hline
+\multicolumn{1}{|l|}{url.shr}                  & \makecell{0.012 \\ (0.091)}  & \makecell{0.004 \\ (0.049)} &              &              &              &              &              & \makecell{0.047 \\ (0.191)}    & \makecell{0.008 \\ (0.077)}   \\ \hline
 \end{tabular}
 \caption{Average features and their standard deviation. Extracted for classification dumps.}
 \label{tab:features-viz-average-std-classification}
 \end{table}
 
 
+Below is
 
-
-\begin{table}[H]
+\begin{table}[h]
 \centering
 \begin{tabular}{l|c|c|c|c|c|c|c|c|c|}
 \cline{2-10}
@@ -1983,7 +1988,7 @@ The first thing one can notice from the table below is that all catalogs have se
 \multicolumn{1}{|l|}{nmt.cos} & \makecell{0.641 \\ (0.291)}  & \makecell{0.494 \\ (0.272)} & \makecell{0.541 \\ (0.210)} & \makecell{0.526 \\ (0.210)} & \makecell{0.506 \\ (0.201)} & \makecell{0.484 \\ (0.203)} & \makecell{0.499 \\ (0.203)} & \makecell{0.641 \\ (0.244)}    & \makecell{0.535 \\ (0.216)}   \\ \hline
 \multicolumn{1}{|l|}{occ.shr}                  &               &              & \makecell{0.028 \\ (0.129)} & \makecell{0.209 \\ (0.308)} & \makecell{0.185 \\ (0.321)} & \makecell{0.137 \\ (0.229)} & \makecell{0.141 \\ (0.225)} &                 &                \\ \hline
 \multicolumn{1}{|l|}{url.exct}                           & \makecell{0.065 \\ (0.246)}  & \makecell{0.038 \\ (0.191)} &              &              &              &              &              & \makecell{0.195 \\ (0.396)}    & \makecell{0.157 \\ (0.363)}   \\ \hline
-\multicolumn{1}{|l|}{utl.shr}                  & \makecell{0.127 \\ (0.295)}  & \makecell{0.078 \\ (0.245)} &              &              &              &              &              & \makecell{0.122 \\ (0.239)}    & \makecell{0.108 \\ (0.242)}   \\ \hline
+\multicolumn{1}{|l|}{url.shr}                  & \makecell{0.127 \\ (0.295)}  & \makecell{0.078 \\ (0.245)} &              &              &              &              &              & \makecell{0.122 \\ (0.239)}    & \makecell{0.108 \\ (0.242)}   \\ \hline
 \end{tabular}
 \caption{Average features and their standard deviation. Extracted for training dumps.}
 \label{tab:features-viz-average-std-training}
@@ -1993,7 +1998,7 @@ The first thing one can notice from the table below is that all catalogs have se
 
 % -------------
 
-\begin{table}[H]
+\begin{table}[h]
 \centering
 \begin{tabular}{l|c|c|c|c|c|c|c|c|c|}
 \cline{2-10}
@@ -2008,7 +2013,7 @@ The first thing one can notice from the table below is that all catalogs have se
 \multicolumn{1}{|l|}{nmt.cos} & \makecell{0.883 \\ (0.224)}  & \makecell{0.816 \\ (0.218)} & \makecell{0.813 \\ (0.184)} & \makecell{0.819 \\ (0.186)} & \makecell{0.785 \\ (0.193)} & \makecell{0.755 \\ (0.201)} & \makecell{0.774 \\ (0.188)} & \makecell{0.895 \\ (0.184)}    & \makecell{0.802 \\ (0.194)}   \\ \hline
 \multicolumn{1}{|l|}{occ.shr}                  &               &              & \makecell{0.073 \\ (0.188)} & \makecell{0.458 \\ (0.341)} & \makecell{0.470 \\ (0.390)} & \makecell{0.369 \\ (0.279)} & \makecell{0.324 \\ (0.269)} &                 &                \\ \hline
 \multicolumn{1}{|l|}{url.exct}                           & \makecell{0.218 \\ (0.413)}  & \makecell{0.172 \\ (0.377)} &              &              &              &              &              & \makecell{0.819 \\ (0.385)}    & \makecell{0.732 \\ (0.443)}   \\ \hline
-\multicolumn{1}{|l|}{utl.shr}                  & \makecell{0.398 \\ (0.418)}  & \makecell{0.328 \\ (0.425)} &              &              &              &              &              & \makecell{0.468 \\ (0.255)}    & \makecell{0.488 \\ (0.289)}   \\ \hline
+\multicolumn{1}{|l|}{url.shr}                  & \makecell{0.398 \\ (0.418)}  & \makecell{0.328 \\ (0.425)} &              &              &              &              &              & \makecell{0.468 \\ (0.255)}    & \makecell{0.488 \\ (0.289)}   \\ \hline
 \end{tabular}
 \caption{Average features and their standard deviation extracted for positive training samples (those labelled as matches).}
 \label{tab:features-viz-average-std-positive}
@@ -2017,7 +2022,7 @@ The first thing one can notice from the table below is that all catalogs have se
 
 
 
-\begin{table}[H]
+\begin{table}[h]
 \centering
 \begin{tabular}{l|c|c|c|c|c|c|c|c|c|}
 \cline{2-10}
@@ -2032,7 +2037,7 @@ The first thing one can notice from the table below is that all catalogs have se
 \multicolumn{1}{|l|}{nmt.cos} & \makecell{0.541 \\ (0.254)}  & \makecell{0.407 \\ (0.212)} & \makecell{0.485 \\ (0.166)} & \makecell{0.471 \\ (0.162)} & \makecell{0.458 \\ (0.159)} & \makecell{0.437 \\ (0.164)} & \makecell{0.445 \\ (0.156)} & \makecell{0.563 \\ (0.203)}    & \makecell{0.462 \\ (0.157)}   \\ \hline
 \multicolumn{1}{|l|}{occ.shr}                  &               &              & \makecell{0.018 \\ (0.111)} & \makecell{0.162 \\ (0.277)} & \makecell{0.136 \\ (0.280)} & \makecell{0.097 \\ (0.193)} & \makecell{0.105 \\ (0.197)} &                 &                \\ \hline
 \multicolumn{1}{|l|}{url.exct}                           & \makecell{0.001 \\ (0.035)}  & \makecell{0.002 \\ (0.040)} &              &              &              &              &              & \makecell{0.002 \\ (0.047)}    & \makecell{0.001 \\ (0.035)}   \\ \hline
-\multicolumn{1}{|l|}{utl.shr}                  & \makecell{0.015 \\ (0.090)}  & \makecell{0.010 \\ (0.072)} &              &              &              &              &              & \makecell{0.015 \\ (0.079)}    & \makecell{0.005 \\ (0.048)}   \\ \hline
+\multicolumn{1}{|l|}{url.shr}                  & \makecell{0.015 \\ (0.090)}  & \makecell{0.010 \\ (0.072)} &              &              &              &              &              & \makecell{0.015 \\ (0.079)}    & \makecell{0.005 \\ (0.048)}   \\ \hline
 \end{tabular}
 \caption{Average features and their standard deviation extracted for negative training samples (those labelled as not matches).}
 \label{tab:features-viz-average-std-negative}
@@ -2040,13 +2045,13 @@ The first thing one can notice from the table below is that all catalogs have se
 
 
 
-\begin{figure}[]
+\begin{figure}[h]
   \centering \includegraphics[width=.8\textwidth]{feature_heatmap_classification_and_training} 
   \caption{Average values of the features obtained for each concrete entity. Separated by classification and training datasets.}
   \label{fig:average-features-classification-training}
 \end{figure}
 
-\begin{figure}[]
+\begin{figure}[h]
   \centering \includegraphics[width=.8\textwidth]{feature_heatmap_training_positive_and_negative} 
   \caption{Average values of the features obtained for each concrete entity. Separated by positive (matches) and negative (non-matches) labelled points in the training data.}
   \label{fig:average-features-positive-negative}
@@ -2056,13 +2061,13 @@ The first thing one can notice from the table below is that all catalogs have se
 
 \todo[inline]{\textit{name exact} causes oter features to look a bit squashed. Consider representing it in some other way}
 
-\begin{figure}[]
+\begin{figure}[h]
   \centering \includegraphics[width=\textwidth]{classification_feature_distribution} 
   \caption{Feature distribution for the classification set.}
   \label{fig:distribution-of-classification-features}
 \end{figure}
 
-\begin{figure}[]
+\begin{figure}[h]
   \centering \includegraphics[width=\textwidth]{classification_feature_distribution_2} 
   \caption{Feature distribution for the classification set.}
   \label{fig:distribution-of-classification-features}
@@ -2071,25 +2076,23 @@ The first thing one can notice from the table below is that all catalogs have se
 
 
 
-\begin{figure}[]
+\begin{figure}[h]
       \centering
       \includegraphics[width=\linewidth]{training_feature_distribution}
       \caption{Feature distribution for the training set (1).}
       \label{fig:distribution-of-training-features-1}
 \end{figure}
 
-\begin{figure}[]
+\begin{figure}[h]
       \centering
       \includegraphics[width=\linewidth]{training_feature_distribution_2}
       \caption{Feature distribution for the training set (2).}
       \label{fig:distribution-of-training-features-2}
 \end{figure}
 
-> note, separate trainingin positive and negative
 
-TABLE
 
-PCA of features
+PCA of features?
 % https://mlens.readthedocs.io/en/0.1.x/getting_started/
 
 % https://www.cs.cmu.edu/~elaw/papers/pca.pdf
@@ -2105,6 +2108,7 @@ classifiers to keep it simple. Maybe one example.
 
 This section might be removed, since correlation between features themselves is not very interesting. Would be better to do correlatino of features with predicted values, but I don't know if we have time for that. 
 
+
 \subsection{Difference between training and real world data}
 \label{sec:training-real-data-difference}
 
@@ -2114,6 +2118,8 @@ with the visualization done in \pageref{sec:feature-viz} which is about
 
 
 A potential problem with classification data coming from Wikidata is that the classification data is usually worst quality data than the training one. Elements in the training data, are probably more \textit{important} since somebody took the time to link them to the external catalog, and it can be reasonably believed that the other statements of these items have been filled as well. This makes the 
+
+
 
 
 Consider an horizontal bar plot, showing the average values for features in classifications and in training.
