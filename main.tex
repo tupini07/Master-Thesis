@@ -244,17 +244,17 @@ flexible and allows for a quick and rich construction of knowledge.
 \chapter{State of the art}
 \label{chap:state-of-the-art}
 
-This chapter will mainly cover \textit{Record Linkage}, which is a common approach used when there is need to join different datasets. The next section will give a brief introduction to the record linkage framework, and mention some of the most common terms used in this document. \autoref{sec:rl-as-a-workflow} will show how record linkage can be thought of as a workflow or pipeline, and every step will be explained in depth. Finally, \autoref{sec:rl-related-work} will mention related work.
+This chapter will mainly cover \textit{record linkage}, namely a standard method to link a pair of databases. The next section will give a brief introduction to the record linkage workflow and mention some of the most common terms used in this document. \autoref{sec:rl-as-a-workflow} will show how record linkage can be thought of as a pipeline, and every step will be explained in depth. Finally, \autoref{sec:rl-related-work} will mention related work.
 
 \section{Introduction to record linkage}
 \label{sec:rl-intro}
 
-\textit{Record linkage} is the a technique commonly used when there is need to merge different sources of data. This merging is done by finding all entries (also called \textit{entities}) in the data which are the same and represent the same underlying concept and joining them according to some previously defined criteria. It is possible to apply the technique to both joining different sources (which are also called \textit{catalogs}) as well as removing duplicates from one single catalog.
+\textit{Record linkage} is commonly used when there is a need for data integration. This is achieved by finding pairs of records which represent the same underlying \textit{entity}, and by joining them according to previously defined set of criteria. It is possible to apply the technique both for connecting a pair of databases (which we call \textit{catalogs} in our use case) and for removing duplicates from one single catalog.
 
   
 
-For a more formal description of the problem, suppose there are two datasets ($\Psi$ and $\Omega$). The goal of record linkage is to find all those pairs $(x, y)$ where $x \in \Psi$ and $y \in \Omega$, such that both $x$ and $y$ refer to the same underlying entity. So the algorithm must compare the entities from $\Psi$ and $\Omega$, and decide which of them are a match ( or refer to the same underlying entity) and which are not. 
-Record linkage can also naturally be expressed or viewed as a problem of clustering, in which the objective is to cluster all the entities representing the same \textit{latent entity} together.
+For a more formal description of the problem, suppose there are two datasets ($\Psi$ and $\Omega$). The goal of record linkage is to find all those pairs $(x, y)$ where $x \in \Psi$ and $y \in \Omega$, such that both $x$ and $y$ refer to the same underlying entity. Hence, the algorithm must compare the entities from $\Psi$ and $\Omega$, and decide which of them are a match (i.e., refer to the same underlying entity) and which are not. 
+Record linkage can also be naturally expressed or viewed as a problem of clustering, in which the objective is to cluster all the entities representing the same \textit{latent entity} together.
 
 The goal, as defined in \cite{fellegi69_theor_recor_linkag}, is to find two different sets $M$ and $U$, where $M$ is composed of all matching pairs and $U$ contains all non-matching ones:
 
@@ -266,33 +266,22 @@ The goal, as defined in \cite{fellegi69_theor_recor_linkag}, is to find two diff
 The problem of joining different catalogs is trivial when the catalogs have a
 shared, unique identifier. For example, when joining the datasets of
 customers from two banks, and each customer is associated with their government
-ID, or some other unique identifier. In this case it's just a matter of
+ID, or some other unique identifier. In this case, it is just a matter of
 matching on this attribute and merging the resulting pairs.
 
 However, it is commonly the case (and its the case for this project as well), that
-catalogs don't have a common, unique, identifying attribute so, different approaches are needed to find the matching entities. 
+catalogs do not have a common unique identifying attribute, thus requiring a less trivial approach.
 
-As shown later in this chapter
-(\autoref{sec:rl-main-approaches}) there are two main methods of performing
-record linkage, but basically they can be separated into methods which match
-directly comparing pairs of fields, and methods which measure the similarity
-between said pairs.
+As shown later in this chapter (\autoref{sec:rl-main-approaches}), there are two main methods of performing record linkage, but basically they can be separated into methods which match directly comparing pairs of fields, and methods which measure the similarity between said pairs.
 
-Besides not having a unique identifier it may also be the case that the datasets
-that need to be merged have some mistakes. This is something which is specially
-noticeable when we're working with data representing people: maybe the names
-were misspelled, or the first and last names are reversed, or maybe the format
-of the date is not standardised or the dates presented are simply not possible,
-since they're to forward in the future or too far in the past, among other possible
-problems. 
+Besides not having a unique identifier, it may also be the case that the datasets that need to be merged have some mistakes. This is something which is especially noticeable when we are working with data representing people: maybe the names were misspelled, or the first and last names are reversed, or maybe the format of the date is not standardised, or the dates presented are simply not possible, since they are too forward in the future or too far in the past, among other possible problems. 
 
-Many of these can be somewhat reduced by preprocessing the dataset but
-other may not and we need to account for them when working with the data.
+Many of these can be somewhat reduced by preprocessing the dataset, but
+others may not, and it is necessary to account for them when working with the data.
 
 
-To give an example of a situation in which \textit{record linkage} would be used
-suppose there are two databases of clients which need to be joined for some company. Below is a
-representation of said databases.
+To give an example of a situation in which \textit{record linkage} would be used,
+suppose there are two databases of clients which need to be joined for some company. Below is a representation of said databases.
 
 \begin{table}[H]
   \centering{}
@@ -323,54 +312,54 @@ In this example it is possible to see that both catalogs have a unique, shared k
 \textit{Government ID} column). So for linking the records its easy to just go ahead
 and use that to find the matches.
 
-But if the catalogs didn't have a common unique identifier (or if the
-data is known to be not 100\% trustworthy) then its necessary to check the other attributes. In
+However, if the catalogs did not have a common unique identifier (or if the
+data is known not to be 100\% trustworthy) then its necessary to check other attributes. In
 this specific example the data is quite good, although there is an entry where
 the first and last name are reversed (\textit{Chi Yu} and \textit{Yu Chi}). This
-situation is quite common in real world datasets.
+situation is quite common in real-world datasets.
 
 \subsection{Terminology}
 \label{sec:rl-terminology}
 
-In this section will review the terminology which is extensively used in this work while on the subject of record linkage.
+In this section, we will review the terminology which is extensively used in this work with respect to record linkage.
 
 \subsubsection{Entity}
 \label{sec:rl-term-entity}
 
-An entity refers to a single data point in a dataset (cataog). \textit{Entities} are what is matched when performing record linkage. A entity is composed of some identifier, and a collection of fields (either quantitative or qualitative) which are specific to each problem. 
+An entity refers to a single data point in a dataset (catalog). \textit{Entities} are what is matched when performing record linkage. An entity is composed of one identifier, and a collection of fields (either quantitative or qualitative) which are specific to each problem. 
   
-For example if working with people then the entities will most likely have fields representing personal information \textit{(name, birth date, death date, etc)}. If, on the other hand there is a problem where its necessary to perform record linkage on houses, then it would probably have fields like \texttt{total area, number of floors, number of rooms, etc}.
+In the people use case, the entities will most likely have fields representing personal information \textit{(name, birth date, death date, etc.)}. If, on the other hand there is a problem where its necessary to perform record linkage on houses, then it would probably have fields like \texttt{total area, number of floors, number of rooms, etc}.
 
 
 \subsubsection{Catalog}
 \label{sec:rl-term-catalog}
 
-A catalog is a collection of entities and its the source of the data, it is similar to the different datasets, and these terms are sometimes used interchangeably (each dataset is a catalog). \textit{Entities} are found inside catalogs. 
+A catalog is a collection of entities and its the source of the data. The terms \textit{catalog} is a synonym with \textit{dataset}, and in this work they will be used interchangeably. \textit{Entities} are found inside catalogs. 
 Any source of data can be a catalog: books, databases, spreadsheets, etc.
 
 \hfill 
 
 As stated before, entities are always assigned an identifier. This said identifier is always unique, and specific to a distinct catalog (rarely this identifier is shared among different catalogs). 
 
-When performing record linkage it is desirable to end up with a list of tuples of identifiers, where each tuple represents a single real world entity, and the identifiers inside said tuple tells us which record in the corresponding dataset has information on the specific entity.
+When performing record linkage, it is desirable to end up with a list of identifiers pairs, where each pair describes a single real-world entity, and its identifiers tells us which record in the corresponding dataset has information on the specific entity.
 
 
 \subsubsection{Source and Target}
 \label{sec:rl-term-source-and-target}
 
-The concepts of \textit{source and target} are not always used in record linkage
-since most of the time it is commonly used to group entities in a series of catalogs.
+\textit{source} and \textit{target} are not always used in the record linkage literature,
+since most of the time it is common to group entities in a series of catalogs.
 However, as is the case of this work, sometimes there is a \textit{source
   catalog} which is one that needs to be matched against other \textit{target} catalogs.
 
 
-This is specially useful when there is no need to match all the catalogs amongst
+This is especially useful when there is no need to match all the catalogs amongst
 themselves, since matching a \textit{source catalog} against multiple target ones
 requires a much more diminished number of comparisons than it would do if matching all catalogs among themselves.
 
 When using a \textit{source catalog}, the record linkage algorithm is no longer matching
 source entities into a unique latent (underlying) entity, rather, it will match
-them against a concrete entity (ie, an entity from the source catalog).
+them against a concrete entity (e.g. an entity from the source catalog).
 
 In related record linkage studies, these terms are also commonly referred to as \cite{Sayers2015}
 \textit{master file} (instead of source), and \textit{file of interest} (instead
@@ -381,7 +370,7 @@ of target) .
 \subsection{Main Approaches}
 \label{sec:rl-main-approaches}
 
-There are two main approaches\footnote{Besides these two approaches, in the record linkage literature we commonly find the term \textit{clerical}, which in basic terms means a record linkage which is done \textit{manually}, by a clerk.} to consider when talking about record linkage, these are known as: 1)deterministic; and 2) probabilistic. 
+There are two main approaches\footnote{Besides these two approaches, in the record linkage literature we commonly find the term \textit{clerical}, which entails \textit{manual} work, i.e., by a clerk.} to consider when talking about record linkage, namely 1)\textit{deterministic}, and 2) \textit{probabilistic}. 
 
 The main difference between these is the way in which the pairs of entities are compared. A more thorough description of each method follows.
 
@@ -389,14 +378,14 @@ The main difference between these is the way in which the pairs of entities are 
 \subsubsection{Deterministic}
 \label{sec:rl-approach-deterministic}
 
-When performing deterministic record linkage the most common basic assumption is that
-all catalogs posses a shared field which can be used to identify an entity (ie, the
-\textit{name} of a person). At the end of this procedure it is possible to be absolutely certain of
+Deterministic record linkage assumes that
+all catalogs hold a shared field which can be used to identify an entity (e.g., the
+\textit{name} of a person). At the end of this procedure, it is possible to be absolutely certain of
 which records from the catalogs are a match and which aren't (hence the term
 \textit{deterministic}).
 
-Take for example, the task of joining a catalog which provides information regarding where someone
-lives with another catalog that providing information relative to said persons age. Both catalogs only contain the
+Take for instance the task of joining a catalog which provides information regarding where someone
+lives with another catalog that provides their age. Both catalogs only contain the
 name of the person as an identifying feature, so we can use a composition of
 these two fields (attributes) to identify each entity.
 
@@ -423,7 +412,7 @@ these two fields (attributes) to identify each entity.
   \label{tab:ex-deterministic-2}
 \end{table}
 
-After matching these results there is a clear match for \textit{Sarah Miller}, but no available match for \textit{John Piers} and \textit{Johnny Piers}, since the
+After matching these results, there is a clear match for \textit{Sarah Miller}, but no available match for \textit{John Piers} and \textit{Johnny Piers}, since the
 names are different and there is no way to be sure if \textit{Johnny} is just a nickname (making them the same person)
 or if these two entities are actually different people.
 
@@ -437,25 +426,24 @@ uniform as possible, but even so, it is never easy to know if there might be mat
 \subsubsection{Probabilistic}
 \label{sec:rl-approach-probabilistic}
 
-In simple terms, probabilistic record linkage \cite{Sayers2015} means having a pair of entities, comparing said entities’s subset fields and
-then deciding, with some certainty, if the pair is a match or not.
+In simple terms, probabilistic record linkage \cite{Sayers2015} compares a shared subset of fields of a given entity pair,
+then decides, whether the pair is a match or not, with a certainty value.
 
-By default the comparison is done by contrasting all entities in the source
-catalog with all entities in the target catalog (unless  opting to first
-perform a blocking as explained in \autoref{sec:rl-workflow-blocking}).
+By default, the task is achieved by comparing all entities in the source
+catalog with all entities in the target catalog (unless we opt for \textit{blocking}, as explained in \autoref{sec:rl-workflow-blocking}).
 
-In its most basic form, two entities are taken and compared in all their fields, if any pair of fields are the same then it should be said that this specific pair matches. If all
+In its most basic form, two entities are taken and compared in all their fields; if any pair of fields are the same, then it should be said that this specific pair matches. If all
 fields are the same then it may be proclaimed a complete match, otherwise it is only seen as a partial match.
 
-Instead checking whether the fields match exactly or not, it is quite common to choose to measure how similar the two fields are. This similarity can be measured
-in any number of ways. For example, \textit{edit distance} for strings, which is basically the number of changes needed to transform one of the strings into the other in order to make them equal (either by adding, removing or updating characters). It is
+Instead of checking whether the fields exactly match or not, it is quite common to choose to measure how similar the two fields are. This similarity can be measured
+in a large number of ways. For example, \textit{edit distance} for strings, which is basically the number of changes needed to transform one of the strings into the other in order to make them equal (either by adding, removing or updating characters). It is
 important to respect what the results of these comparisons mean. 
 
 As a standard, if a comparison yields a $0$ then it means the two fields are completely
 different, and if it yields a $1$ they're the same, any value in between
 specifies how similar or how diverse the fields are.
 
-Following the example catalogs defined in the previous section now it is possible to compare the \textit{First Name} and \textit{Last Name} fields separately.
+Following the example catalogs defined in the previous section, now it is possible to compare the \textit{First Name} and \textit{Last Name} fields separately.
 Suppose they are compared with a function $fc$ that provides the percentage of
 letters both fields have in common.
 
@@ -466,13 +454,13 @@ $$
 
 
 It might be that both last names are exactly the same, as is with the first name for
-\textit{Sarah}. However with the first name for \textit{John} it would show a similarity of only $0.8$ with \textit{Johnny}. Taking both the similarity given
+\textit{Sarah}. However, with the first name for \textit{John} it would show a similarity of only $0.8$ with \textit{Johnny}. Taking both the similarity given
 for the first and last names then it is possible to make a better informed final decision on
 whether both records should be marked as a definite match or not. 
 For instance, it may be said that if the average similarity assigned to all fields is greater than $0.5$ then it may be stated that a pair is a match. Under this assumptions \textit{John Piers} and
 \textit{Johnny Piers} will be classified as the same person.
 
-The probabilistic record linkage approach is the one which will be implemented on this project.
+The probabilistic record linkage approach is the one which will be implemented in this project.
 
 
 
@@ -489,22 +477,22 @@ An abstraction which is commonly used when performing record linkage is that of 
   \label{fig:rl-workflow}
 \end{figure}
 
-This process is separated into five steps and it may be applied to $n$ input catalogs, the most important part is for them all of be submited to pass through the \textit{Data Preprocessing} step so they're as uniform and clean as possible. In the following sections a more in depth description of each step will be provided.
+This process is separated into five steps and it may be applied to $n$ input catalogs, the most important part is for them to be submitted to the \textit{Data Preprocessing} step so they're as uniform and clean as possible. In the following sections a more in-depth description of each step will be provided.
 
 \subsection{Data Preprocessing}
 \label{sec:rl-workflow-data-preprocessing}
 
-This is the first and most significant step in which the data is preprocessed. During this step the catalog will be taken in and its data will be rearranged and \textit{cleaned up}. The actual meaning of this depends on the kind of data that the specific catalog
+This is the first and most significant step in which the data is preprocessed. During this step, the catalog will be taken in and its data will be rearranged and \textit{cleaned up}. The actual meaning of this depends on the kind of data that the specific catalog
 contains and it is mostly up to the designer of the system to decide in which way the presented data
 should be preprocessed \cite{Rahm00datacleaning}. 
 However, some of the most common cleaning procedures which are almost always done are:
 
 \begin{enumerate}
-\item Ensure that the case of the text is appropriate. (make sure all text is lowercase, or ensure that only the first letter is capitalized)
+\item Normalize the case of the text (e.g., make sure all text is lowercase).
 \item Remove invalid characters for the current encoding.
-\item Standardize all characters. (ie, transform accented characters into their
-  \textit{non-accented} equivalent)
-\item Make sure all dates respect a given date format such as \textit{DD/MM/YYYY}.
+\item Standardize all characters (e.g. transform accented characters into their
+  \textit{non-accented} equivalent).
+\item Ensure all dates comply with a given format, such as \textit{DD/MM/YYYY}.
 \item Remove empty values or fill them with a default value.
 \item Standardize the \textit{gender} representation. (ie, either \textit{m} or
   \textit{male})
@@ -512,7 +500,7 @@ However, some of the most common cleaning procedures which are almost always don
 \end{enumerate}
 
 The goal of this step is for the catalogs and their data to become as similar as possible amongst
-themselves so that there will be no need to deal with the potential differences between them once the matching process has begun.
+themselves, so that there will be no need to deal with the potential differences between them once the matching process has begun.
   
 It has also been shown \cite{@clark2004_rl_for_injury} that a well made data
 preprocessing step is necessary for the record linkage algorithm to have positive
@@ -537,7 +525,7 @@ catalog or not, so in this specific example the
   \label{tab:data-prepr-ex-dirty}
 \end{table}
 
-Before proceeding it is necessary to define what is  actually considered as a clean catalog for this
+Before proceeding, it is necessary to define what is actually considered as a clean catalog for this
 specific example. Suppose that the following format is required:
 
 \begin{enumerate}
@@ -597,8 +585,8 @@ catalogs, while the number of true matches increases linearly
 Blocking (also known as \textit{indexing}) is defined as comparing a specific entity only against entities which might be a match. When matching said entity against a dataset, its possible to use a simple rule to define a subset of all entities
 composed only of those which the rule suggests are possible matches. 
 
-This new set of entities made to be matched against is not guaranteed to contain any match, nor is
-it guaranteed that non of the sets in an entity which is an actual match were left out, but it entails a much smaller number of comparisons. 
+This new set of entities made to be matched against is not guaranteed to contain any match, nor it
+is guaranteed that none of the sets in an entity which is an actual match were left out, but it entails a much smaller number of comparisons. 
 If a good blocking rule is chosen then the record linkage process becomes much more efficient.
 
 Suppose there are two catalogs, $\Psi$ and $\Omega$, and one specific entity is being considered $x \in
@@ -611,7 +599,7 @@ $$
 blocked = {y; r(x,y) = 1; y \in \Omega;}
 $$
 
-There are many possible blocking rules can be used
+There are many possible blocking rules that can be used
 \cite{christen12_survey_index_techn_scalab_recor_linkag_dedup}, ranging from the
 very simple \textit{exact string match}, to the more complex phonetical q-gram
 comparison of text. When choosing one, its important to keep in mind that the more
@@ -627,7 +615,7 @@ The decision regarding the \textit{rule} used for blocking is part of the record
 linkage problem, and it needs to be simple enough so that there is an actual gain in performance, but good enough so that the resulting set of potential
 matches actually includes real matches. 
 
-Its also practical to freely to use multiple blocking
+Its also practical to freely use multiple blocking
 rules to get multiple sets of possible matches and then use the union of these
 to do the final comparisons.
 
@@ -661,7 +649,7 @@ which leaves out potential matches.
 
 In other words, when choosing a blocking
 rule its preferable to choose one with higher \textit{recall} and lower \textit{precision}
-(obviously, the choice of this trade off needs to be done on an individual per problem
+(obviously, the choice of this trade-off needs to be done on an individual per problem
 basis).
 
 As an example suppose the following two catalogs are available. They both contain the
@@ -692,7 +680,7 @@ contains the \textit{academic title} of each person.
   \label{tab:blocking-ex-target}
 \end{table}
 
-Suppose the goal is to perform blocking on the \textit{Zip Code} field, and to achieve that an
+Suppose the goal is to perform blocking on the \textit{Zip Code} field, and to achieve that, an
 \textit{exact match} strategy is used. Its possible to see that in total there are only two zip
 codes (\textit{27321} and \textit{34918}), so after blocking there will end up being two sets. The first one (for zip code \textit{27321}) will contain the pair
 $[(A1, B1)]$, both of which could arguably be the same person. In the second set the remaining pairs $[(A2, B2), (A2, B3)]$ can be found.
@@ -725,16 +713,16 @@ candidates for a match.
 
 As mentioned before, each entity is composed of a series of fields. 
 However, rather than
-taking the two entities directly and comparing their raw fields, an intermediary representation of a pair of entities is derived, which is also
-composed of fields, which are in this case will be known as the \textit{feature vectors}. Each of
-these fields (entries in the feature vector) is derived by applying a function
+taking the two entities directly and comparing their raw fields, an intermediary representation of a pair of entities is derived, said representation is also
+composed of fields and will be known as the \textit{feature vectors}. Each of
+these fields (entries in the feature vector) is obtained by applying a function
 to a couple of fields taken from a pair of entities.
 
 $$
 feature_i = f(entity_y.field_i , entity_z.field_q)
 $$
 
-The function $f$ is a \textit{comparing function}, which shows the
+The function $f$ is a \textit{comparison function}, which shows the
 similarity, or distance, between two fields of the same kind (for example, the
 name field of both entities). As such, the decision of which functions to select is
 part of the record linkage problem, and the designer is free to use as many as needed (ie, if desired the designer could compare two textual fields from a pair of entities
@@ -747,9 +735,9 @@ the latter are referred to as \textbf{exact match} functions.
 When one of the fields being compared has no value then the function treats the
 pair as if it was not a match and returns a similarity of zero.
 
-For example, one such comparison function can be the \textit{Levenshtein distance} \cite{levenshtein1966binary}, which provides the difference between two lists, for this specific case it will be used to see how similar two strings truly are (this distance will be explained more in depth in \autoref{sec:feature-levenshtein-on-name-tokens}). 
+For example, one such comparison function can be the \textit{Levenshtein distance} \cite{levenshtein1966binary}, which provides the difference between two strings, for this specific case it will be used to see how similar two strings truly are (this distance will be explained more in depth in \autoref{sec:feature-levenshtein-on-name-tokens}). 
 
-Actually the \texttt{Levenshtein} function will show a distance which increases the more two strings are dissimilar, which is not the desired behaviour. What is needed is for the result to be $0$ when the strings are dissimilar, and $1$ when they're the same. So the distance function will neet to be adapted to be the $1 -$ [this value divided by the length of the longest string\footnote{which is also, incidentally, the maximum value the \texttt{Levenshtein} function can return}]. Basically, the new function is just the complement of the percentage of the maximum value that can be returned by \texttt{Levenshtein(a, b)}.
+Actually the \texttt{Levenshtein} function will show a distance which increases the more two strings are dissimilar, which is not the desired behaviour. What is needed is for the result to be $0$ when the strings are dissimilar, and $1$ when they're the same. So the distance function will need to be adapted to be the $1 -$ [this value divided by the length of the longest string\footnote{which is also, incidentally, the maximum value the \texttt{Levenshtein} function can return}]. Basically, the new function is just the complement of the percentage of the maximum value that can be returned by \texttt{Levenshtein(a, b)}.
 
 $$
 lev(a,b) = 1 - \frac{Levenshtein(a, b)}{max(|a|, |b|)}
@@ -791,7 +779,7 @@ of the pair of entities, and it has all the information needed for the next step
 In the \textit{linking} (also called \textit{classification}) step, the list of features extracted in the previous part is consequently fed to a decision model which takes the features and then decides whether the said pair is a match or not.
 
 There are many decision models to choose from and that might be considered to be utilized. \cite{gu06_decis_model_recor_linkag}.
-The go to model for record linkage is the basic probabilistic model defined in
+The \textit{go to} model for record linkage is the basic probabilistic model defined in
 \cite{fellegi69_theor_recor_linkag}. Other possible models \cite{Elfeky} include
 using the \textit{k-means} \cite{Hartigan1979} clustering algorithm to cluster
 the feature vectors into \textit{matched}, \textit{unmatched} and
@@ -814,7 +802,7 @@ for which the certainty of the model falls in the interval $[0, 0.4]$ are
 
 To follow with the previous example, consider as input to the linking step
 the feature vectors in \autoref{tab:ex-feature-levens}. And suppose that as a
-decision model a simple rule based model is being used:
+decision model a simple rule-based model is being used:
 
 \begin{equation*}
   decision\_model(f_i) =
@@ -1971,6 +1959,7 @@ PCA of features
 Maybe also show correlation between features and output? Use predictions of base
 classifiers to keep it simple. Maybe one example.
 
+This section might be removed, since correlation between features themselves is not very interesting. Would be better to do correlatino of features with predicted values, but I don't know if we have time for that. 
 
 \subsection{Difference between training and real world data}
 \label{sec:training-real-data-difference}
@@ -2124,8 +2113,18 @@ A specialization of \textit{bagging}, it uses a meta layer
 \chapter{Results}
 \label{chap:results}
 
+The evaluation results for both the baseline and ensemble classifiers presented in this section have been obtained by performing a 5-fold cross validation \cite{Kohavi:1995_study_of_cross_validation} procedure on the training data. 
+
+The evaluation results for all models for each specific concrete entity can be found in \autoref{sec:apx-ensemble-eval-results}.
+
+\section{Cross Validation}
+\label{sec:cross-validation}
+
+% maybe own section for explaining what cross validation is
+
 \section{Baseline Evaluation}
 \label{sec:baseline-evaluation}
+
 
 \begin{table}[H]
 \centering
@@ -2143,76 +2142,6 @@ naive\_bayes                      & 0.915145   & 0.003473       & 0.886305     &
 \end{table}
 
 
-In the table below are presented the individual results for the baseline algorithms, for each catalog and entity. Note that the names of the algorithms have been shortened to make the table fit nicely in the page. The abbreviations are as follow:
-
-\begin{itemize}
-    \item Linear Support Vector Machine: lsvm
-    \item Logistic Regression: lr
-    \item Multi layer perceptron: mlp
-    \item Naive Bayes: nb
-    \item Random Forest: rf
-    \item Single layer perceptron: s;p
-\end{itemize}
-
-
-\begin{longtable}{|l|l|l|l|l|l|l|l|l|}
-\hline
-Catalog     & Entity   & Model                & F1.Mean  & F1.STD   & Prec.Mean & Prec.STD & Rec.Mean & Rec.STD \\ \hline
-discogs     & band     & lsvm                 & 0.925262 & 0.001267 & 0.896373  & 0.002110 & 0.956090    & 0.003388   \\
-discogs     & musician & lsvm                 & 0.936944 & 0.001224 & 0.905424  & 0.002080 & 0.970741    & 0.000880   \\
-imdb        & writer   & lsvm                 & 0.928606 & 0.001983 & 0.919005  & 0.002274 & 0.938421    & 0.003574   \\
-imdb        & actor    & lsvm                 & 0.894011 & 0.000789 & 0.875260  & 0.002088 & 0.913592    & 0.001998   \\
-imdb        & director & lsvm                 & 0.912727 & 0.001597 & 0.880551  & 0.005850 & 0.947397    & 0.003670   \\
-imdb        & producer & lsvm                 & 0.905975 & 0.003885 & 0.894173  & 0.006799 & 0.918114    & 0.001219   \\
-imdb        & musician & lsvm                 & 0.917906 & 0.001399 & 0.909440  & 0.002345 & 0.926534    & 0.001067   \\
-musicbrainz & band     & lsvm                 & 0.913877 & 0.001689 & 0.961199  & 0.003976 & 0.871046    & 0.006050   \\
-musicbrainz & musician & lsvm                 & 0.954410 & 0.001406 & 0.942882  & 0.002112 & 0.966225    & 0.001090   \\ \hline
-discogs     & musician & lr & 0.938138 & 0.001693 & 0.917022  & 0.002191 & 0.960250    & 0.001370   \\
-discogs     & band     & lr & 0.924791 & 0.001550 & 0.908952  & 0.001476 & 0.941198    & 0.003025   \\
-imdb        & director & lr & 0.913846 & 0.000694 & 0.892154  & 0.004468 & 0.936658    & 0.003834   \\
-imdb        & producer & lr & 0.906045 & 0.002643 & 0.898064  & 0.005640 & 0.914192    & 0.000826   \\
-imdb        & actor    & lr & 0.893573 & 0.000579 & 0.878388  & 0.001838 & 0.909299    & 0.001406   \\
-imdb        & musician & lr & 0.917958 & 0.001717 & 0.908442  & 0.002911 & 0.927680    & 0.001280   \\
-imdb        & writer   & lr & 0.928108 & 0.002082 & 0.924621  & 0.001792 & 0.931635    & 0.004264   \\
-musicbrainz & band     & lr & 0.918022 & 0.002327 & 0.937643  & 0.002251 & 0.899217    & 0.003973   \\
-musicbrainz & musician & lr & 0.953083 & 0.001301 & 0.943755  & 0.002042 & 0.962600    & 0.001165   \\ \hline
-discogs     & band     & mlp                  & 0.928931 & 0.001310 & 0.915249  & 0.001875 & 0.943032    & 0.001727   \\
-discogs     & musician & mlp                  & 0.940715 & 0.001443 & 0.921507  & 0.001770 & 0.960754    & 0.003867   \\
-imdb        & director & mlp                  & 0.919340 & 0.000980 & 0.899994  & 0.002724 & 0.939548    & 0.002002   \\
-imdb        & actor    & mlp                  & 0.896922 & 0.000400 & 0.880657  & 0.003412 & 0.913832    & 0.004129   \\
-imdb        & producer & mlp                  & 0.909398 & 0.002913 & 0.894253  & 0.007249 & 0.925119    & 0.003188   \\
-imdb        & musician & mlp                  & 0.925888 & 0.001165 & 0.942860  & 0.001545 & 0.909520    & 0.001863   \\
-imdb        & writer   & mlp                  & 0.930302 & 0.002571 & 0.924571  & 0.003714 & 0.936149    & 0.006365   \\
-musicbrainz & band     & mlp                  & 0.921134 & 0.002588 & 0.926546  & 0.004402 & 0.915818    & 0.004989   \\
-musicbrainz & musician & mlp                  & 0.957375 & 0.001629 & 0.944146  & 0.004491 & 0.971004    & 0.002647   \\ \hline
-discogs     & musician & nb         & 0.931622 & 0.001314 & 0.903489  & 0.002155 & 0.961565    & 0.000812   \\
-discogs     & band     & nb         & 0.922386 & 0.001457 & 0.891462  & 0.001633 & 0.955542    & 0.003274   \\
-imdb        & musician & nb         & 0.904327 & 0.013959 & 0.868388  & 0.055110 & 0.948158    & 0.033475   \\
-imdb        & producer & nb         & 0.898657 & 0.004254 & 0.842785  & 0.008230 & 0.962525    & 0.001450   \\
-imdb        & director & nb         & 0.907755 & 0.002541 & 0.855312  & 0.005063 & 0.967075    & 0.001997   \\
-imdb        & writer   & nb         & 0.922121 & 0.002580 & 0.882778  & 0.004051 & 0.965145    & 0.002172   \\
-imdb        & actor    & nb         & 0.889563 & 0.001311 & 0.825956  & 0.002002 & 0.963789    & 0.001153   \\
-musicbrainz & musician & nb         & 0.952783 & 0.001847 & 0.953561  & 0.002394 & 0.952008    & 0.001847   \\
-musicbrainz & band     & nb         & 0.907094 & 0.001994 & 0.953012  & 0.001335 & 0.865401    & 0.002974   \\ \hline
-discogs     & band     & rf       & 0.921673 & 0.001084 & 0.909216  & 0.002648 & 0.934490    & 0.002988   \\
-discogs     & musician & rf       & 0.933460 & 0.002427 & 0.917496  & 0.003021 & 0.949992    & 0.002296   \\
-imdb        & musician & rf       & 0.922135 & 0.000594 & 0.932216  & 0.000733 & 0.912272    & 0.001018   \\
-imdb        & producer & rf       & 0.906239 & 0.004720 & 0.895270  & 0.008984 & 0.917553    & 0.005214   \\
-imdb        & director & rf       & 0.916903 & 0.000940 & 0.892806  & 0.003096 & 0.942355    & 0.002601   \\
-imdb        & writer   & rf       & 0.929301 & 0.002919 & 0.922216  & 0.004160 & 0.936508    & 0.003393   \\
-imdb        & actor    & rf       & 0.899161 & 0.000836 & 0.879621  & 0.001427 & 0.919592    & 0.001620   \\
-musicbrainz & band     & rf       & 0.918844 & 0.002231 & 0.938321  & 0.005419 & 0.900192    & 0.003714   \\
-musicbrainz & musician & rf       & 0.953673 & 0.001146 & 0.943972  & 0.001591 & 0.963577    & 0.001052   \\ \hline
-discogs     & band     & slp                  & 0.925647 & 0.001462 & 0.908264  & 0.001465 & 0.943716    & 0.003188   \\
-discogs     & musician & slp                  & 0.938168 & 0.001664 & 0.917755  & 0.002291 & 0.959510    & 0.001258   \\
-imdb        & actor    & slp                  & 0.893205 & 0.000591 & 0.881499  & 0.001829 & 0.905232    & 0.001676   \\
-imdb        & musician & slp                  & 0.917503 & 0.001383 & 0.909845  & 0.002659 & 0.925296    & 0.000865   \\
-imdb        & director & slp                  & 0.914070 & 0.000545 & 0.895414  & 0.003822 & 0.933551    & 0.003516   \\
-imdb        & producer & slp                  & 0.905526 & 0.002380 & 0.903146  & 0.006456 & 0.907958    & 0.001993   \\
-imdb        & writer   & slp                  & 0.927724 & 0.001915 & 0.924983  & 0.002891 & 0.930499    & 0.003970   \\
-musicbrainz & musician & slp                  & 0.953054 & 0.001383 & 0.943662  & 0.002094 & 0.962638    & 0.001341   \\
-musicbrainz & band     & slp                  & 0.915977 & 0.002302 & 0.946439  & 0.002538 & 0.887441    & 0.005184  \\ \hline
-\end{longtable}
 
 
 
@@ -2232,48 +2161,7 @@ stacked\_classifier      & 0.923439   & 0.003534       & 0.923585     & 0.008592
 \label{tab:metrics-summary-for-ensembles}
 \end{table}
 
-metnion abbreviations here
 
-\begin{longtable}{|l|l|l|l|l|l|l|l|l|}
-\hline
-Catalog     & Entity   & Model                    & F1.Mean  & F1.STD   & Prec.Mean & Prec.STD & Recall.Mean & Recall.STD \\ \hline
-discogs     & musician & gated\_classifier        & 0.936638 & 0.002652 & 0.922472  & 0.004920 & 0.951308    & 0.006874   \\
-discogs     & band     & gated\_classifier        & 0.927455 & 0.001522 & 0.912845  & 0.002324 & 0.942566    & 0.004981   \\
-imdb        & director & gated\_classifier        & 0.918505 & 0.001411 & 0.900678  & 0.002997 & 0.937067    & 0.003067   \\
-imdb        & musician & gated\_classifier        & 0.924625 & 0.002018 & 0.943199  & 0.010644 & 0.906929    & 0.007107   \\
-imdb        & producer & gated\_classifier        & 0.910555 & 0.003934 & 0.902453  & 0.007668 & 0.918955    & 0.010547   \\
-imdb        & writer   & gated\_classifier        & 0.931719 & 0.002789 & 0.928561  & 0.007822 & 0.934984    & 0.005804   \\
-imdb        & actor    & gated\_classifier        & 0.897257 & 0.002191 & 0.895105  & 0.003315 & 0.899486    & 0.007650   \\
-musicbrainz & band     & gated\_classifier        & 0.918238 & 0.003816 & 0.948221  & 0.012288 & 0.890520    & 0.016863   \\
-musicbrainz & musician & gated\_classifier        & 0.955526 & 0.001926 & 0.951364  & 0.006050 & 0.959821    & 0.007915   \\ \hline
-discogs     & band     & stacked\_classifier      & 0.927771 & 0.001080 & 0.911809  & 0.006866 & 0.944456    & 0.009776   \\
-discogs     & musician & stacked\_classifier      & 0.938836 & 0.002473 & 0.917001  & 0.002568 & 0.961746    & 0.003667   \\
-imdb        & musician & stacked\_classifier      & 0.924930 & 0.001915 & 0.947724  & 0.003561 & 0.903238    & 0.004935   \\
-imdb        & actor    & stacked\_classifier      & 0.890012 & 0.007978 & 0.907933  & 0.016179 & 0.873941    & 0.029767   \\
-imdb        & producer & stacked\_classifier      & 0.904998 & 0.008882 & 0.899323  & 0.020682 & 0.912508    & 0.035943   \\
-imdb        & writer   & stacked\_classifier      & 0.931043 & 0.003075 & 0.929588  & 0.007946 & 0.932652    & 0.009692   \\
-imdb        & director & stacked\_classifier      & 0.917923 & 0.001777 & 0.901563  & 0.004736 & 0.934969    & 0.007596   \\
-musicbrainz & musician & stacked\_classifier      & 0.955643 & 0.001373 & 0.955374  & 0.003750 & 0.955933    & 0.003327   \\
-musicbrainz & band     & stacked\_classifier      & 0.919791 & 0.003254 & 0.941948  & 0.011043 & 0.898935    & 0.013037   \\ \hline
-discogs     & band     & voting\_classifier\_hard & 0.926795 & 0.001145 & 0.905189  & 0.001827 & 0.949465    & 0.002661   \\
-discogs     & musician & voting\_classifier\_hard & 0.939658 & 0.001932 & 0.913881  & 0.002899 & 0.966938    & 0.002004   \\
-imdb        & director & voting\_classifier\_hard & 0.918177 & 0.001400 & 0.890278  & 0.004667 & 0.947915    & 0.003379   \\
-imdb        & producer & voting\_classifier\_hard & 0.907517 & 0.004611 & 0.901155  & 0.004867 & 0.914052    & 0.009619   \\
-imdb        & actor    & voting\_classifier\_hard & 0.897184 & 0.000752 & 0.882077  & 0.009962 & 0.913098    & 0.012148   \\
-imdb        & writer   & voting\_classifier\_hard & 0.931065 & 0.002249 & 0.920422  & 0.007199 & 0.942038    & 0.005549   \\
-imdb        & musician & voting\_classifier\_hard & 0.921577 & 0.002711 & 0.918733  & 0.022289 & 0.925297    & 0.017423   \\
-musicbrainz & musician & voting\_classifier\_hard & 0.956088 & 0.001293 & 0.946047  & 0.003334 & 0.966356    & 0.001537   \\
-musicbrainz & band     & voting\_classifier\_hard & 0.917456 & 0.002139 & 0.953082  & 0.007505 & 0.884490    & 0.006698   \\ \hline
-discogs     & band     & voting\_classifier\_soft & 0.927576 & 0.001300 & 0.904116  & 0.002522 & 0.952312    & 0.004592   \\
-discogs     & musician & voting\_classifier\_soft & 0.938896 & 0.001494 & 0.909274  & 0.004537 & 0.970543    & 0.003097   \\
-imdb        & actor    & voting\_classifier\_soft & 0.899699 & 0.001028 & 0.887665  & 0.005118 & 0.912139    & 0.006529   \\
-imdb        & director & voting\_classifier\_soft & 0.919262 & 0.001497 & 0.894902  & 0.008123 & 0.945108    & 0.006606   \\
-imdb        & producer & voting\_classifier\_soft & 0.909610 & 0.003182 & 0.905090  & 0.005243 & 0.914192    & 0.002709   \\
-imdb        & musician & voting\_classifier\_soft & 0.926019 & 0.001244 & 0.939099  & 0.007632 & 0.913418    & 0.007684   \\
-imdb        & writer   & voting\_classifier\_soft & 0.931617 & 0.002161 & 0.929887  & 0.004030 & 0.933369    & 0.002867   \\
-musicbrainz & musician & voting\_classifier\_soft & 0.954936 & 0.001831 & 0.955208  & 0.002438 & 0.954666    & 0.001676   \\
-musicbrainz & band     & voting\_classifier\_soft & 0.916297 & 0.002493 & 0.954029  & 0.002458 & 0.881462    & 0.005454   \\ \hline
-\end{longtable}
 
 
 Compare with the results exposed before, without ensemble (only the base models)
@@ -2360,36 +2248,325 @@ bibliografia in formato bibtex
 \bibliographystyle{plain} \bibliography{biblio}
 
 
-Nota
-
-Nella bibliografia devono essere riportati tutte le fonti consultate per lo
-svolgimento della tesi. La bibliografia deve essere redatta in ordine alfabetico
-sul cognome del primo autore.
-
-La forma della citazione bibliografica va inserita secondo la fonte utilizzata:
-
-LIBRI Cognome e iniziale del nome autore/autori, la data di edizione, titolo,
-casa editrice, eventuale numero dell’edizione.
-
-ARTICOLI DI RIVISTA Cognome e iniziale del nome autore/autori, titolo articolo,
-titolo rivista, volume, numero, numero di pagine.
-
-ARTICOLI DI CONFERENZA Cognome e iniziale del nome autore/autori (anno), titolo
-articolo, titolo conferenza, luogo della conferenza (città e paese), date della
-conferenza, numero di pagine.
-
-SITOGRAFIA La sitografia contiene un elenco di indirizzi Web consultati e
-disposti in ordine alfabetico. E’ necessario: Copiare la URL (l’indirizzo web)
-specifica della pagina consultata Se disponibile, indicare il cognome e nome
-dell’autore, il titolo ed eventuale sottotitolo del testo Se disponibile,
-inserire la data di ultima consultazione della risorsa (gg/mm/aaaa).
-
-
-    
 
 \titleformat{\chapter} {\normalfont\Huge\bfseries}{Apendix \thechapter}{1em}{}
 % sezione Allegati - opzionale
 \appendix
-\input{appendix}
+\chapter{Appendix}
+
+\section{Mapping IMDb Professions to Wikidata}
+\label{sec:imdb-profs-to-wikidata}
+
+almost everything said in https://github.com/Wikidata/soweego/issues/165
+
+\section{Evaluation results for each model and concrete entity}
+
+This section presents the evaluation results obtained by each model when applied to a specific concrete entity. The first section shows the results of the baseline classifiers, while the second shows those for the ensemble classifiers. The data used to generate this results was the Wikidata training dumps and the external catalog dumps mentioned in \autoref{sec:orig-shape-of-data}.
+
+\subsubsection{Baseline Evaluation Results}
+\label{sec:apx-baseline-eval-results}
+
+In the table below are presented the individual results for the baseline algorithms, for each catalog and entity. Note that the names of the algorithms have been shortened to make the table fit nicely in the page. The abbreviations are as follow:
+
+\begin{itemize}
+    \item Linear Support Vector Machine: lsvm
+    \item Logistic Regression: lr
+    \item Multi layer perceptron: mlp
+    \item Naive Bayes: nb
+    \item Random Forest: rf
+    \item Single layer perceptron: s;p
+\end{itemize}
+
+
+\begin{longtable}{|l|l|l|l|l|l|l|l|l|}
+\hline
+Catalog     & Entity   & Model                & F1.Mean  & F1.STD   & Prec.Mean & Prec.STD & Rec.Mean & Rec.STD \\ \hline
+discogs     & band     & lsvm                 & 0.925262 & 0.001267 & 0.896373  & 0.002110 & 0.956090    & 0.003388   \\
+discogs     & musician & lsvm                 & 0.936944 & 0.001224 & 0.905424  & 0.002080 & 0.970741    & 0.000880   \\
+imdb        & writer   & lsvm                 & 0.928606 & 0.001983 & 0.919005  & 0.002274 & 0.938421    & 0.003574   \\
+imdb        & actor    & lsvm                 & 0.894011 & 0.000789 & 0.875260  & 0.002088 & 0.913592    & 0.001998   \\
+imdb        & director & lsvm                 & 0.912727 & 0.001597 & 0.880551  & 0.005850 & 0.947397    & 0.003670   \\
+imdb        & producer & lsvm                 & 0.905975 & 0.003885 & 0.894173  & 0.006799 & 0.918114    & 0.001219   \\
+imdb        & musician & lsvm                 & 0.917906 & 0.001399 & 0.909440  & 0.002345 & 0.926534    & 0.001067   \\
+musicbrainz & band     & lsvm                 & 0.913877 & 0.001689 & 0.961199  & 0.003976 & 0.871046    & 0.006050   \\
+musicbrainz & musician & lsvm                 & 0.954410 & 0.001406 & 0.942882  & 0.002112 & 0.966225    & 0.001090   \\ \hline
+discogs     & musician & lr & 0.938138 & 0.001693 & 0.917022  & 0.002191 & 0.960250    & 0.001370   \\
+discogs     & band     & lr & 0.924791 & 0.001550 & 0.908952  & 0.001476 & 0.941198    & 0.003025   \\
+imdb        & director & lr & 0.913846 & 0.000694 & 0.892154  & 0.004468 & 0.936658    & 0.003834   \\
+imdb        & producer & lr & 0.906045 & 0.002643 & 0.898064  & 0.005640 & 0.914192    & 0.000826   \\
+imdb        & actor    & lr & 0.893573 & 0.000579 & 0.878388  & 0.001838 & 0.909299    & 0.001406   \\
+imdb        & musician & lr & 0.917958 & 0.001717 & 0.908442  & 0.002911 & 0.927680    & 0.001280   \\
+imdb        & writer   & lr & 0.928108 & 0.002082 & 0.924621  & 0.001792 & 0.931635    & 0.004264   \\
+musicbrainz & band     & lr & 0.918022 & 0.002327 & 0.937643  & 0.002251 & 0.899217    & 0.003973   \\
+musicbrainz & musician & lr & 0.953083 & 0.001301 & 0.943755  & 0.002042 & 0.962600    & 0.001165   \\ \hline
+discogs     & band     & mlp                  & 0.928931 & 0.001310 & 0.915249  & 0.001875 & 0.943032    & 0.001727   \\
+discogs     & musician & mlp                  & 0.940715 & 0.001443 & 0.921507  & 0.001770 & 0.960754    & 0.003867   \\
+imdb        & director & mlp                  & 0.919340 & 0.000980 & 0.899994  & 0.002724 & 0.939548    & 0.002002   \\
+imdb        & actor    & mlp                  & 0.896922 & 0.000400 & 0.880657  & 0.003412 & 0.913832    & 0.004129   \\
+imdb        & producer & mlp                  & 0.909398 & 0.002913 & 0.894253  & 0.007249 & 0.925119    & 0.003188   \\
+imdb        & musician & mlp                  & 0.925888 & 0.001165 & 0.942860  & 0.001545 & 0.909520    & 0.001863   \\
+imdb        & writer   & mlp                  & 0.930302 & 0.002571 & 0.924571  & 0.003714 & 0.936149    & 0.006365   \\
+musicbrainz & band     & mlp                  & 0.921134 & 0.002588 & 0.926546  & 0.004402 & 0.915818    & 0.004989   \\
+musicbrainz & musician & mlp                  & 0.957375 & 0.001629 & 0.944146  & 0.004491 & 0.971004    & 0.002647   \\ \hline
+discogs     & musician & nb         & 0.931622 & 0.001314 & 0.903489  & 0.002155 & 0.961565    & 0.000812   \\
+discogs     & band     & nb         & 0.922386 & 0.001457 & 0.891462  & 0.001633 & 0.955542    & 0.003274   \\
+imdb        & musician & nb         & 0.904327 & 0.013959 & 0.868388  & 0.055110 & 0.948158    & 0.033475   \\
+imdb        & producer & nb         & 0.898657 & 0.004254 & 0.842785  & 0.008230 & 0.962525    & 0.001450   \\
+imdb        & director & nb         & 0.907755 & 0.002541 & 0.855312  & 0.005063 & 0.967075    & 0.001997   \\
+imdb        & writer   & nb         & 0.922121 & 0.002580 & 0.882778  & 0.004051 & 0.965145    & 0.002172   \\
+imdb        & actor    & nb         & 0.889563 & 0.001311 & 0.825956  & 0.002002 & 0.963789    & 0.001153   \\
+musicbrainz & musician & nb         & 0.952783 & 0.001847 & 0.953561  & 0.002394 & 0.952008    & 0.001847   \\
+musicbrainz & band     & nb         & 0.907094 & 0.001994 & 0.953012  & 0.001335 & 0.865401    & 0.002974   \\ \hline
+discogs     & band     & rf       & 0.921673 & 0.001084 & 0.909216  & 0.002648 & 0.934490    & 0.002988   \\
+discogs     & musician & rf       & 0.933460 & 0.002427 & 0.917496  & 0.003021 & 0.949992    & 0.002296   \\
+imdb        & musician & rf       & 0.922135 & 0.000594 & 0.932216  & 0.000733 & 0.912272    & 0.001018   \\
+imdb        & producer & rf       & 0.906239 & 0.004720 & 0.895270  & 0.008984 & 0.917553    & 0.005214   \\
+imdb        & director & rf       & 0.916903 & 0.000940 & 0.892806  & 0.003096 & 0.942355    & 0.002601   \\
+imdb        & writer   & rf       & 0.929301 & 0.002919 & 0.922216  & 0.004160 & 0.936508    & 0.003393   \\
+imdb        & actor    & rf       & 0.899161 & 0.000836 & 0.879621  & 0.001427 & 0.919592    & 0.001620   \\
+musicbrainz & band     & rf       & 0.918844 & 0.002231 & 0.938321  & 0.005419 & 0.900192    & 0.003714   \\
+musicbrainz & musician & rf       & 0.953673 & 0.001146 & 0.943972  & 0.001591 & 0.963577    & 0.001052   \\ \hline
+discogs     & band     & slp                  & 0.925647 & 0.001462 & 0.908264  & 0.001465 & 0.943716    & 0.003188   \\
+discogs     & musician & slp                  & 0.938168 & 0.001664 & 0.917755  & 0.002291 & 0.959510    & 0.001258   \\
+imdb        & actor    & slp                  & 0.893205 & 0.000591 & 0.881499  & 0.001829 & 0.905232    & 0.001676   \\
+imdb        & musician & slp                  & 0.917503 & 0.001383 & 0.909845  & 0.002659 & 0.925296    & 0.000865   \\
+imdb        & director & slp                  & 0.914070 & 0.000545 & 0.895414  & 0.003822 & 0.933551    & 0.003516   \\
+imdb        & producer & slp                  & 0.905526 & 0.002380 & 0.903146  & 0.006456 & 0.907958    & 0.001993   \\
+imdb        & writer   & slp                  & 0.927724 & 0.001915 & 0.924983  & 0.002891 & 0.930499    & 0.003970   \\
+musicbrainz & musician & slp                  & 0.953054 & 0.001383 & 0.943662  & 0.002094 & 0.962638    & 0.001341   \\
+musicbrainz & band     & slp                  & 0.915977 & 0.002302 & 0.946439  & 0.002538 & 0.887441    & 0.005184  \\ \hline
+\end{longtable}
+
+\subsubsection{Ensembles Evaluation Results}
+\label{sec:apx-ensemble-eval-results}
+
+This section presents the evaluation results obtained for each concreate entity separately. The names of the classifiers have been shortened to make the table fit properly in the page. The abbreviations are as follows:
+
+\begin{itemize}
+    \item Gated Classifier: gc
+    \item Stacked Classifier: sc
+    \item Hard Voting Classifier: vh
+    \item Soft Voting Classifier: vs
+\end{itemize}
+
+\begin{longtable}{|l|l|l|l|l|l|l|l|l|}
+\hline
+Catalog     & Entity   & Model                    & F1.Mean  & F1.STD   & Prec.Mean & Prec.STD & Rec.Mean & Rec.STD \\ \hline
+discogs     & musician & gc        & 0.936638 & 0.002652 & 0.922472  & 0.004920 & 0.951308    & 0.006874   \\
+discogs     & band     & gc        & 0.927455 & 0.001522 & 0.912845  & 0.002324 & 0.942566    & 0.004981   \\
+imdb        & director & gc        & 0.918505 & 0.001411 & 0.900678  & 0.002997 & 0.937067    & 0.003067   \\
+imdb        & musician & gc        & 0.924625 & 0.002018 & 0.943199  & 0.010644 & 0.906929    & 0.007107   \\
+imdb        & producer & gc        & 0.910555 & 0.003934 & 0.902453  & 0.007668 & 0.918955    & 0.010547   \\
+imdb        & writer   & gc        & 0.931719 & 0.002789 & 0.928561  & 0.007822 & 0.934984    & 0.005804   \\
+imdb        & actor    & gc        & 0.897257 & 0.002191 & 0.895105  & 0.003315 & 0.899486    & 0.007650   \\
+musicbrainz & band     & gc        & 0.918238 & 0.003816 & 0.948221  & 0.012288 & 0.890520    & 0.016863   \\
+musicbrainz & musician & gc        & 0.955526 & 0.001926 & 0.951364  & 0.006050 & 0.959821    & 0.007915   \\ \hline
+discogs     & band     & sc      & 0.927771 & 0.001080 & 0.911809  & 0.006866 & 0.944456    & 0.009776   \\
+discogs     & musician & sc      & 0.938836 & 0.002473 & 0.917001  & 0.002568 & 0.961746    & 0.003667   \\
+imdb        & musician & sc      & 0.924930 & 0.001915 & 0.947724  & 0.003561 & 0.903238    & 0.004935   \\
+imdb        & actor    & sc      & 0.890012 & 0.007978 & 0.907933  & 0.016179 & 0.873941    & 0.029767   \\
+imdb        & producer & sc      & 0.904998 & 0.008882 & 0.899323  & 0.020682 & 0.912508    & 0.035943   \\
+imdb        & writer   & sc      & 0.931043 & 0.003075 & 0.929588  & 0.007946 & 0.932652    & 0.009692   \\
+imdb        & director & sc      & 0.917923 & 0.001777 & 0.901563  & 0.004736 & 0.934969    & 0.007596   \\
+musicbrainz & musician & sc      & 0.955643 & 0.001373 & 0.955374  & 0.003750 & 0.955933    & 0.003327   \\
+musicbrainz & band     & sc      & 0.919791 & 0.003254 & 0.941948  & 0.011043 & 0.898935    & 0.013037   \\ \hline
+discogs     & band     & vh & 0.926795 & 0.001145 & 0.905189  & 0.001827 & 0.949465    & 0.002661   \\
+discogs     & musician & vh & 0.939658 & 0.001932 & 0.913881  & 0.002899 & 0.966938    & 0.002004   \\
+imdb        & director & vh & 0.918177 & 0.001400 & 0.890278  & 0.004667 & 0.947915    & 0.003379   \\
+imdb        & producer & vh & 0.907517 & 0.004611 & 0.901155  & 0.004867 & 0.914052    & 0.009619   \\
+imdb        & actor    & vh & 0.897184 & 0.000752 & 0.882077  & 0.009962 & 0.913098    & 0.012148   \\
+imdb        & writer   & vh & 0.931065 & 0.002249 & 0.920422  & 0.007199 & 0.942038    & 0.005549   \\
+imdb        & musician & vh & 0.921577 & 0.002711 & 0.918733  & 0.022289 & 0.925297    & 0.017423   \\
+musicbrainz & musician & vh & 0.956088 & 0.001293 & 0.946047  & 0.003334 & 0.966356    & 0.001537   \\
+musicbrainz & band     & vh & 0.917456 & 0.002139 & 0.953082  & 0.007505 & 0.884490    & 0.006698   \\ \hline
+discogs     & band     & vs & 0.927576 & 0.001300 & 0.904116  & 0.002522 & 0.952312    & 0.004592   \\
+discogs     & musician & vs & 0.938896 & 0.001494 & 0.909274  & 0.004537 & 0.970543    & 0.003097   \\
+imdb        & actor    & vs & 0.899699 & 0.001028 & 0.887665  & 0.005118 & 0.912139    & 0.006529   \\
+imdb        & director & vs & 0.919262 & 0.001497 & 0.894902  & 0.008123 & 0.945108    & 0.006606   \\
+imdb        & producer & vs & 0.909610 & 0.003182 & 0.905090  & 0.005243 & 0.914192    & 0.002709   \\
+imdb        & musician & vs & 0.926019 & 0.001244 & 0.939099  & 0.007632 & 0.913418    & 0.007684   \\
+imdb        & writer   & vs & 0.931617 & 0.002161 & 0.929887  & 0.004030 & 0.933369    & 0.002867   \\
+musicbrainz & musician & vs & 0.954936 & 0.001831 & 0.955208  & 0.002438 & 0.954666    & 0.001676   \\
+musicbrainz & band     & vs & 0.916297 & 0.002493 & 0.954029  & 0.002458 & 0.881462    & 0.005454   \\ \hline
+\end{longtable}
+
+
+\section{Analysis of classification distributions}
+\label{sec:apx-classification-results}
+
+When a classifier predicts if a pair is a match or not it will yield a prediction which may be between 0 and 1. This predictions can be plotted with a distribution plot to see how different classifiers behave for the same concrete entity.
+
+This section contains the results of running the \texttt{soweego} pipeline on each concrete entity. The data used to create these results were the Wikidata training and classification dumps, and also the dumps for the external catalogs mentioned in \autoref{sec:orig-shape-of-data}. The training data was used for training each model, and the results were obtained from the classification data.
+
+The following sections will show the results obtained for the baseline and ensemble models separately.
+
+\subsection{Baseline classification results}
+\label{sec:apx-baseline-classification-results}
+
+The table below shows statics on the 
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|l|l|ll|l|}
+\hline
+Model                             & Average Mean & Average STD & Average 25\% & Average 50\% & Average 75\% & Average Max \\ \hline
+single\_layer\_perceptron         & 0.911712     & 0.213713    & 0.963896     & 0.997227     & 0.998371     & 0.999749    \\
+multi\_layer\_perceptron          & 0.911148     & 0.212020    & 0.945349     & 0.999371     & 0.999781     & 0.999994    \\
+naive\_bayes                      & 0.077806     & 0.183952    & 0.000463     & 0.003623     & 0.078400     & 0.999998    \\
+linear\_support\_vector\_machines & 0.057549     & 0.225727    & 0.000000     & 0.000000     & 0.000000     & 1.000000    \\
+random\_forest                    & 0.053097     & 0.173311    & 0.000000     & 0.000000     & 0.000444     & 1.000000    \\
+logistic\_regression              & 0.051562     & 0.162769    & 0.001627     & 0.002700     & 0.005134     & 0.999925    \\ \hline
+\end{tabular}
+\caption{}
+\label{tab:my-table}
+\end{table}
+
+
+
+\begin{longtable}{|l|l|l|l|l|l|l|l|l|l|l|}
+\hline
+Catalog     & Entity   & Model                             & Count  & Mean     & STD      & Min      & 25\%     & 50\%     & 75\%     & Max      \\ \hline
+discogs     & band     & linear\_support\_vector\_machines & 92137  & 0.064480 & 0.245607 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
+discogs     & musician & linear\_support\_vector\_machines & 515082 & 0.032108 & 0.176286 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
+imdb        & writer   & linear\_support\_vector\_machines & 68702  & 0.053259 & 0.224551 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
+imdb        & musician & linear\_support\_vector\_machines & 944196 & 0.018987 & 0.136477 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
+imdb        & director & linear\_support\_vector\_machines & 35094  & 0.083775 & 0.277054 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
+imdb        & producer & linear\_support\_vector\_machines & 9351   & 0.094001 & 0.291845 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
+imdb        & actor    & linear\_support\_vector\_machines & 355515 & 0.085555 & 0.279706 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
+musicbrainz & musician & linear\_support\_vector\_machines & 652175 & 0.029915 & 0.170354 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
+musicbrainz & band     & linear\_support\_vector\_machines & 106026 & 0.055864 & 0.229659 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\ \hline
+discogs     & musician & logistic\_regression              & 515082 & 0.026798 & 0.125459 & 0.000000 & 0.000681 & 0.001240 & 0.002344 & 0.999997 \\
+discogs     & band     & logistic\_regression              & 92137  & 0.056130 & 0.165189 & 0.000000 & 0.004231 & 0.006317 & 0.010508 & 0.999984 \\
+imdb        & director & logistic\_regression              & 35094  & 0.066687 & 0.194344 & 0.000132 & 0.001263 & 0.002436 & 0.006390 & 0.999955 \\
+imdb        & producer & logistic\_regression              & 9351   & 0.076076 & 0.200209 & 0.000220 & 0.001204 & 0.002088 & 0.004567 & 0.999668 \\
+imdb        & actor    & logistic\_regression              & 355515 & 0.068824 & 0.188005 & 0.000236 & 0.002456 & 0.003915 & 0.006918 & 0.999943 \\
+imdb        & musician & logistic\_regression              & 944196 & 0.019788 & 0.089113 & 0.000075 & 0.000567 & 0.000977 & 0.001920 & 0.999975 \\
+imdb        & writer   & logistic\_regression              & 68702  & 0.044311 & 0.157563 & 0.000114 & 0.000965 & 0.001704 & 0.003226 & 0.999800 \\
+musicbrainz & band     & logistic\_regression              & 106026 & 0.077057 & 0.218408 & 0.000000 & 0.001852 & 0.002936 & 0.006318 & 1.000000 \\
+musicbrainz & musician & logistic\_regression              & 652175 & 0.028386 & 0.126628 & 0.000000 & 0.001425 & 0.002688 & 0.004012 & 1.000000 \\ \hline
+discogs     & band     & multi\_layer\_perceptron          & 92137  & 0.947446 & 0.169248 & 0.000000 & 0.994668 & 0.999367 & 0.999794 & 0.999977 \\
+discogs     & musician & multi\_layer\_perceptron          & 515082 & 0.974131 & 0.125070 & 0.000000 & 0.998604 & 0.999678 & 0.999942 & 0.999999 \\
+imdb        & director & multi\_layer\_perceptron          & 70188  & 0.934691 & 0.192393 & 0.002369 & 0.996334 & 0.999077 & 0.999737 & 0.999995 \\
+imdb        & writer   & multi\_layer\_perceptron          & 137404 & 0.954458 & 0.160987 & 0.004722 & 0.997428 & 0.999359 & 0.999802 & 0.999995 \\
+imdb        & producer & multi\_layer\_perceptron          & 18702  & 0.922224 & 0.204272 & 0.000604 & 0.996273 & 0.999268 & 0.999751 & 0.999984 \\
+imdb        & actor    & multi\_layer\_perceptron          & 355515 & 0.932479 & 0.185652 & 0.002369 & 0.996054 & 0.998967 & 0.999477 & 0.999999 \\
+imdb        & musician & multi\_layer\_perceptron          & 944196 & 0.982765 & 0.081712 & 0.001360 & 0.999014 & 0.999708 & 0.999881 & 0.999997 \\
+musicbrainz & musician & multi\_layer\_perceptron          & 652175 & 0.766345 & 0.411756 & 0.000000 & 0.820425 & 0.999451 & 0.999733 & 1.000000 \\
+musicbrainz & band     & multi\_layer\_perceptron          & 106026 & 0.785790 & 0.377086 & 0.000000 & 0.709337 & 0.999467 & 0.999908 & 1.000000 \\ \hline
+discogs     & musician & naive\_bayes                      & 515082 & 0.034216 & 0.161297 & 0.000000 & 0.000319 & 0.000319 & 0.005422 & 0.999999 \\
+discogs     & band     & naive\_bayes                      & 92137  & 0.069714 & 0.205292 & 0.000000 & 0.001541 & 0.013942 & 0.013942 & 0.999995 \\
+imdb        & musician & naive\_bayes                      & 944196 & 0.025071 & 0.111446 & 0.000000 & 0.000319 & 0.001574 & 0.001574 & 0.999999 \\
+imdb        & writer   & naive\_bayes                      & 68702  & 0.043241 & 0.152733 & 0.000000 & 0.000355 & 0.001883 & 0.001883 & 0.999999 \\
+imdb        & actor    & naive\_bayes                      & 355515 & 0.070022 & 0.192806 & 0.000000 & 0.000700 & 0.004079 & 0.004079 & 0.999999 \\
+imdb        & producer & naive\_bayes                      & 9351   & 0.070559 & 0.184460 & 0.000000 & 0.000417 & 0.001824 & 0.001824 & 0.999993 \\
+imdb        & director & naive\_bayes                      & 35094  & 0.060302 & 0.180137 & 0.000000 & 0.000438 & 0.002258 & 0.002790 & 0.999998 \\
+musicbrainz & band     & naive\_bayes                      & 106026 & 0.313230 & 0.366327 & 0.000000 & 0.000063 & 0.006630 & 0.673986 & 1.000000 \\
+musicbrainz & musician & naive\_bayes                      & 652175 & 0.013899 & 0.101066 & 0.000000 & 0.000012 & 0.000096 & 0.000096 & 1.000000 \\ \hline
+discogs     & band     & random\_forest                    & 92137  & 0.053361 & 0.180183 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
+discogs     & musician & random\_forest                    & 515082 & 0.024329 & 0.127647 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
+imdb        & producer & random\_forest                    & 9351   & 0.081674 & 0.221939 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
+imdb        & writer   & random\_forest                    & 68702  & 0.045897 & 0.167953 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
+imdb        & director & random\_forest                    & 35094  & 0.067178 & 0.204324 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
+imdb        & musician & random\_forest                    & 944196 & 0.018942 & 0.096642 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
+imdb        & actor    & random\_forest                    & 355515 & 0.070115 & 0.202583 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
+musicbrainz & musician & random\_forest                    & 652175 & 0.025781 & 0.128633 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
+musicbrainz & band     & random\_forest                    & 106026 & 0.090595 & 0.229891 & 0.000000 & 0.000000 & 0.000000 & 0.004000 & 1.000000 \\ \hline
+discogs     & musician & single\_layer\_perceptron         & 515082 & 0.973132 & 0.125103 & 0.000000 & 0.997566 & 0.998666 & 0.999229 & 0.999829 \\
+discogs     & band     & single\_layer\_perceptron         & 92137  & 0.943075 & 0.165641 & 0.000000 & 0.989174 & 0.993207 & 0.995274 & 0.998551 \\
+imdb        & writer   & single\_layer\_perceptron         & 68702  & 0.955303 & 0.161966 & 0.000147 & 0.997567 & 0.998731 & 0.999296 & 0.999923 \\
+imdb        & actor    & single\_layer\_perceptron         & 355515 & 0.930660 & 0.189850 & 0.000052 & 0.993078 & 0.996077 & 0.997540 & 0.999728 \\
+imdb        & director & single\_layer\_perceptron         & 35094  & 0.931354 & 0.200875 & 0.000025 & 0.994105 & 0.997881 & 0.998906 & 0.999895 \\
+imdb        & musician & single\_layer\_perceptron         & 944196 & 0.980424 & 0.089165 & 0.000026 & 0.998115 & 0.999061 & 0.999472 & 0.999938 \\
+imdb        & producer & single\_layer\_perceptron         & 9351   & 0.922776 & 0.206773 & 0.000165 & 0.996212 & 0.998406 & 0.999139 & 0.999876 \\
+musicbrainz & musician & single\_layer\_perceptron         & 652175 & 0.763318 & 0.411444 & 0.000000 & 0.795643 & 0.996459 & 0.997635 & 1.000000 \\
+musicbrainz & band     & single\_layer\_perceptron         & 106026 & 0.805367 & 0.372603 & 0.000000 & 0.913607 & 0.996555 & 0.998851 & 1.000000 \\ \hline
+\end{longtable}
+
+\begin{figure}[]
+  \centering \includegraphics[width=\textwidth]{baseline_classification_continuous_classifiers_distplots} 
+  \caption{Distribution of predictions for classifier whose output is in a binary space.}
+  \label{fig:apx-baseline-classification-barplot}
+\end{figure}
+
+\begin{figure}[]
+  \centering \includegraphics[width=\textwidth]{baseline_classification_binary_classifiers_barplot} 
+  \caption{Distribution of predictions for classifier whose output is in a binary space.}
+  \label{fig:apx-baseline-classification-barplot}
+\end{figure}
+
+
+\subsection{Ensembles classification results}
+\label{sec:apx-ensembles-classification-results}
+
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|l|l|l|l|l|}
+\hline
+Model                    & Avg. Mean & Avg. STD & Avg. 25\% & Avg. 50\% & Avg. 75\% & Avg. Max \\ \hline
+voting\_classifier\_soft & 0.057636     & 0.158270    & 0.003207     & 0.007516     & 0.021039     & 0.999121    \\
+stacked\_classifier      & 0.056042     & 0.168406    & 0.009359     & 0.009674     & 0.011936     & 0.974617    \\
+voting\_classifier\_hard & 0.054288     & 0.218717    & 0.000000     & 0.000000     & 0.000000     & 1.000000    \\
+gated\_classifier        & 0.052910     & 0.167008    & 0.006857     & 0.007141     & 0.007596     & 0.989812    \\ \hline
+\end{tabular}
+\caption{}
+\label{tab:apx-ensemble-classification-summary}
+\end{table}
+
+% consider name abbreviations!
+
+
+\begin{longtable}{|l|l|l|l|l|l|l|l|l|l|l|}
+\hline
+Catalog     & Entity   & Model                    & Count  & Mean     & STD      & Min      & 25\%     & 50\%     & 75\%     & Max      \\ \hline
+discogs     & musician & gc        & 515082 & 0.029858 & 0.134515 & 0.000000 & 0.005109 & 0.005152 & 0.005247 & 0.984798 \\
+discogs     & band     & gc        & 92137  & 0.057388 & 0.179030 & 0.000000 & 0.009710 & 0.009955 & 0.010281 & 0.981458 \\
+imdb        & actor    & gc        & 355515 & 0.065065 & 0.181855 & 0.005060 & 0.005130 & 0.005192 & 0.005239 & 0.987478 \\
+imdb        & musician & gc        & 944196 & 0.017756 & 0.079748 & 0.004216 & 0.004266 & 0.004288 & 0.004328 & 0.988251 \\
+imdb        & writer   & gc        & 68702  & 0.048981 & 0.170615 & 0.005432 & 0.005505 & 0.005550 & 0.005590 & 0.989302 \\
+imdb        & producer & gc        & 9351   & 0.080576 & 0.213030 & 0.006867 & 0.007220 & 0.007352 & 0.007708 & 0.993112 \\
+imdb        & director & gc        & 35094  & 0.066865 & 0.202458 & 0.005077 & 0.005161 & 0.005196 & 0.005438 & 0.983906 \\
+musicbrainz & musician & gc        & 652175 & 0.027414 & 0.123071 & 0.000000 & 0.006402 & 0.006426 & 0.006457 & 1.000000 \\
+musicbrainz & band     & gc        & 106026 & 0.082290 & 0.218746 & 0.000000 & 0.013210 & 0.015158 & 0.018073 & 1.000000 \\ \hline
+discogs     & band     & sc      & 92137  & 0.054855 & 0.171827 & 0.000000 & 0.012356 & 0.012482 & 0.013273 & 0.959502 \\
+discogs     & musician & sc      & 515082 & 0.023429 & 0.111203 & 0.000000 & 0.004903 & 0.004904 & 0.004925 & 0.956270 \\
+imdb        & actor    & sc      & 355515 & 0.061541 & 0.175259 & 0.006668 & 0.006805 & 0.006814 & 0.007155 & 0.982776 \\
+imdb        & producer & sc      & 9351   & 0.106723 & 0.253498 & 0.014097 & 0.014177 & 0.015255 & 0.018345 & 0.970012 \\
+imdb        & musician & sc      & 944196 & 0.018207 & 0.082833 & 0.005190 & 0.005191 & 0.005253 & 0.005348 & 0.974544 \\
+imdb        & director & sc      & 35094  & 0.061921 & 0.188322 & 0.005990 & 0.006000 & 0.006003 & 0.006119 & 0.956035 \\
+imdb        & writer   & sc      & 68702  & 0.056798 & 0.194364 & 0.006776 & 0.006781 & 0.006801 & 0.007176 & 0.972416 \\
+musicbrainz & musician & sc      & 652175 & 0.027208 & 0.115886 & 0.000000 & 0.009073 & 0.009075 & 0.009164 & 1.000000 \\
+musicbrainz & band     & sc      & 106026 & 0.093695 & 0.222461 & 0.000000 & 0.018945 & 0.020480 & 0.035917 & 1.000000 \\ \hline
+discogs     & band     & vh & 92137  & 0.057187 & 0.232200 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
+discogs     & musician & vh & 515082 & 0.029859 & 0.170199 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
+imdb        & musician & vh & 337111 & 0.017525 & 0.131219 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
+imdb        & writer   & vh & 68702  & 0.048718 & 0.215279 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
+imdb        & actor    & vh & 355515 & 0.083248 & 0.276257 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
+imdb        & producer & vh & 9351   & 0.087156 & 0.282079 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
+imdb        & director & vh & 35094  & 0.081125 & 0.273031 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
+musicbrainz & band     & vh & 106026 & 0.061240 & 0.239771 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
+musicbrainz & musician & vh & 652175 & 0.022537 & 0.148422 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\ \hline
+discogs     & band     & vs & 92137  & 0.063509 & 0.168745 & 0.000000 & 0.008184 & 0.012160 & 0.017549 & 0.999697 \\
+discogs     & musician & vs & 515082 & 0.030028 & 0.133205 & 0.000000 & 0.001535 & 0.002331 & 0.004532 & 0.998474 \\
+imdb        & musician & vs & 944196 & 0.021848 & 0.092686 & 0.000205 & 0.001234 & 0.001659 & 0.002589 & 0.999709 \\
+imdb        & writer   & vs & 68702  & 0.043952 & 0.148484 & 0.000438 & 0.002171 & 0.002948 & 0.003702 & 0.999094 \\
+imdb        & producer & vs & 9351   & 0.076109 & 0.182346 & 0.002841 & 0.006002 & 0.006845 & 0.009239 & 0.996601 \\
+imdb        & actor    & vs & 355515 & 0.068285 & 0.185416 & 0.000203 & 0.002040 & 0.002958 & 0.004662 & 0.998976 \\
+imdb        & director & vs & 35094  & 0.064267 & 0.185011 & 0.000541 & 0.002337 & 0.002876 & 0.007271 & 0.999539 \\
+musicbrainz & band     & vs & 106026 & 0.126356 & 0.213054 & 0.000000 & 0.004267 & 0.034199 & 0.137530 & 1.000000 \\
+musicbrainz & musician & vs & 652175 & 0.024370 & 0.115483 & 0.000000 & 0.001089 & 0.001672 & 0.002279 & 1.000000 \\ \hline
+\end{longtable}
+
+\begin{figure}[]
+  \centering \includegraphics[width=\textwidth]{ensembles_classification_continuous_classifiers_distplots} 
+  \caption{Distribution of predictions for classifiers whose output is in a continuous space.}
+  \label{fig:apx-ensemble-classification-distplot}
+\end{figure}
+
+\begin{figure}[]
+  \centering \includegraphics[width=\textwidth]{ensembles_classification_binary_classifiers_barplot} 
+  \caption{Distribution of predictions for classifier whose output is in a binary space.}
+  \label{fig:apx-ensemble-classification-barplot}
+\end{figure}
 
 \end{document}
