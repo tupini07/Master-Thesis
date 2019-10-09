@@ -1,27 +1,36 @@
 digraph soweegostructure {
     rankdir=LR;
-
+ 
     catA [label="Catalog A"];
     catB [label="Catalog B"];
     wikiCat [label="Wikidata"];
     importer [label="Importer", shape="box"];
-    blocking [label="Blocking", shape="box"];
-    featext [label="Feature Extraction", shape="box"];
-    linker [label="Linker", shape="box"];
+    blocking [label="Blocking", shape="box", style=filled,color=gray];
+    featext [label="Feature Extraction", shape="box",style=filled,color=gray];
     ingester [label="Ingester", shape="box"];
-
     subgraph cl0 {
         rank = same;
         catA;
         catB;
-        wikiCat;
     }
-
+   	subgraph cluster0 {
+		    label = "Linker";
+		    node [style=filled,color=gray,shape=box];
+        subgraph cluster1 {
+            label ="Workflow";
+            DataCleaning -> featext;
+       }
+		    blocking -> DataCleaning;
+        featext -> Evaluate;
+        featext -> Link;
+        featext -> Train;
+	  }
     catA -> importer -> blocking;
     catB -> importer;
-    wikiCat -> importer;
-    importer -> blocking -> featext -> linker -> ingester;
+    Link -> ingester;
     ingester -> wikiCat;
-}
+
+    wikiCat -> blocking;
+ }
 
 
