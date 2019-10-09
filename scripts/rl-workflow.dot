@@ -1,0 +1,24 @@
+digraph rlworkflow {
+    rankdir=LR;
+    
+    catA [label="Catalog A"];
+    catB [label="Catalog B"];
+    dpA [label="Data Preprocessing", shape="box"];
+    dpB [label="Data Preprocessing", shape="box"];
+    blocking [label="Blocking", shape="box"];
+    fe [label="Feature Extraction", shape="box"];
+    link [label="Linking/Classification", shape="box"];
+    matches [label="Matches"];
+    nonmatch [label="Non-Matches"];
+    potentialmatch [label="Potential Matches"];
+    eval [label="Evaluation"];
+
+    
+    catA -> dpA -> blocking;
+    catB -> dpB -> blocking;
+    
+    blocking -> fe -> link;
+    link -> matches -> eval;
+    link -> nonmatch -> eval;
+    link -> potentialmatch -> eval;
+}

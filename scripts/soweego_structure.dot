@@ -1,0 +1,27 @@
+digraph soweegostructure {
+    rankdir=LR;
+
+    catA [label="Catalog A"];
+    catB [label="Catalog B"];
+    wikiCat [label="Wikidata"];
+    importer [label="Importer", shape="box"];
+    blocking [label="Blocking", shape="box"];
+    featext [label="Feature Extraction", shape="box"];
+    linker [label="Linker", shape="box"];
+    ingester [label="Ingester", shape="box"];
+
+    subgraph cl0 {
+        rank = same;
+        catA;
+        catB;
+        wikiCat;
+    }
+
+    catA -> importer -> blocking;
+    catB -> importer;
+    wikiCat -> importer;
+    importer -> blocking -> featext -> linker -> ingester;
+    ingester -> wikiCat;
+}
+
+

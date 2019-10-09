@@ -1,0 +1,27 @@
+digraph featureExtraction{
+    rankdir=LR;
+    
+    entT [label="Target Entity"];
+    entS [label="Source Entity"];
+    
+    lev1 [label="Lev", shape="box"];
+    lev2 [label="Lev", shape="box"];
+    
+    subgraph cl0 {
+        rank = same;
+        entT;
+        entS
+    }
+    
+    entS -> lev1 [label="name"];
+    entT -> lev1 [label="name"];
+
+    entS -> lev2 [label="description"];
+    entT -> lev2 [label="description"];
+    
+    lev1 -> 0.87;
+    lev2 -> 0.42;
+    
+}
+
+
