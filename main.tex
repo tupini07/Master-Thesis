@@ -1923,9 +1923,9 @@ Currently, the smallest set is usually IMDb. As seen in \autoref{fig:imdb-profes
 \subsubsection{Feature Exploration}
 \label{sec:feature-viz}
 
-To understand the features exposed in the last function better, and to learn what is their behaviour in a real world scenario, this section will proceed to mention some basic statistical information about them. Of special interest is: which is the average value for a feature, which features are always zero, and knowledge of the features that are extracted for a specific catalog. It would also be interesting to see if the features extracted vary between the classification and training sets, or between the positive and negative examples in the training set. This section strives to answer all these questions.
+To understand the features exposed in the last function better, and to learn what is their behaviour in a real world scenario, this section will proceed to mention some basic statistical information about them. Questions of special interest are: which is the average value and standard deviation for a feature, which features are always zero, and knowledge of the features that are extracted for a specific catalog. It would also be interesting to see if the features extracted vary between the classification and training sets, or between the positive and negative examples in the training set. This section strives to answer all these questions.
 
-\autoref{tab:features-viz-average-std-classification}, presents the features extracted for a specific concrete entity in the \textit{classification set}. The first number in each cell is the average value, and the number below it, in parenthesis, is the standard deviation. If a cell has no value then it means that specific concrete entity does not have the required fields to extract said features and so it was not used. An example of this is the \textit{born\_similar} which was not applied to entities of \textit{Discogs} catalog since they do not have birth dates. Note that to make the tables fit nicely in the page, the names of the features have been shortened. Below is a mapping from the complete feature name to its shortened version:
+\autoref{tab:features-viz-average-std-classification}, presents the features extracted for each concrete entity in the \textit{classification set}. The first number in each cell is the average value, and the number below it, in parenthesis, is the standard deviation. If a cell has no value then it means that specific concrete entity does not have the required fields to extract said features and so it was not used. An example of this is the \textit{born\_similar} which was not applied to entities of the \textit{Discogs} catalog since they do not have birth dates. Note that to make the tables fit nicely in the page, the names of the features have been shortened. Below is a mapping from the complete feature name to its shortened version:
 
 \begin{itemize}
     \item born\_similar : brn.sim
@@ -1942,7 +1942,9 @@ To understand the features exposed in the last function better, and to learn wha
 
 By looking at \autoref{tab:features-viz-average-std-classification}, the first thing one can notice is that all catalogs have seven features, except for \textit{Musicbrainz} which has eight. It is also clear which features were extracted from which catalogs. 
 
-The mean for some features seem to be maintained similar across each concrete entity. For example the born similarity is \textit{0.005 +- 0.001} in 5 our of 7 concrete entities that have it. However, \textit{nm.exct} varies a bit more, with it going from \textit{0.04} for \textit{Discogs/Musician} to \textit{0.14} for \textit{Musicbrainz/Band}. For some features it also seems that the the mean values are lower than for others. An example of this is the feature \textit{die.sim} whose mean is $\leq 0.003$ for all concrete entities, while \textit{nmt.cos} is always above \textit{0.5}. 
+The mean for some features seem to be maintained similar across each concrete entity. For example the born similarity is \textit{0.005 $\pm$ 0.001} in 5 our of 7 concrete entities that have it. However, \textit{nm.exct} varies a bit more, with it going from \textit{0.04} for \textit{Discogs/Musician} to \textit{0.14} for \textit{Musicbrainz/Band}. 
+
+For some features it also seems that the the mean values are lower than for others. An example of this is the feature \textit{die.sim} whose mean is $\leq 0.003$ for all concrete entities, while \textit{nmt.cos} is always above \textit{0.5}. 
 
 Among these features, those associated with flexible name similarities (\textit{nmt.lev}, \textit{nmt.shr}, \textit{nmt.cos}) seem to be the ones with the higher average value. \textit{url.exct} has a lower average, in all cases, than \textit{url.shr}, and it's mean is quite low for almost all concrete entities. 
 
@@ -1971,7 +1973,9 @@ When it comes to \textit{standard deviation}, it seems that all name similarity 
 \end{table}
 
 
-Below is
+On the other hand, \autoref{tab:features-viz-average-std-training} shows the mean and standard deviation for features extracted from the training set. The first thing that can be noticed is that in almost all cases the \textit{mean} is higher for features in the training set thank for the respective feature/concrete-entity in the classification set. Besides this, features in the training set seem to behave similarly than those in the classification set. For instance, the non-exact name measures are those with the higher mean. Another thing which can be noticed is that the standard deviation in the training data features is also higher in most cases. 
+
+The above suggests that there is a substantial difference among training and classification data. To better understand this difference, \autoref{fig:average-features-classification-training} shows two heatmaps which have been generated by drawing the respective mean feature values. The heatmap shows in gray those feature/concrete-entities for which there is no value, and the rest is showed in some shade of red. It is easy to see that features do behave similarly across the different heatmaps. For instance, features which are darker (higher mean) in the classification set are also, generally, darker in the training set. However, many features seem to have a much lower mean in the classification set than in the training set. Examples which can readily be discerned from the graphic are: \textit{name\_exact}, \textit{born and died similar}, \textit{occupations\_shared}, \textit{url\_exact}, \textit{url\_tokens\_shared}, and \textit{description\_cosine}. Interestingly, it also seems that \textit{name\_tokens\_shared} has, in most cases, a higher mean than the respective entries in the classification set.
 
 \begin{table}[h]
 \centering
@@ -1995,8 +1999,12 @@ Below is
 \end{table}
 
 
+Now, the used features can be said to be effective if they acually separate the positive from negative examples. For this purpose, \autoref{tab:features-viz-average-std-positive} and \autoref{tab:features-viz-average-std-negative} present the mean and standard deviation values for positive and negative training examples respectively. It is easily seen that in most cases the mean values in the positive samples are much higher than those in the negative samples, meaning that the features actually are significative for characterizing when a samples if either of those classes.
 
-% -------------
+\autoref{fig:average-features-positive-negative} shows two heatmaps similar to those described for the classification and training sets. It is easy to see that training examples have a higher mean value for almost all features/concrete-entities. An interesting thing to notice, however, is that \textit{name token levenshtein} and \textit{name tokens string kernal cosine} have quite high mean values compared with all the other values in the \textit{negative set}, and in some cases, for \textit{Discogs/Musician}, the mean value in the negative set is actually higher than the corresponding value in the positive set. 
+
+Among all features it seems that those most significative for separating positive and negative samples are: \textit{name\_exact}, which is almost 1 in the positive set, and very low in the negative set, also \textit{born and died similar} are much higher for the positive set, and finally the url features are also much higher for positive samples. Finally, it should also be pointed out that the \textit{occupations\_shared} feature is similar in value between the two sets, but is a little higher in positive samples. An exception to this last is \textit{IMDb/Actor}, which seems to have the same mean value for this feature in both sets.
+
 
 \begin{table}[h]
 \centering
@@ -2058,41 +2066,10 @@ Below is
 \end{figure}
 
 
-
-\todo[inline]{\textit{name exact} causes oter features to look a bit squashed. Consider representing it in some other way}
-
-\begin{figure}[h]
-  \centering \includegraphics[width=\textwidth]{classification_feature_distribution} 
-  \caption{Feature distribution for the classification set.}
-  \label{fig:distribution-of-classification-features}
-\end{figure}
-
-\begin{figure}[h]
-  \centering \includegraphics[width=\textwidth]{classification_feature_distribution_2} 
-  \caption{Feature distribution for the classification set.}
-  \label{fig:distribution-of-classification-features}
-\end{figure}
+For completeness, \autoref{sec:apx-feature-distribution} contains distribution plots of the feature values for training and the classification sets, and also for positive and negative samples. 
 
 
-
-
-\begin{figure}[h]
-      \centering
-      \includegraphics[width=\linewidth]{training_feature_distribution}
-      \caption{Feature distribution for the training set (1).}
-      \label{fig:distribution-of-training-features-1}
-\end{figure}
-
-\begin{figure}[h]
-      \centering
-      \includegraphics[width=\linewidth]{training_feature_distribution_2}
-      \caption{Feature distribution for the training set (2).}
-      \label{fig:distribution-of-training-features-2}
-\end{figure}
-
-
-
-PCA of features?
+% PCA of features?
 % https://mlens.readthedocs.io/en/0.1.x/getting_started/
 
 % https://www.cs.cmu.edu/~elaw/papers/pca.pdf
@@ -2100,39 +2077,77 @@ PCA of features?
 %  "On Lines and Planes of Closest Fit to Systems of Points in Space". Philosophical Magazine. 2 (11): 559–572. doi:10.1080/14786440109462720.
 
 
-\subsubsection{Feature Correlation}
-\label{sec:feature-correlation}
-
-Maybe also show correlation between features and output? Use predictions of base
-classifiers to keep it simple. Maybe one example.
-
-This section might be removed, since correlation between features themselves is not very interesting. Would be better to do correlatino of features with predicted values, but I don't know if we have time for that. 
-
-
 \subsection{Difference between training and real world data}
 \label{sec:training-real-data-difference}
 
-Consider including a visualization of the classification features. Compare it
-with the visualization done in \pageref{sec:feature-viz} which is about
-\ref{sec:feature-viz} the visualization of features obtained from training data.
+Seeing that the catalogs used are maintained mainly by contributors, one may think that more important people/bands have more information on them than less important ones. From this follows that these entities may have already been linked with the respective external catalog entity. As such, one can assume that the training data is composed mainly of these already labelled \textit{more important} entities, and the classification data are \textit{less important} entities, and less accurately labelled. 
+
+This hypothesis, that training data is better quality than classification data, may impact the ability to extract meaningful features from the data. For example, it may be more common in the classification set than in the training set that an entity has no \textit{birth date}, or that this date is wrong.
+
+\autoref{tab:features-percentage-of-nans-or-zeroes} shows the percentage of zero values obtained for each feature, for each concrete entity. Most features behave similarly across the different sets, for example \textit{nmt.lev} which is always positive. Of more interest are the features \textit{born and die similar}, and \textit{nm.exact}, which are almost always zero in the classification set, but are considerably \textit{better} in the training set.
+
+If training and classification sets were of the same quality then this difference can be attributed to the simple fact that the classification set contains more negative examples than the training set. However, in the current case there is no way to know except by evaluating the classification predictions, which is something that will be automatically done by the Wikidata community once said predictions are uploaded. Regardless, this is something that must be kept in mind since the final performance of the algorithms on the classification data may actually be different from that on the training data. 
 
 
-A potential problem with classification data coming from Wikidata is that the classification data is usually worst quality data than the training one. Elements in the training data, are probably more \textit{important} since somebody took the time to link them to the external catalog, and it can be reasonably believed that the other statements of these items have been filled as well. This makes the 
+
+\begin{table}[]
+\centering
+\begin{tabular}{ll|l|l|l|l|l|l|l|l|l|}
+\cline{3-11}
+                                                       &          & \multicolumn{2}{l|}{discogs} & \multicolumn{5}{l|}{imdb}                       & \multicolumn{2}{l|}{musicbrainz} \\ \cline{3-11} 
+                                                       &          & band        & musician       & actor & director & musician & producer & writer & band          & musician         \\ \hline \hline
+\multicolumn{1}{|l|}{\multirow{10}{*}{C}} & brn.sim  &             &                & 0.995 & 0.994    & 0.997    & 0.995    & 0.995  & 1.000         & 0.993            \\ \cline{2-11} 
+\multicolumn{1}{|l|}{}                                 & des.cos  & 0.919       & 0.850          &       &          &          &          &        &               &                  \\ \cline{2-11} 
+\multicolumn{1}{|l|}{}                                 & die.sim  &             &                & 0.999 & 0.999    & 0.999    & 0.998    & 0.997  & 1.000         & 0.998            \\ \cline{2-11} 
+\multicolumn{1}{|l|}{}                                 & nm.exct  & 0.923       & 0.960          & 0.893 & 0.909    & 0.958    & 0.878    & 0.930  & 0.860         & 0.949            \\ \cline{2-11} 
+\multicolumn{1}{|l|}{}                                 & nmt.lev  & 0.000       & 0.000          & 0.000 & 0.000    & 0.000    & 0.000    & 0.000  & 0.000         & 0.000            \\ \cline{2-11} 
+\multicolumn{1}{|l|}{}                                 & nmt.shr  & 0.000       & 0.001          & 0.002 & 0.002    & 0.001    & 0.002    & 0.001  & 0.000         & 0.001            \\ \cline{2-11} 
+\multicolumn{1}{|l|}{}                                 & nmt.cos  & 0.064       & 0.058          & 0.000 & 0.000    & 0.000    & 0.000    & 0.000  & 0.005         & 0.001            \\ \cline{2-11} 
+\multicolumn{1}{|l|}{}                                 & occ.shr  &             &                & 0.978 & 0.815    & 0.851    & 0.920    & 0.955  &               &                  \\ \cline{2-11} 
+\multicolumn{1}{|l|}{}                                 & url.exct & 0.999       & 0.999          &       &          &          &          &        & 0.965         & 0.994            \\ \cline{2-11} 
+\multicolumn{1}{|l|}{}                                 & url.shr  & 0.975       & 0.988          &       &          &          &          &        & 0.931         & 0.984            \\ \hline \hline
+\multicolumn{1}{|l|}{\multirow{10}{*}{T}}       & brn.sim  &             &                & 0.879 & 0.910    & 0.911    & 0.912    & 0.888  & 1.000         & 0.822            \\ \cline{2-11} 
+\multicolumn{1}{|l|}{}                                 & des.cos  & 0.783       & 0.666          &       &          &          &          &        &               &                  \\ \cline{2-11} 
+\multicolumn{1}{|l|}{}                                 & die.sim  &             &                & 0.957 & 0.964    & 0.962    & 0.968    & 0.947  & 1.000         & 0.939            \\ \cline{2-11} 
+\multicolumn{1}{|l|}{}                                 & nm.exct  & 0.684       & 0.753          & 0.795 & 0.817    & 0.823    & 0.823    & 0.814  & 0.715         & 0.766            \\ \cline{2-11} 
+\multicolumn{1}{|l|}{}                                 & nmt.lev  & 0.000       & 0.000          & 0.000 & 0.000    & 0.000    & 0.000    & 0.000  & 0.000         & 0.000            \\ \cline{2-11} 
+\multicolumn{1}{|l|}{}                                 & nmt.shr  & 0.000       & 0.000          & 0.001 & 0.001    & 0.001    & 0.000    & 0.000  & 0.000         & 0.001            \\ \cline{2-11} 
+\multicolumn{1}{|l|}{}                                 & nmt.cos  & 0.053       & 0.065          & 0.000 & 0.000    & 0.000    & 0.000    & 0.000  & 0.006         & 0.002            \\ \cline{2-11} 
+\multicolumn{1}{|l|}{}                                 & occ.shr  &             &                & 0.944 & 0.618    & 0.699    & 0.698    & 0.681  &               &                  \\ \cline{2-11} 
+\multicolumn{1}{|l|}{}                                 & url.exct & 0.935       & 0.962          &       &          &          &          &        & 0.805         & 0.843            \\ \cline{2-11} 
+\multicolumn{1}{|l|}{}                                 & url.shr  & 0.809       & 0.882          &       &          &          &          &        & 0.750         & 0.806            \\ \hline \hline
+\multicolumn{1}{|l|}{\multirow{10}{*}{N}}       & brn.sim  &             &                & 0.995 & 0.996    & 0.996    & 0.997    & 0.995  & 1.000         & 0.992            \\ \cline{2-11} 
+\multicolumn{1}{|l|}{}                                 & des.cos  & 0.843       & 0.747          &       &          &          &          &        &               &                  \\ \cline{2-11} 
+\multicolumn{1}{|l|}{}                                 & die.sim  &             &                & 0.999 & 0.999    & 0.999    & 0.999    & 0.999  & 1.000         & 0.999            \\ \cline{2-11} 
+\multicolumn{1}{|l|}{}                                 & nm.exct  & 0.943       & 0.955          & 0.950 & 0.964    & 0.958    & 0.957    & 0.966  & 0.925         & 0.967            \\ \cline{2-11} 
+\multicolumn{1}{|l|}{}                                 & nmt.lev  & 0.000       & 0.000          & 0.000 & 0.000    & 0.000    & 0.000    & 0.000  & 0.000         & 0.000            \\ \cline{2-11} 
+\multicolumn{1}{|l|}{}                                 & nmt.shr  & 0.000       & 0.001          & 0.001 & 0.001    & 0.001    & 0.001    & 0.000  & 0.000         & 0.001            \\ \cline{2-11} 
+\multicolumn{1}{|l|}{}                                 & nmt.cos  & 0.061       & 0.074          & 0.000 & 0.000    & 0.000    & 0.000    & 0.000  & 0.006         & 0.002            \\ \cline{2-11} 
+\multicolumn{1}{|l|}{}                                 & occ.shr  &             &                & 0.965 & 0.685    & 0.765    & 0.764    & 0.746  &               &                  \\ \cline{2-11} 
+\multicolumn{1}{|l|}{}                                 & url.exct & 0.999       & 0.998          &       &          &          &          &        & 0.998         & 0.999            \\ \cline{2-11} 
+\multicolumn{1}{|l|}{}                                 & url.shr  & 0.959       & 0.967          &       &          &          &          &        & 0.944         & 0.975            \\ \hline \hline
+\multicolumn{1}{|l|}{\multirow{10}{*}{P}}       & brn.sim  &             &                & 0.317 & 0.462    & 0.412    & 0.419    & 0.341  & 1.000         & 0.191            \\ \cline{2-11} 
+\multicolumn{1}{|l|}{}                                 & des.cos  & 0.637       & 0.370          &       &          &          &          &        &               &                  \\ \cline{2-11} 
+\multicolumn{1}{|l|}{}                                 & die.sim  &             &                & 0.756 & 0.782    & 0.747    & 0.783    & 0.682  & 1.000         & 0.718            \\ \cline{2-11} 
+\multicolumn{1}{|l|}{}                                 & nm.exct  & 0.055       & 0.013          & 0.047 & 0.045    & 0.034    & 0.036    & 0.037  & 0.032         & 0.023            \\ \cline{2-11} 
+\multicolumn{1}{|l|}{}                                 & nmt.lev  & 0.000       & 0.000          & 0.000 & 0.000    & 0.000    & 0.000    & 0.000  & 0.000         & 0.000            \\ \cline{2-11} 
+\multicolumn{1}{|l|}{}                                 & nmt.shr  & 0.000       & 0.000          & 0.000 & 0.000    & 0.000    & 0.000    & 0.000  & 0.000         & 0.000            \\ \cline{2-11} 
+\multicolumn{1}{|l|}{}                                 & nmt.cos  & 0.035       & 0.031          & 0.000 & 0.000    & 0.000    & 0.000    & 0.000  & 0.009         & 0.002            \\ \cline{2-11} 
+\multicolumn{1}{|l|}{}                                 & occ.shr  &             &                & 0.844 & 0.265    & 0.313    & 0.314    & 0.351  &               &                  \\ \cline{2-11} 
+\multicolumn{1}{|l|}{}                                 & url.exct & 0.782       & 0.828          &       &          &          &          &        & 0.181         & 0.268            \\ \cline{2-11} 
+\multicolumn{1}{|l|}{}                                 & url.shr  & 0.446       & 0.571          &       &          &          &          &        & 0.118         & 0.179            \\ \hline
+\end{tabular}
+\caption{Percentage of zero values extracted for a given feature, for each concrete entity. Results have been separated by set of procedence: (C)lassification, (T)raining, (N)egative samples, (P)ositive samples.}
+\label{tab:features-percentage-of-nans-or-zeroes}
+\end{table}
 
 
 
 
-Consider an horizontal bar plot, showing the average values for features in classifications and in training.
+% Consider an horizontal bar plot, showing the average values for features in classifications and in training.
 % \^-- consider also make comparative distplots of each feature. There are many, 10 features to be exact, which could be separated into 2x5 subplots? .. Just compare all entities with the feature, no need to separate amongst catalogs and etc.
 
-Also show if some are NaN in classification while not-nan in training (doubt it) 
-
-% \subsection{Example of a including data}
-% \label{sec:ex-include-data}
-
-% maybe this section can be removed. But can show the process of including IMDB,
-% and how the features are also a bit specific to the catalog itself (as is the
-% case with imdb's occupations).
+% Also show if some are NaN in classification while not-nan in training (doubt it) 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2278,11 +2293,13 @@ However, finding this weights manually can be quite hard. That is why it is best
 \chapter{Results}
 \label{chap:results}
 
-This chapter presents the results obtained when evaluating the different model used, both baseline and ensembles. The evaluation results for both the baseline and ensemble classifiers presented in this section have been obtained by performing a 5-fold cross validation procedure on the training data. This process will be explained in the following section. The data used to generate this results was the Wikidata training dumps and the external catalog dumps mentioned in \autoref{sec:orig-shape-of-data}.
+This chapter presents the results obtained when evaluating the different models, both baseline and ensembles. The evaluation results for both the baseline and ensemble classifiers presented in this section have been obtained by performing a 5-fold cross validation procedure on the training data (on overview of which is given in the next section). The data used to generate this results was the Wikidata training dumps and the external catalog dumps mentioned in \autoref{sec:orig-shape-of-data}.
 
 The metrics measured during evaluation are: \textit{F1 score}, \textit{Precision}, and \textit{Recall}. These have been previously explained in \autoref{sec:rl-workflow-evaluation}. 
 
-Note that this section includes only the results obtained during evaluation. \autoref{sec:apx-classification-results} contains information on the distributions obtained when predicting the classification sets.
+Note that this section includes only the results obtained during evaluation. In the appendix, specifically in \autoref{sec:apx-classification-results} a brief analysis of the distribution of predictions obtained when predicting on the classification set can be found.
+
+Besides presenting the results, \autoref{sec:sec:comparative-evaluation} will strive to compare the results obtained for the baseline and ensemble models, and point out any differences.
 
 
 \section{Cross Validation}
@@ -2292,12 +2309,9 @@ When evaluating the performance of a given machine learning algorithm, it is des
 
 The training data must come from a similar distribution from the classification data, if not the performance of the algorithm will be very poor when applied to the classification set. This assumption, that the training and classification datasets are \textbf{i.i.d.}\footnote{Independent and identically distributed.} \cite{clauset2011brief}, allows us to take a piece of the training set and set it aside to act as an \textit{approximation} of the classification set. This piece we set aside is called the \textit{validation set}. 
 
-The way this can be used is that we separate the whole training data $D$ into a \textit{validation set} $V$ and a \textit{training set} $T$ such that.
+The way this can be used is that we separate the whole training data $D$ into a \textit{validation set} $V$ and a \textit{training set} $T$ such that:
 
 \begin{align*}
-    V &\in D \\
-    T &\in D \\\\
-    \text{subject to:}& \\
     V &\cup T = D \\ 
     V &\cap T = \varnothing
 \end{align*}
@@ -2342,7 +2356,7 @@ Note that in this example \textit{error} was mentioned as the metric that is bei
 
 This section presents the results of performing a 5-fold cross validation on the baseline models presented in \autoref{sec:baseline-classifiers}. 
 
-In the table below are presented the performance metrics for each classifier applied to each concrete entity. Note that the names of the algorithms have been shortened to make the table fit nicely in the page. The abbreviations are as follow:
+The table below shows the performance metrics for each classifier applied to each concrete entity. Note that the names of the algorithms have been shortened to make the table fit nicely in the page. The abbreviations are as follow:
 
 \begin{itemize}
     \item Linear Support Vector Machine: lsvm
@@ -2421,12 +2435,13 @@ When it comes to \textit{precision} things are less \textit{unanimous}. Most mod
 
 For \textit{Recall}, all models except for \textit{lsvm} and \textit{Naive Bayes} have \textit{Musicbrainz/Musician} as their top concrete entity. \textit{lsvm} and \textit{naive bayes} have \textit{Discogs/Musician} and \textit{IMDb/Director} respectively. All models except \textit{lsvm} and \textit{Naive Bayes} have \textit{Discogs/Musician} as their second best. \textit{lsvm} and \textit{naive bayes} have \textit{Musicbrainz/Musician} and \textit{IMDb/Writer} respectively.
 
-The results presented above are quite interesting since they show that features extracted for \textit{Musicbrainz/Musicians} are most definitely more informative than those for other concrete entities. This makes sense when one looks at (plot of features), it is clear that the information available for this case is much more than in others.
+The results presented above are quite interesting since they show that features extracted for \textit{Musicbrainz/Musicians} are most definitely more informative than those for other concrete entities. Another reason for this may be, as seen in \autoref{sec:feature-viz}, that the \textit{Musicbrainz} catalogs has eight possible features while all other catalogs have seven. 
 
+The table below shows which was the average performance of each model on each catalog in general. The rows have been ordered by \textit{F1 Score}. It can be noted that the average \textit{STD} is quite low compared to the score values. 
 
 \begin{longtable}{|l|l|l|l|l|l|l|l|}
 \hline
-Catalog     & Model                             & Average F1 & Average F1.STD & Average Prec & Average Prec.STD & Average Recall & Average Recall.STD \\ \hline
+Catalog     & Model                             & Avg.F1 & Avg.F1.STD & Avg.Prec & Avg.Prec.STD & Avg.Rec & Avg.Rec.STD \\ \hline
 musicbrainz & mlp          & 0.939254   & 0.002109       & 0.935346     & 0.004446         & 0.943411       & 0.003818           \\
 musicbrainz & rf                    & 0.936259   & 0.001688       & 0.941146     & 0.003505         & 0.931885       & 0.002383           \\
 musicbrainz & lr              & 0.935553   & 0.001814       & 0.940699     & 0.002146         & 0.930909       & 0.002569           \\
@@ -2448,7 +2463,23 @@ discogs     & nb                      & 0.927004   & 0.001386       & 0.897476  
 \end{longtable}
 
 
-The table below contains a summary of the metrics obtained by each classifier, these were obtained by averaging the metrics obtained for each concrete entity.  
+\begin{table}[H]
+\centering
+\begin{tabular}{l|l|l|l}
+                                  & Best Avg.F1 & Best Avg.Prec & Best Avg.Rec \\ \hline
+\multicolumn{1}{l|}{Musicbrainz} & mlp    & nb       & mlp     \\ \hline
+\multicolumn{1}{l|}{IMDb}        & mlp    & mlp      & nb      \\ \hline
+\multicolumn{1}{l|}{Discogs}     & mlp    & mlp      & lsvm    \\ 
+\end{tabular}
+\caption{Best performing baseline models for each catalog according to the three main metrics.}
+\label{tab:best-model-per-metric-average}
+\end{table}
+
+It seems that overrall \textit{mlp} is the best performing baseline model. It is interesting to note that although \textit{naive bayes} appears to have the highest \textit{precision} for \textit{Musicbrainz} is is also the model that has the lowest \textit{recall} for that catalog. The same happens for IMDb, \textit{naive bayes} has the best \textit{recall} but the lowest precision. A slight exception is Discogs, where \textit{lsvm} has the best \textit{recall}, and is the second worse in \textit{precision}.
+
+
+
+Finally, the table below contains a summary of the metrics obtained by each classifier, these were obtained by averaging the metrics obtained for each concrete entity.  
 
 \begin{table}[H]
 \centering
@@ -2466,7 +2497,7 @@ naive\_bayes                      & 0.915145   & 0.003473       & 0.886305     &
 \end{table}
 
 
-
+It can be seen in \autoref{tab:metrics-summary-baseline} that \textit{mlp} is the model with the best \textit{F1 score} (as expected). It also seems that \textit{mlp} has the best average \textit{precision} and is second in best \textit{recall}, with the first place being taken by \textit{naive bayes}.
 
 
 \section{Ensemble Evaluation}
@@ -2488,24 +2519,7 @@ stacked\_classifier      & 0.923439   & 0.003534       & 0.923585     & 0.008592
 
 
 
-Compare with the results exposed before, without ensemble (only the base models)
 
-**** (If have time) See how varying the size of the ensemble changes the result
-
-This can be done by varying the sizes of different ensembles made with different
-methods.
-
-The average error can be obtained by using the existing evaluation procedure.
-
-**** Possibly analyze the output of the base classifiers a bit about their
-distribution, if there are outliers or not
-
-***** How it varies across ensemble methods Then graph them together were each
-hue is a different ensemble method, and the values are the average error rate
-for all catalogs/entities.
-
-***** How it varies for all catalogs Same as above, but choose best ensemble
-method and see how it performs across all catalogs/entities
 
 
 \section{Comparative Evaluation}
@@ -2517,32 +2531,19 @@ Ideas:
     - Compare model summaries, maybe best vs best? 
     - multi kde plot for comparing prec.vs.recall (maybe also best vs best)
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-% \chapter{Belief Propagation}
-% \label{chap:belief-propagation}
+% Compare with the results exposed before, without ensemble (only the base models)
 
-% Or \textit{overlapping record linkage}, not sure which yet
+% **** Possibly analyze the output of the base classifiers a bit about their
+% distribution, if there are outliers or not
 
-% Notes about this are in ~thesis.org~ file
+% ***** How it varies across ensemble methods Then graph them together were each
+% hue is a different ensemble method, and the values are the average error rate
+% for all catalogs/entities.
 
-% \section{Problem}
-% \label{sec:overlapping-problem}
+% ***** How it varies for all catalogs Same as above, but choose best ensemble
+% method and see how it performs across all catalogs/entities
 
-% \subsection{Scaling}
-% \label{sec:overlapping-scaling}
-
-% \subsection{Blocking}
-% \label{sec:overlapping-blocking}
-
-% the subsets to match can be obtained by seeing which entities from external
-% catalogs mapped to the same wikidata entity during blocking
-
-% A naive approach would be to just get the one-to-target probabilities and then
-% check if any of the external catalogs match (0/1). If they do then use the
-% highest probability with target for both.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 
 \chapter{Conclusion}
 \label{chap:conclusion}
@@ -2582,6 +2583,85 @@ bibliografia in formato bibtex
 \label{sec:imdb-profs-to-wikidata}
 
 almost everything said in https://github.com/Wikidata/soweego/issues/165
+
+
+\section{Distribution of features}
+\label{sec:apx-feature-distribution}
+
+This section contains the plots which characterize the distributions of feature values extracted for different concrete entities. 
+
+\autoref{fig:distribution-of-classification-features-1} and \autoref{fig:distribution-of-classification-features-2} present the distribution plot of features in the classification set. While \autoref{fig:distribution-of-training-features-1} and \autoref{fig:distribution-of-training-features-2} presents the distribution for the training set.
+
+\autoref{fig:distribution-of-training-negative-features-1} and \autoref{fig:distribution-of-training-negative-features-2} show the distribution for features of negative samples from the training set. While \autoref{fig:distribution-of-training-positive-features-1} and \autoref{fig:distribution-of-training-positive-features-2} show those for the positive samples.
+
+By comparing the classification and training sets one of the first things that can be noticed is that for features in all cases there is one feature which is almost always one, while in the classification set this happens only in some cases. The featrures with this behaviour are one of the \textit{exact measures}: \textit{exact anmes}, \textit{exact url}.
+
+It is also interesting to note that in most plots, but especially in those for the classification set, the majority of the features values seem to be below \textit{0.7}.
+
+For the training set distributions there is a bit more variations, and feature values are also higher feature values are more common. Here it can be noted that the \textit{exact} features are much more prominent than in the classification set. 
+
+Comparing the positive and negative training distributions one can notice that for the positive distributions, in all cases, the exact matches measures are much higher than the others.
+
+\todo[inline]{finish or remove section. exact measures squash all the others, but removing them would mean they should be presented in some other way.. might leverage the already presented table of percentages of zero values, the complement is the percentage of 1s (since exact is only 1/0)}
+
+\begin{figure}[H]
+  \centering \includegraphics[width=\textwidth]{classification_feature_distribution} 
+  \caption{Feature distribution for the classification set.}
+  \label{fig:distribution-of-classification-features-1}
+\end{figure}
+
+\begin{figure}[H]
+  \centering \includegraphics[width=\textwidth]{classification_feature_distribution_2} 
+  \caption{Feature distribution for the classification set.}
+  \label{fig:distribution-of-classification-features-2}
+\end{figure}
+
+\begin{figure}[H]
+      \centering
+      \includegraphics[width=\linewidth]{training_feature_distribution}
+      \caption{Feature distribution for the training set (1).}
+      \label{fig:distribution-of-training-features-1}
+\end{figure}
+
+\begin{figure}[H]
+      \centering
+      \includegraphics[width=\linewidth]{training_feature_distribution_2}
+      \caption{Feature distribution for the training set (2).}
+      \label{fig:distribution-of-training-features-2}
+\end{figure}
+
+
+
+\begin{figure}[H]
+      \centering
+      \includegraphics[width=\linewidth]{features_distribution_negative_samples_1}
+      \caption{Feature distribution for the negative samples of the training set (1).}
+      \label{fig:distribution-of-training-negative-features-1}
+\end{figure}
+
+\begin{figure}[H]
+      \centering
+      \includegraphics[width=\linewidth]{features_distribution_negative_samples_2}
+      \caption{Feature distribution for the negative samples of the training set (2).}
+      \label{fig:distribution-of-training-negative-features-2}
+\end{figure}
+
+
+
+\begin{figure}[H]
+      \centering
+      \includegraphics[width=\linewidth]{features_distribution_positive_samples_1}
+      \caption{Feature distribution for the positive samples of the training set (1).}
+      \label{fig:distribution-of-training-positive-features-1}
+\end{figure}
+
+\begin{figure}[H]
+      \centering
+      \includegraphics[width=\linewidth]{features_distribution_positive_samples_2}
+      \caption{Feature distribution for the positive samples of the training set (2).}
+      \label{fig:distribution-of-training-positive-features-2}
+\end{figure}
+
 
 
 \subsubsection{Ensembles Evaluation Results}
@@ -2815,5 +2895,10 @@ musicbrainz & musician & vs & 652175 & 0.024370 & 0.115483 & 0.000000 & 0.001089
   \caption{Distribution of predictions for classifier whose output is in a binary space.}
   \label{fig:apx-ensemble-classification-barplot}
 \end{figure}
+
+
+
+
+
 
 \end{document}
