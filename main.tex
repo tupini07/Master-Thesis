@@ -2499,6 +2499,16 @@ naive\_bayes                      & 0.915145   & 0.003473       & 0.886305     &
 
 It can be seen in \autoref{tab:metrics-summary-baseline} that \textit{mlp} is the model with the best \textit{F1 score} (as expected). It also seems that \textit{mlp} has the best average \textit{precision} and is second in best \textit{recall}, with the first place being taken by \textit{naive bayes}.
 
+\begin{figure}[h]
+  \centering \includegraphics[width=\textwidth]{baseline_evluation_main_metrics_barplot} 
+  \caption{Barplots of the evaluation metrics. Separated by concrete entity.}
+  \label{fig:baseline-evaluation-barplots}
+\end{figure}
+
+A graphical representation of the table above can be seen in \autoref{fig:baseline-evaluation-barplots}. Here it can be better appreciated which concrete entities are easier to classify for which algorithms. For instance, it seems that all models have trouble with \textit{IMDb/Actor}, in all metrics. It can also be seen that \textit{naive bayes} tends to have a high recall in all cases, and poor \textit{precision} in most. Another interesting thing to note is that all models have a much lower recall for \textit{Musicbrainz/Band}, even if the precision they attain for this same entity is quite good when compared against the others. As expected, \textit{Musicbrainz/Musician} is the overall best classified concrete entity. 
+
+It can also be appreciated that while \textit{mlp} almost always has the best performance, some other models may have similar or event better scores for some metrics. For instance, all models have a higher precision for \textit{Musicbrainz/Band} than \textit{mlp}, and most have a higher recall for \textit{IMDb/Musician}. This suggests that using only the \textit{opinion} of \textit{mlp} would not be the optimal strategy to get the best performance. A better approach would be to mix these predictions by means of an ensemble method.
+
 
 \section{Ensemble Evaluation}
 \label{sec:ensemble-evaluation}
