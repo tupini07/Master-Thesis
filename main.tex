@@ -73,6 +73,7 @@
 \lstset{style=mystyle}
 
 \newcommand{\footurl}[1]{\footnote{\url{#1}}}
+\newcommand{\soweego}[0]{\texttt{soweego}}
 
 \linespread{1.25}
 
@@ -179,8 +180,8 @@ This project's goal is to aid in the development of the
 , which is a data importing system that adds references to Wikipedia
 pages.
 
-\texttt{soweego} was developed as a answer to the amount of Wikipedia pages that
-don't have reliable external references, which are necessary to ensure data
+\texttt{soweego} was developed as an answer to the amount of Wikipedia pages that
+do not have reliable external references, which are necessary to ensure data
 quality. Specifically, its aim is to align the Wikidata entities with a set of
 external databases (catalogs).
 
@@ -188,18 +189,18 @@ external databases (catalogs).
 \section{A brief overview of Wikidata}
 \label{sec:intro-wikidata}
 
-Here we define \textit{Wikidata} as the \textit{knowledge base} that supports
+\textit{Wikidata} is defined as the \textit{knowledge base} that supports
 \textit{Wikipedia} and all of the \textit{Wikimedia Foundation}
-projects\footurl{https://wikimediafoundation.org/}. A \textit{knowledge base} is a colection of statements of and about the world. There are many different knowledge bases available on the web but, \textit{Wikidata} is one of the most complete out there, it also has a very active and extense comunity of users and volunteers. 
+projects\footurl{https://wikimediafoundation.org/}. A \textit{knowledge base} is a collection of statements of and about the world. There are many different knowledge bases available on the web but, \textit{Wikidata} is one of the most complete out there, it also has a very active and extense community of users and volunteers. 
 
-In this specific \textit{knowledge base} there are different \textit{items} which are interconnected and intergrated with each other. They achieve this through the use of a \textit{Wikidata} construct called 
+In this specific \textit{knowledge base} there are different \textit{items} which are interconnected and integrated with each other. They achieve this through the use of a \textit{Wikidata} construct called 
 \textit{properties}. 
 
 Each \textit{item} is identified by using a special tag named \texttt{QID} (Q-identifier), it was given this name because each of these unique values starts with the letter \textit{Q}. Information about a specific item (QID) is
 recorded by the use of \textit{statements} which are \textit{key-value} pairs
 that contain specific information about each item.
 
-The key of each statement is a \textit{property}, and the value can be a reference to anoche item via its QID, a string, a number, or media
+The key of each statement is a \textit{property}, and the value can be a reference to another item via its QID, a string, a number, or media
 files\footurl{https://www.wikidata.org/wiki/Help:Statements}. Statements can
 also be extended by the use of \textit{qualifiers} which are \textit{extra information} about the
 statement. An example of this can be a person who studied at some university for
@@ -208,12 +209,12 @@ a certain period of time (this period of time would be the qualifier).
 Properties\footurl{https://www.wikidata.org/wiki/Help:Properties}, like items,
 have their own ID. These are known as \texttt{PID} (Property-ID). Some properties may accept only one value, or multiple values, and
 some may also be constrained in some specific way: for example, its value can
-only be string composed of one letter.
+only be a string composed of one letter.
 
 In Wikidata both \textit{items} and \textit{properties} are associated with a name and a
-brief description, the main difference is how they are used: items have the
-goal of representing a specific entity while properties are used to express 
-information regarding said entity. Another difference between them would be that \textit{intems} are displayed on their respective page on Wikipedia and \textit{properties} are not.
+brief description, the main difference is how they are used: items, have the
+goal of representing a specific entity while properties, are used to express 
+information regarding said entity. Another difference between them would be that \textit{items} are displayed on their respective page on Wikipedia and \textit{properties} are not.
 
 Consider the QID \textit{Q42}, which identifies the writer
 \textit{Douglas Adams}. Below is a table representing which shows some of the statements about him
@@ -234,7 +235,7 @@ using QIDs and PIDs.
   \label{tab:intro-wikidata-douglas42}
 \end{table}
 
-Here it is possible to see that this way of expressinug information is very
+Here it is possible to see that this way of expressing information is very
 flexible and allows for a quick and rich construction of knowledge. 
 
 
@@ -246,9 +247,9 @@ flexible and allows for a quick and rich construction of knowledge.
 \chapter{State of the art}
 \label{chap:state-of-the-art}
 
-This chapter will mainly cover \textit{record linkage}, namely a standard method to link a pair of databases. The next section will give a brief introduction to the record linkage workflow and mention some of the most common terms used in this document. \autoref{sec:rl-as-a-workflow} will show how record linkage can be thought of as a pipeline, and every step will be explained in depth. Finally, \autoref{sec:rl-related-work} will mention related work.
+This chapter will mainly cover \textit{Record Linkage}, namely a standard method to link a pair of databases. The next section will give a brief introduction to the record linkage workflow and mention some of the most common terms used in this document. \autoref{sec:rl-as-a-workflow} will show how record linkage can be thought of as a pipeline, and every step will be explained in depth. Finally, \autoref{sec:rl-related-work} will mention related work.
 
-\section{Introduction to record linkage}
+\section{Introduction to Record Linkage}
 \label{sec:rl-intro}
 
 \textit{Record linkage} is commonly used when there is a need for data integration. This is achieved by finding pairs of records which represent the same underlying \textit{entity}, and by joining them according to previously defined set of criteria. It is possible to apply the technique both for connecting a pair of databases (which we call \textit{catalogs} in our use case) and for removing duplicates from one single catalog.
@@ -256,7 +257,7 @@ This chapter will mainly cover \textit{record linkage}, namely a standard method
   
 
 For a more formal description of the problem, suppose there are two datasets ($\Psi$ and $\Omega$). The goal of record linkage is to find all those pairs $(x, y)$ where $x \in \Psi$ and $y \in \Omega$, such that both $x$ and $y$ refer to the same underlying entity. Hence, the algorithm must compare the entities from $\Psi$ and $\Omega$, and decide which of them are a match (i.e., refer to the same underlying entity) and which are not. 
-Record linkage can also be naturally expressed or viewed as a problem of clustering, in which the objective is to cluster all the entities representing the same \textit{latent entity} together.
+Record Linkage can also be naturally expressed or viewed as a problem of clustering, in which the objective is to cluster all the entities representing the same \textit{latent entity} together.
 
 The goal, as defined in \cite{fellegi69_theor_recor_linkag}, is to find two different sets $M$ and $U$, where $M$ is composed of all matching pairs and $U$ contains all non-matching ones:
 
@@ -271,27 +272,33 @@ customers from two banks, and each customer is associated with their government
 ID, or some other unique identifier. In this case, it is just a matter of
 matching on this attribute and merging the resulting pairs.
 
-However, it is commonly the case (and its the case for this project as well), that
+However, it is commonly the case (as is the case for this project as well), that
 catalogs do not have a common unique identifying attribute, thus requiring a less trivial approach.
 
 As shown later in this chapter (\autoref{sec:rl-main-approaches}), there are two main methods of performing record linkage, but basically they can be separated into methods which match directly comparing pairs of fields, and methods which measure the similarity between said pairs.
 
-Besides not having a unique identifier, it may also be the case that the datasets that need to be merged have some mistakes. This is something which is especially noticeable when we are working with data representing people: maybe the names were misspelled, or the first and last names are reversed, or maybe the format of the date is not standardised, or the dates presented are simply not possible, since they are too forward in the future or too far in the past, among other possible problems. 
+Besides not having a unique identifier, it may also be the case that the datasets that need to be merged, have some mistakes. This is something which is especially noticeable when we are working with data representing people. These are some of the mistakes that might come up: 
 
-Many of these can be somewhat reduced by preprocessing the dataset, but
-others may not, and it is necessary to account for them when working with the data.
+\begin{itemize}
+\item The names were misspelled.
+\item The first and last names are reversed.
+\item The format of the date is not standardised.
+\item The dates presented are simply not possible, since they are too forward in the future or too far in the past.
+\end{itemize}
 
+Many of these can be somewhat reduced by preprocessing the dataset, but others may not, and it is necessary to account for them when working with the data.
 
 To give an example of a situation in which \textit{record linkage} would be used,
-suppose there are two databases of clients which need to be joined for some company. Below is a representation of said databases.
+suppose there are two databases of clients which need to be joined for some company. The tables below represent said databases.
 
 \begin{table}[H]
   \centering{}
-  \begin{tabular}{l|l|l|l}
-    First Name & Last Name & Government ID & Birth Year \\ \hline
-    Brenda     & Williams  & 42606         & 1990       \\
-    Chi        & Yu        & 31426         & 1950       \\
-    Bruno      & Lima      & 10958         & 1956      
+  \begin{tabular}{l|l|l}
+    First Name & Last Name  & Birth Year \\ \hline
+    Brenda     & Williams   & 1990       \\
+    Meng        & Yu         & 1950       \\
+    Gary        & Crowley   &  1956 \\
+    Bruno      & Lima       & 1956      
   \end{tabular}
   \caption{Example catalog from bank \#1}
   \label{tab:ex-catalog-1}
@@ -300,79 +307,27 @@ suppose there are two databases of clients which need to be joined for some comp
 
 \begin{table}[H]
   \centering{}
-  \begin{tabular}{l|l|l|l}
-    First Name & Last Name & Government ID & Birth Year \\ \hline
-    Emma       & Farr      & 24664         & 1971       \\
-    Yu         & Chi       & 31426         & 1950       \\
-    Gary       & Crowley   & 45907         & 1956      
+  \begin{tabular}{l|l|l}
+    First Name & Last Name  & Birth Year \\ \hline
+    Emma       & Farr       & 1971       \\
+    Yu         & Meng       & 1950       \\
+    Juri       &  Petrov    & 1932 \\
+    Gary       & Crowley    & 1956      
   \end{tabular}
   \caption{Example catalog from bank \#2}
   \label{tab:ex-catalog-2}
 \end{table}
 
-In this example it is possible to see that both catalogs have a unique, shared key (the
-\textit{Government ID} column). So for linking the records its easy to just go ahead
-and use that to find the matches.
-
-However, if the catalogs did not have a common unique identifier (or if the
-data is known not to be 100\% trustworthy) then its necessary to check other attributes. In
-this specific example the data is quite good, although there is an entry where
-the first and last name are reversed (\textit{Chi Yu} and \textit{Yu Chi}). This
-situation is quite common in real-world datasets.
-
-\subsection{Terminology}
-\label{sec:rl-terminology}
-
-In this section, we will review the terminology which is extensively used in this work with respect to record linkage.
-
-\subsubsection{Entity}
-\label{sec:rl-term-entity}
-
-An entity refers to a single data point in a dataset (catalog). \textit{Entities} are what is matched when performing record linkage. An entity is composed of one identifier, and a collection of fields (either quantitative or qualitative) which are specific to each problem. 
-  
-In the people use case, the entities will most likely have fields representing personal information \textit{(name, birth date, death date, etc.)}. If, on the other hand there is a problem where its necessary to perform record linkage on houses, then it would probably have fields like \texttt{total area, number of floors, number of rooms, etc}.
+The catalogs above do not have a unique identifier which unequivocally links them, so it is necessary to check the attributes which are available. The fields can be compared in turn and if they all match then it can be said that two entities are the same. For example, it can be easily seen that \textit{Gary Crowley} is in both datasets since an entity with said name exists in both and their birth dates match. On the other hand, nothing can be confidently said about the other possible matches since for none of them all the fields match. There is a pair (\textit{Meng Yu} in the first dataset, and \textit{Yu Meng} in the second) which might be the same person since the names are similar and they share a birth date. For this last instance there is no way to be sure if the first and last names are reversed in one of the dataset of if they are actually different people. This kind of situation is quite common in real-world datasets.
 
 
-\subsubsection{Catalog}
-\label{sec:rl-term-catalog}
 
-A catalog is a collection of entities and its the source of the data. The terms \textit{catalog} is a synonym with \textit{dataset}, and in this work they will be used interchangeably. \textit{Entities} are found inside catalogs. 
-Any source of data can be a catalog: books, databases, spreadsheets, etc.
-
-\hfill 
-
-As stated before, entities are always assigned an identifier. This said identifier is always unique, and specific to a distinct catalog (rarely this identifier is shared among different catalogs). 
-
-When performing record linkage, it is desirable to end up with a list of identifiers pairs, where each pair describes a single real-world entity, and its identifiers tells us which record in the corresponding dataset has information on the specific entity.
-
-
-\subsubsection{Source and Target}
-\label{sec:rl-term-source-and-target}
-
-\textit{source} and \textit{target} are not always used in the record linkage literature,
-since most of the time it is common to group entities in a series of catalogs.
-However, as is the case of this work, sometimes there is a \textit{source
-  catalog} which is one that needs to be matched against other \textit{target} catalogs.
-
-
-This is especially useful when there is no need to match all the catalogs amongst
-themselves, since matching a \textit{source catalog} against multiple target ones
-requires a much more diminished number of comparisons than it would do if matching all catalogs among themselves.
-
-When using a \textit{source catalog}, the record linkage algorithm is no longer matching
-source entities into a unique latent (underlying) entity, rather, it will match
-them against a concrete entity (e.g. an entity from the source catalog).
-
-In related record linkage studies, these terms are also commonly referred to as \cite{Sayers2015}
-\textit{master file} (instead of source), and \textit{file of interest} (instead
-of target) .
-   
 
 
 \subsection{Main Approaches}
 \label{sec:rl-main-approaches}
 
-There are two main approaches\footnote{Besides these two approaches, in the record linkage literature we commonly find the term \textit{clerical}, which entails \textit{manual} work, i.e., by a clerk.} to consider when talking about record linkage, namely 1)\textit{deterministic}, and 2) \textit{probabilistic}. 
+There are two main approaches\footnote{Besides these two approaches, in the record linkage literature we commonly find the term \textit{clerical}, which entails \textit{manual} work, i.e., by a clerk.} to consider when talking about record linkage: 1)\textit{deterministic}, and 2) \textit{probabilistic}. 
 
 The main difference between these is the way in which the pairs of entities are compared. A more thorough description of each method follows.
 
@@ -380,16 +335,12 @@ The main difference between these is the way in which the pairs of entities are 
 \subsubsection{Deterministic}
 \label{sec:rl-approach-deterministic}
 
-Deterministic record linkage assumes that
-all catalogs hold a shared field which can be used to identify an entity (e.g., the
-\textit{name} of a person). At the end of this procedure, it is possible to be absolutely certain of
-which records from the catalogs are a match and which aren't (hence the term
-\textit{deterministic}).
+In deterministic record linkage all fields are compared to see if they match. If the fields do match, then it can be said that these entities are the same. However, if any of the fields that are being compared only partially match, then the pair is considered as a non-match. 
 
 Take for instance the task of joining a catalog which provides information regarding where someone
 lives with another catalog that provides their age. Both catalogs only contain the
-name of the person as an identifying feature, so we can use a composition of
-these two fields (attributes) to identify each entity.
+name of the person as an identifying feature, so a composition of
+these two fields (attributes) can be used to identify each entity.
 
 \begin{table}[H]
   \centering{}
@@ -418,32 +369,24 @@ After matching these results, there is a clear match for \textit{Sarah Miller}, 
 names are different and there is no way to be sure if \textit{Johnny} is just a nickname (making them the same person)
 or if these two entities are actually different people.
 
-Note also that in this example both rows coincide completely on the \textit{Last Name} field. However, when doing deterministic record linkage partial matches shouldn't be considered.
+Note also that in this example both rows coincide completely on the \textit{Last Name} field. However, when doing deterministic record linkage partial matches are not considered \cite{dusetzina_m_2014}, because there can be no uncertainty in the match.
 
-It should be noted that this linking procedure is not optimal when the provided data is not very
-clean. Preprocessing steps can be taken to ensure that the catalogs are as
+It should be noted that this linking procedure is not optimal when the provided data is not very clean. Preprocessing steps can be taken to ensure that the catalogs are as
 uniform as possible, but even so, it is never easy to know if there might be match missing or not.
 
 
 \subsubsection{Probabilistic}
 \label{sec:rl-approach-probabilistic}
 
-In simple terms, probabilistic record linkage \cite{Sayers2015} compares a shared subset of fields of a given entity pair,
-then decides, whether the pair is a match or not, with a certainty value.
+In simple terms, probabilistic record linkage \cite{Sayers2015} compares a shared subset of fields of a given entity pair, then decides, whether the pair is a match or not, with a certainty value. The main difference with respect to \textit{deterministic record linkage} is that now it is allowed for fields to partially match.
 
-By default, the task is achieved by comparing all entities in the source
-catalog with all entities in the target catalog (unless we opt for \textit{blocking}, as explained in \autoref{sec:rl-workflow-blocking}).
+By default, the task is achieved by comparing all entities in the source catalog with all entities in the target catalog (unless we opt for \textit{blocking}, as explained in \autoref{sec:rl-workflow-blocking}). 
 
-In its most basic form, two entities are taken and compared in all their fields; if any pair of fields are the same, then it should be said that this specific pair matches. If all
-fields are the same then it may be proclaimed a complete match, otherwise it is only seen as a partial match.
+In its most basic form, two entities are taken and compared in all their fields; which may then match completely if they are exactly the same, or partially match if they are similar but not exactly equal. This \textit{partial match} of the fields is measured by a percentage stating how similar they actually are. 
 
-Instead of checking whether the fields exactly match or not, it is quite common to choose to measure how similar the two fields are. This similarity can be measured
-in a large number of ways. For example, \textit{edit distance} for strings, which is basically the number of changes needed to transform one of the strings into the other in order to make them equal (either by adding, removing or updating characters). It is
-important to respect what the results of these comparisons mean. 
+Any similarity metric can be used to measure partial similarity. For example, \textit{edit distance} for strings, which is basically the number of changes needed to transform one of the strings into the other in order to make them equal (either by adding, removing or updating characters). 
 
-As a standard, if a comparison yields a $0$ then it means the two fields are completely
-different, and if it yields a $1$ they're the same, any value in between
-specifies how similar or how diverse the fields are.
+As a standard, if a comparison yields a 0 then it means the two fields are completely different, and if it yields a 0 they are the same, any value in between specifies how similar or how diverse the fields are.
 
 Following the example catalogs defined in the previous section, now it is possible to compare the \textit{First Name} and \textit{Last Name} fields separately.
 Suppose they are compared with a function $fc$ that provides the percentage of
@@ -455,23 +398,17 @@ fc(s1, s2) = \frac{\| s1 \cap s2 \|}{\| s1 \cup s2 \|}
 $$
 
 
-It might be that both last names are exactly the same, as is with the first name for
-\textit{Sarah}. However, with the first name for \textit{John} it would show a similarity of only $0.8$ with \textit{Johnny}. Taking both the similarity given
-for the first and last names then it is possible to make a better informed final decision on
-whether both records should be marked as a definite match or not. 
-For instance, it may be said that if the average similarity assigned to all fields is greater than $0.5$ then it may be stated that a pair is a match. Under this assumptions \textit{John Piers} and
-\textit{Johnny Piers} will be classified as the same person.
+It might be that both last names are exactly the same, as is with the first name for \textit{Sarah}. However, with the first name for \textit{John} it would show a similarity of only $0.8$ with \textit{Johnny}. Taking both the similarity given for the first and last names then it is possible to make a better informed final decision on whether both records should be marked as a definite match or not.  For instance, it may be said that if the average similarity assigned to all fields is greater than $0.5$ then it may be stated that a pair is a match. Under this assumptions \textit{John Piers} and \textit{Johnny Piers} will be classified as the same person.
 
 The probabilistic record linkage approach is the one which will be implemented in this project.
-
-
-
 
 
 \section{Record Linkage as a Workflow}
 \label{sec:rl-as-a-workflow}
 
-An abstraction which is commonly used when performing record linkage is that of viewing the problem as a workflow \cite{christen12_data}, where each step is in charge of performing a different transformation to the data. Below a graphic represents said steps.
+An abstraction which is commonly used when performing record linkage is that of viewing the problem as a workflow \cite{christen12_data}, where each step is in charge of performing a different transformation to the data. In probabilistic record linkage \cite{fellegi69_theor_recor_linkag} the resulting matches are usually segmented into three sets depending on how sure the probabilistic model was that a pair was a match or not. For example, pairs for which the certainty of the model falls in the interval $[0, 0.4]$ are \textit{non-matches}. Pairs whose certainty of a match is in $[0.4, 0.6]$ are \textit{potential matches}. And those whose certainty is in the range $[0.6, 1.0]$ are \textit{matches}.
+
+\autoref{fig:rl-workflow} shows a graphical representation of said steps.
 
 \begin{figure}[H]
   \centering \includegraphics[width=\textwidth]{rl-workflow}
@@ -479,7 +416,12 @@ An abstraction which is commonly used when performing record linkage is that of 
   \label{fig:rl-workflow}
 \end{figure}
 
-This process is separated into five steps and it may be applied to $n$ input catalogs, the most important part is for them to be submitted to the \textit{Data Preprocessing} step so they're as uniform and clean as possible. In the following sections a more in-depth description of each step will be provided.
+This process is separated into five steps and it may be applied to $n$ input catalogs, the most important part is for them to be submitted to the \textit{Data Preprocessing} step so they're as uniform and clean as possible. 
+
+
+
+In the following sections a more in-depth description of each step will be provided.
+
 
 \subsection{Data Preprocessing}
 \label{sec:rl-workflow-data-preprocessing}
@@ -527,22 +469,8 @@ catalog or not, so in this specific example the
   \label{tab:data-prepr-ex-dirty}
 \end{table}
 
-Before proceeding, it is necessary to define what is actually considered as a clean catalog for this
-specific example. Suppose that the following format is required:
 
-\begin{enumerate}
-\item All text should be written with Latin letters.
-\item The dates should be formatted as \textit{DD/MM/YYYY}.
-\item The provided text should not have any accented letters.
-\end{enumerate}
-
-Keeping these rules in mind its possible to readily see that the input catalog has some
-problems. 
-
-Specifically, since the first entity has its first and last names written
-with Cyrillic letters, and the date format is different from what is expected. The
-second entity's first and last name use accented letters. And finally, the date of
-the third entity also does not respect the stated date requirements.
+Before proceeding it is necessary to clean this data. Specifically, since the first entity has its first and last names written with Cyrillic letters, and the date format is different from what is expected. The second entity's first and last name use accented letters. And finally, the date of the third entity also does not respect the stated date requirements.
 
 After passing the input catalog through the data preprocessing step the following output will be available:
 
@@ -604,8 +532,7 @@ $$
 There are many possible blocking rules that can be used
 \cite{christen12_survey_index_techn_scalab_recor_linkag_dedup}, ranging from the
 very simple \textit{exact string match}, to the more complex phonetical q-gram
-comparison of text. When choosing one, its important to keep in mind that the more
-precise it is, the more computational resources it needs.
+comparison of text. Usually, the more a blocking algorithm is complex the more computational power it requires. A more complex algorithm may be more precise than a simpler one. For example, a metric which compares multiple subsets of a text may be resistant to minor spelling errors, while one that compares the string character by character may not. However, the latter is less computationally expensive to perform.
 
 These rules are applied to a pair of fields from two different entities. For
 example, its possible to apply an \textit{exact string match} rule to the \textit{name}
@@ -649,10 +576,7 @@ not a match and later filter this out during the actual \textit{linking} step
 (see \autoref{sec:rl-workflow-linking}), than using a more precise blocking but
 which leaves out potential matches. 
 
-In other words, when choosing a blocking
-rule its preferable to choose one with higher \textit{recall} and lower \textit{precision}
-(obviously, the choice of this trade-off needs to be done on an individual per problem
-basis).
+In other words, when choosing a blocking rule its preferable to choose one which tends to include more entities than necessary, than having one which only includes few non-matches. Obviously, the choice of this trade-off needs to be done on an individual per problem basis.
 
 As an example suppose the following two catalogs are available. They both contain the
 first and last names, and the zip code of each person. The first also contains
@@ -709,16 +633,13 @@ way.
 
 The feature extraction step is in charge of taking a pair of entities and
 extracting from them a set of \textit{features}, which characterize how similar
-this pair of entities is. The pair of entities for which we extract the features
+this pair of entities is. The pair of entities for which the features are extracted
 are those pairs which the previous \textit{blocking} step said may be good
 candidates for a match.
 
-As mentioned before, each entity is composed of a series of fields. 
-However, rather than
-taking the two entities directly and comparing their raw fields, an intermediary representation of a pair of entities is derived, said representation is also
-composed of fields and will be known as the \textit{feature vectors}. Each of
-these fields (entries in the feature vector) is obtained by applying a function
-to a couple of fields taken from a pair of entities.
+As mentioned before, each entity is composed of a series of fields. By comparing said fields, and extracting a value from each comparison, a new vector can be generated. This vector, called \textit{feature vector}, characterizes the similarity between each field of the pair of entities.
+
+The comparison itself is made by applying a function to a given pair of fields. 
 
 $$
 feature_i = f(entity_y.field_i , entity_z.field_q)
@@ -770,11 +691,7 @@ In this example, only two fields were used and one comparison function was appli
 however more fields and potentially many different comparison
 functions can be used for the same fields.
 
-The aggregation of these features is said to be an intermediary representation
-of the pair of entities, and it has all the information needed for the next step
-(\textit{linking}) to make the decision on whether the pair is a match or not.
 
-  
 \subsection{Linking/Classification}
 \label{sec:rl-workflow-linking}
 
@@ -782,25 +699,10 @@ In the \textit{linking} (also called \textit{classification}) step, the list of 
 
 There are many decision models to choose from and that might be considered to be utilized. \cite{gu06_decis_model_recor_linkag}.
 The \textit{go to} model for record linkage is the basic probabilistic model defined in
-\cite{fellegi69_theor_recor_linkag}. Other possible models \cite{Elfeky} include
-using the \textit{k-means} \cite{Hartigan1979} clustering algorithm to cluster
-the feature vectors into \textit{matched}, \textit{unmatched} and
-\textit{potential match} clusters, or if there is labeled data available then
-it is possible to train a supervised machine learning algorithm to learn when to classify
+\cite{fellegi69_theor_recor_linkag}. Other possible models \cite{Elfeky} include using the \textit{k-means} \cite{Hartigan1979} clustering algorithm to cluster the feature vectors into \textit{matched}, \textit{unmatched} and \textit{potential match} clusters, or if there is labeled data available then it is possible to train a supervised machine learning algorithm to learn when to classify
 feature vectors as a match or not.
 
-Regardless of the model used, the output of this step can be either two sets
-(\textit{matches} and \textit{non-matches}) or three sets (\textit{matches},
-\textit{non-matches}, and \textit{potential matches}). The \textit{potential matches} set of pairs can be reviewed manually to define the final matching
-status.
-
-In probabilistic record linkage \cite{fellegi69_theor_recor_linkag} the
-resulting matches are usually segmented into three sets depending on how sure
-the probabilistic model was that a pair was a match or not. For example, pairs
-for which the certainty of the model falls in the interval $[0, 0.4]$ are
-\textit{non-matches}. Pairs whose certainty of a match is in $[0.4, 0.6]$ are
-\textit{potential matches}. And those whose certainty is in the range $[0.6,
-1.0]$ are \textit{matches}.
+Regardless of the model used, the output of this step can be either two sets (\textit{matches} and \textit{non-matches}) or three sets (\textit{matches}, \textit{non-matches}, and \textit{potential matches}). Usually, the set of potential matches is reviewed manually to define which are actually a match \cite{dusetzina_m_2014}.
 
 To follow with the previous example, consider as input to the linking step
 the feature vectors in \autoref{tab:ex-feature-levens}. And suppose that as a
@@ -829,25 +731,22 @@ feature vectors would yield the following results:
   \label{tab:ex-linking}
 \end{table}
 
-With these results it is now possible to merge the corresponding entities (in this case
-$(A2, B2)$). Just to clarify, the merging procedure itself is not part of the
-record linkage process.
+With these results it is now possible to merge the corresponding entities (in this case $(A2, B2)$). Just to clarify, the procedure to join the data in the pairs predicted as \textit{matches} is not part of the record linkage process.
+
+
 
 \subsection{Evaluation}
 \label{sec:rl-workflow-evaluation}
 
-As the name suggests, in the evaluation step, the evaluation of the record linkage procedure performance is made. To do this its necessary to have some previously labeled data that  may  be used to calculate the metrics given the prediction of the model. This
-\textit{data} is nothing more than the labeled pairs of entities which say whether
-they're actually a match or not\footnote{similar to the \textit{training set} when reffering to supervised machine learning}, and it should be different
-from the one that’s currently being classified.\footnote{\textit{classification
-    set} in supervised learning}.
+As the name suggests, in the evaluation step, the evaluation of the record linkage procedure performance is made. Record linkage can be thought of as a supervised machine learning problem. As such, it is results are evaluated like those of any other supervised algorithm.
+
+To do this its necessary to have some previously labeled data that  may  be used to calculate the metrics given the prediction of the model. This \textit{data} is nothing more than the labeled pairs of entities which say whether they are actually a match or not\footnote{similar to the \textit{training set} when referring to supervised machine learning}, and it should be different from the one that’s currently being classified.\footnote{\textit{classification set} in supervised learning}.
 
 The metrics considered when evaluating a record linkage pipeline are the commonly used
 \cite{Powers2011_evaluation} \textit{precision}, \textit{recall}, and
 \textit{$F_1$-Score}.
 
-Before defining the above metrics more in depth, its necessary to firstly define the
-concept of \textbf{confusion matrix} from which they are derived.
+Before defining the above metrics more in depth, its necessary to firstly define the concept of \textbf{true/false positive} and \textbf{true/false negatives} from which they are derived.
 
 \begin{table}[H]
   \centering
@@ -896,8 +795,7 @@ $$
 \subsubsection{Recall}
 \label{sec:evaluation-metric-recall}
 
-\textit{Recall}, on the other hand, measures the percentage of \textit{True
-  Positives} which were actually classified as \textit{positive}. The less \textit{positive} examples are missclassied as \textit{negative}, the higher the
+\textit{Recall}, on the other hand, measures the percentage of \textit{positive} values which where actually predicted as \textit{positive}. The less \textit{positive} examples are miss-classfied as \textit{negative}, the higher the
 \textit{Recall} will be. It is defined as:
 
 $$
@@ -906,7 +804,7 @@ $$
 
 Recall alone is not an informative metric, since achieving a high recall is
 quite easy: just classifying everything as \textit{positive} will yield a
-perfect \textit{recall}.
+perfect \textit{recall}. For instance, if all samples are predicted as \textit{positive} then $FN = \varnothing$, meaning that $\frac{\|TP\|}{\|TP\| + 0} = 1$.
 
 
 
@@ -922,13 +820,7 @@ $$
 F_1 = 2 * \frac{Precision * Recall}{Precision + Recall}
 $$
 
-Even though the $F_1$ metric is commonly used for evaluating machine learning
-problems, its usage for record linkage has been criticized
-\cite{hand17_note_using_f_measur_evaluat} since it presupposes that both
-\textit{precision} and \textit{recall} are of equal importance. In some record
-linkage scenarios it might be that a higher \textit{recall} is more valued than a
-higher \textit{precision} (or vice versa). In this cases the $F_1$ metric should
-be used with care, and analyzed together with \textit{precision} and \textit{recall}.
+Even though the $F_1$ metric is commonly used for evaluating machine learning problems, its usage for record linkage has been criticized \cite{hand17_note_using_f_measur_evaluat} since it presupposes that both \textit{precision} and \textit{recall} are of equal importance. In some scenarios, be them record linkage or other machine learning problems, it might be that a higher \textit{recall} is more valued than a higher \textit{precision} (or vice versa). In this cases the $F_1$ metric should be used with care, and analyzed together with \textit{precision} and \textit{recall}. 
 
 
 
@@ -956,20 +848,26 @@ For cases where there are different, but related, entities, a technique called \
 \chapter{Problem Statement}
 \label{chap:problem-statement}
 
-Currently, the latest available snapshot in the Grafana Wikimedia interface\footnote{Snapshot for \textit{2019-09-05} can be seen at \url{https://grafana.wikimedia.org/dashboard/snapshot/jWeAFAg0QczHXK62h7rXvJPH2Zh4D609}} states that there are a total of \textit{744.4 million} \textbf{statements} in Wikidata. Of these, a full \textit{200.5 million (26.89\%)} are un-referenced, which represents a large chunk of the total statments. This means that a sure way to improve the quality of Wikidata is to develop a way in which these references can be populated with its respective reference. This is exactly the objective of \texttt{soweego}: linking Wikidata entities to trusted, external catalogs.
+Wikidata is a huge repository of knowledge which people from all over the world consume. However, a big part of the information it contains can not be verified since it is missing references to external, and trusted, sources of information. These references are essential to ensure that the content is of the highest quality. 
 
-As a starting point, \texttt{soweego} currently focuses specifically on the \textit{people} domain. At the time of this writing, the \textit{Wikidata Statistics} page\footurl{https://www.wikidata.org/wiki/Wikidata:Statistics}, states that there are a total of 61 million entities, of which 5.2 million are people (roughly 10\% of all entities). 
+Currently, the latest available snapshot in the Wikimedia Grafana interface\footnote{Snapshot for \textit{2019-09-05} can be seen at \url{https://grafana.wikimedia.org/dashboard/snapshot/jWeAFAg0QczHXK62h7rXvJPH2Zh4D609}}, states that there are a total of \textit{744.4 million} \textbf{statements} in Wikidata. Of these, a full \textit{200.5 million (26.89\%)} are un-referenced, which represents a large chunk of the total statements. This means that a sure way to improve the quality of Wikidata is to develop a way in which these statements can be populated with its respective reference.
+
+\texttt{soweego} is a great answer to this problem since it strives to automatically link Wikidata with external catalogs, making its content more trustworthy. Even though the project has done great contributions by constructing a machine learning based pipeline to automatically link entities, there is still some space for improvement. Specifically, \texttt{soweego}'s pipeline allows for only one machine learning algorithm to operate at a time. This means that, when executing the pipeline, a single algorithm needs to be chosen. This is not an easy task since not all algorithms perform optimally on all catalogs. Meaning that a trade-off must ultimately be made.
+
+\texttt{soweego} may benefit from considering the opinion of more than one algorithm at a time, since it allows the final result to be derived from a wider spectrum of information provided by a diverse set of classifiers.
 
 
-Besides this fact, there are also many external databases on the web which contain information about people. Of these, the most prolific ones are those about \textit{entertainment}. The next section shows which external catalogs will be used for this project. 
-
-
-Note that even though the development is centered around \textit{people} the idea is to develop a flexible system which can easily be extended to include external catalogs containing different kinds of entities and not exclusively centering on people. 
 
 \section{Use Case}
 \label{sec:statement-use-case}
 
-\texttt{soweego} is able to handle any input dataset. However, for the purposes of this project the following ones were selected as a starting point. Note that this section limited to mention the catalogs and their entities, and a more in depth explanation of each will be done in \autoref{sec:data-preprocessing}. 
+As a starting point, \texttt{soweego} currently focuses on the \textit{people} domain. At the time of this writing, the \textit{Wikidata Statistics} page\footurl{https://www.wikidata.org/wiki/Wikidata:Statistics}, states that there are a total of 61 million entities, of which 5.2 million are people (roughly 10\% of all entities), which is a large portion of all entities. 
+
+Note that even though the development is centered around \textit{people} the idea is to develop a flexible system which can easily be extended to include external catalogs containing different kinds of entities and not exclusively centering on people. 
+
+For the purposes of this project the following ones were selected as a starting point\footurl{https://meta.wikimedia.org/wiki/Grants:Project/Hjfocs/soweego/Timeline\#Monthly\_updates}. Note that this section is limited to mention the catalogs and their entities, and a more in depth explanation of each will be done in \autoref{sec:data-preprocessing}. 
+
+
 
 \subsection{Internet Movie Database (IMDb)}
 \label{sec:catalog-imdb}
@@ -994,15 +892,15 @@ IMDb’s dump does not actually provide such a clean separation of the different
 The IMDb’s data is mostly provided by contributors. However, information like \textit{name}, \textit{description}, \textit{image} (either the profile image of a person or the cover for a movie/TV-Series), are manually curated by the IMDb team. Automated access to the data itself is, as said above, restricted since IMDb only provides a partial dump of their whole database, and using web crawlers to access more information is not permitted according to their terms of usage.
 
 
-\subsection{Musicbrainz}
+\subsection{MusicBrainz}
 \label{sec:catalog-musicbrainz}
 
-\textbf{Musicbrainz}\footurl{https://musicbrainz.org/} is a music encyclopedia, which contains metadata about music, musicians, and bands. From this external database this project is specially interested in their information regarding \textit{musicians} and \textit{bands}. 
+\textbf{MusicBrainz}\footurl{https://musicbrainz.org/} is a music encyclopedia, which contains metadata about music, musicians, and bands. From this external database this project is specially interested in their information regarding \textit{musicians} and \textit{bands}. 
 
 
-Note that on this chapter’s introdution it was mentioned that \texttt{soweego} works mainly with people, however now its possible to see that it also includes \textit{musical bands}. This is because \textit{bands} have very similar fields to people, and it comes as a testament to the flexibility of the project.
+Note that on this chapter’s introdution it was mentioned that \texttt{soweego} works mainly with people, however now its possible to see that it also includes \textit{musical bands}. This is because \textit{bands} have very similar fields to people, and it is an example of the project's flexibility.
 
-The Musicbrainz database is collectively maintained, with the help of the Musicbrainz team. All of Musicbrainz data is in the public domain, and as such it is free to use.
+The MusicBrainz database is collectively maintained, with the help of the Musicbrainz team. All of Musicbrainz data is in the public domain, and as such it is free to use.
 
 The types of entities utilized for this project from the Musicbrainz database are:
 
@@ -1040,14 +938,14 @@ From the Discogs database the information retrieved are the following entity typ
 % models/ ensemble models have their own chapter as well. This is to prevent
 % this section from bloating up too much.
 
-\texttt{soweego} presents a pipeline though which data flows, and is composed of a series of steps which closely resemble the record linkage workflow (explained in depth in \autoref{sec:rl-as-a-workflow}). The pipeline is executed once for each  \textit{concrete entity type}\footnote{Every different combination of \textit{catalog + entity}  is a concrete entity type, since each represents a different entity type with different provenance. As seen later, each is saved as a different \textit{model} in \texttt{soweego}'s internal database}.
+\texttt{soweego} presents a pipeline though which data flows, and is composed of a series of steps which closely resemble the record linkage workflow (explained in depth in \autoref{sec:rl-as-a-workflow}). The pipeline is executed once for each \textit{concrete entity type}\footnote{Every different combination of \textit{catalog + entity}  is a concrete entity type, since each represents a different entity type with different provenance. As seen later, each is saved as a different \textit{model} in \texttt{soweego}'s internal database}.
 
 Specifically, the \texttt{soweego} pipeline is structured as follows:
 
 \begin{figure}[H]
   \centering \includegraphics[width=\textwidth]{soweego_structure}
   \caption{Structure of \texttt{soweego}. \textit{Catalog A} and \textit{Catalog
-      B} represent external databases which we want to import into
+      B} represent external databases which will be imported into
     \textit{Wikidata}.}
   \label{fig:soweego-structure}
 \end{figure}
@@ -1056,65 +954,68 @@ A section will be dedicated to each step, but just to give an overview, below is
 
 \begin{enumerate}
 \item \texttt{Importer}: 
-reads the data from both the external databases (target catalogs) and Wikidata (source catalog), and cleans it (the \textit{Data Preprocessing} step in the record linkage workflow).
- 
+reads the data from both the external databases (target catalogs) and Wikidata (source catalog),
+
 \item \texttt{Blocking}: 
 takes the preprocessed data and clusters each source entity on the Wikidata catalog with potential matches in the target catalogs.
+
+\item \texttt{DataCleaning}: 
+Takes the pairs of potential matches and cleans them (the \textit{Data Preprocessing} step in the record linkage workflow).
   
 \item \texttt{Feature extractor}: 
-takes the pairs generated in the blocking step and extracts a number of features, as previously defined in \autoref{sec:rl-workflow-feat-extraction}.
+takes the cleaned pairs from \textit{DataCleaning} and extracts a number of features, as previously defined in \autoref{sec:rl-workflow-feat-extraction}.
  
-\item \texttt{Linker}: 
-uses machine learning algorithms to predict the probability that a given pair of entities is a match or not, given the features extracted for said pair in the previous step.
+\item \texttt{Train, Evaluate}:
+train or evaluate the performance of a machine learning algorithm given the features extracted in the previous step.
+
+\item \texttt{Link}:
+uses a previously trained machine learning algorithm to predict the final labels on some classification data. These predictions are done on features extracted from said data.
  
 \item \texttt{Ingester}: 
 is in charge of taking the predicted matches and uploading the confident predictions (those above a threshold) to Wikidata, while potential matches are uploaded to the \texttt{Mix'n'match}\footurl{https://tools.wmflabs.org/mix-n-match} platform to be reviewed manually by the community.
 \end{enumerate}
 
-The current work will be mainly centered around the development of the \texttt{linker} module, and small parts of the \texttt{importer} and \texttt{feature extractor}. Although for the discussion of results  (\autoref{chap:results}) only the \texttt{linker} module will be evaluated.  The remaining modules were developed by the rest of the team working on \texttt{soweego}\footurl{https://github.com/Wikidata/soweego/}.
+The current work will be mainly centered around the development of the \texttt{linker} modules, and small parts of the \texttt{importer}. Although for the discussion of results  (\autoref{chap:results}) only the results of  \texttt{evaluate} and \texttt{link} module will be evaluated.  The remaining modules were developed by the rest of the team working on \texttt{soweego}\footurl{https://github.com/Wikidata/soweego/}.
 
 
 \subsection{Importer}
 \label{sec:soweego-st-importer}
 
-The importer is the first step in the pipeline, and is also the one that is in charge of taking an external source of data (for example, a \texttt{csv} file), and then interpreting it, cleaning it, and finally saving the results to \texttt{soweego}'s internal database so that it can be easily consumed by the following steps.
+The importer is the first step in the pipeline, and is also the one that is in charge of taking an external source of data (for example, a \texttt{csv} file), and then interpreting it, and saving the results to \texttt{soweego}'s internal database so that it can be easily consumed by the following steps.
 
 The importer is composed of one \textit{adapter} for each external catalog. The adapter basically is the \textit{importer} for a specific catalog and is in charge of downloading the latest available dump for the catalog. 
 
 
-Once this is done the adapter reads the obtained data and cleans it, both by using procedures which are unique to the specific catalog and shared procedures (the data cleaning part will be covered more in depth in \autoref{sec:data-preprocessing}). 
-The adapter is necessary because the database dump from each catalog contains different fields, in different formats which need to be converted to a common representation. 
+Once this is done the adapter reads the obtained data and prepossesses it, so that it can be imported into the database. The adapter is necessary because the database dump from each catalog contains different fields, in different formats which need to be converted to a common representation. 
 
 
 After cleaning, the data is then saved into the database. An important thing to note is that all of the dumps include the ID of each entity in the catalog's database, this is what will then be used as the \textit{target id (TID)}: the id of the target entities used during the  record linkage process.
 
-The importer also defines a series of  database \textit{models} which are specific to each catalog, one for each concrete entity type. For example, the importer defines an \texttt{ImdbWriter} database model which stands for entities of type \textit{writer} which come from the \textit{IMDb} catalog.
+The importer also defines a series of ORM database \textit{models} \cite{sqlalchemy}, which are specific to each catalog, one for each concrete entity type. For example, the importer defines an \texttt{ImdbWriter} database model which stands for entities of type \textit{writer} which come from the \textit{IMDb} catalog.
 
-This modular design makes it very easy to add new external catalogs to \texttt{soweego}.
+Using this modular design, allows to add new external catalogs to \texttt{soweego} without much complexity.
 
 
 \subsubsection{Importing data from Wikidata}
 \label{sec:importing-from-wikidata}
 
-There is a special importer for downloading data from Wikidata. This Wikidata importer is in charge of downloading both the training and classification sets, which are downloaded separately for each combination of catalog-entity. These datasets will be used as the \textit{source catalogs} during the record linkage process.
+There is a special importer for downloading data from Wikidata. This Wikidata importer is in charge of downloading both the training and classification sets. These may then be used, together with the respective training or classification sets from an external catalog, to train a machine learning model or to classify the data using a previously trained mode.
+
+These data sets are downloaded separately for each combination of catalog-entity. They will be used as the \textit{source catalogs} during the record linkage process.
 
 Following is an overview of the procedure used in each case. 
-
 
 \begin{description}
 \item[Downloading training set:] 
 
+To download the Wikidata training set what needs to be done is to receive the \textit{QID} of the catalog and of the type of entity. This is achieved by asking Wikidata, via a \textit{SPARQL} query, to provide all the items it has which are of the specified entity type\footnote{for example, all items which are \textit{directors}} and which also have a \textit{statement} linking them to the given target catalog identifier. 
 
-To download the Wikidata training set what needs to be done is to receive the \textit{QID} of the catalog and of the type of entity. This is achieved by asking Wikidata, via a \textit{SPARQL} query, to provide all the items it has which are of the specified entity type\footnote{for example, all items which are \textit{directors}} and which also have a \textit{statement} linking them to the specified catalog. 
-
-
-All Wikidata items with such statement also include their \textit{ID} in the external database (the target it), meaning that this can be easily used to check which of the items provided by Wikidata have also been included in the catalog's dump. 
-
+These identifier statements can be easily used to check which of the items provided by Wikidata have also been included in the catalog's dump. 
 
 The intersection, those with the same \textit{target id}, between this data and the data that resides in the project’s database for the specific catalog-entity defines the labeled data  for said entity that can be used for training and evaluation.
  
+ 
 \item[Downloading classification set:] The classification set is also downloaded on a per \textit{catalog-entity} basis. The procedure for downloading it is very similar to that already mentioned above. 
-
 
 The difference is that now Wikidata is asked to only send  the data regarding items of a specific entity type (for example, all \textit{Musicians}), and that are not already linked with the specified catalog.
 \end{description}
@@ -1124,13 +1025,9 @@ The difference is that now Wikidata is asked to only send  the data regarding it
 \subsection{Blocking}
 \label{sec:soweego-st-blocking}
 
-Before going into details about the \textit{blocking} step, its necessary to clarify on which field the blocking happens. There is no need to explain data pre-processing until \autoref{sec:data-preprocessing}, although for the moment its important to mention that during this process, the name of each entity gets tokenized. 
+When performing the \textit{blocking} procedure, \soweego compares the entities by using the \textit{name\_tokens} field. This field get created during the \textit{import} process. It consists of a list of all parts of the name of the entity. For example, the name \textit{Bernie Stewart} is composed of the parts \textit{Bernie} and \textit{Stewart}.
 
-
-This basically means that a new field,  \textit{name\_tokens} is created for all entities, this fiel is a list of all the tokens that can be generated from the full name of a person.
-
-To perform the blocking, the fist thing that need to be done is to receive a Wikidata set, and the name of the concrete entity type for which \texttt{soweego} is currently running. Then, for every entity in the Wikidata set, the blocking is made by getting all entities in the external catalog which share \textit{name tokens} with the Wikidata entity. 
-
+When performing blocking, the first thing that need to be done is to receive a Wikidata set, and the concrete entity type for which \texttt{soweego} is currently running. Then, for every entity in the Wikidata set, the blocking is made by getting all entities in the external catalog which share \textit{name tokens} with the Wikidata entity. 
 
 To prevent getting too many results its allowed for only a maximum of 10 external entities to be retrieved for each Wikidata entity.
 
@@ -1164,7 +1061,7 @@ Choosing another field (like \textit{birth date + death date}) might yield bette
 
 An in depth description of each feature used will be given in \autoref{sec:used-features}, for the moment it will be mentioned at a high level how the \textit{feature extraction} step works in \texttt{soweego}. 
 
-The project leverages the \texttt{Python Record Linkage Toolkit} \cite{recordlinkage-library} framework to extract the features. By using this framework the process gets simplified, it only needs the definition of which feature functions to use, and to which fields they should be applied. 
+The project leverages the \texttt{Python Record Linkage Toolkit} \cite{recordlinkage-library} to extract the features. By using this framework the process gets simplified, it only needs the definition of which feature functions to use, and to which fields they should be applied. 
 
 
 
@@ -1172,7 +1069,7 @@ After this is done, the only thing that remains is feeding to the framework the 
 
 For example, consider that this step gets as an input the list of potential matches extracted during the previous blocking procedure. An example of such list of pairs can be: 
 
-\begin{center}
+\begin{center}B
     \texttt{[('Q185002', 'nm0310359'), ('Q185002', 'nm2242569'), ('Q185002', 'nm0267785')]}
 \end{center}
 
@@ -1180,7 +1077,7 @@ Where the first element in each pair is the QID of a Wikidata item, and the seco
 
 
 
-Finally, the feature extraction procedure also defines a list of which comparison functions to apply to which fields of the target (Wikidata) and source (IMDb in this case) entities.
+Finally, the feature extraction procedure also defines a list of which comparison functions to apply to which fields of the source (Wikidata) and target (IMDb in this case) entities.
 
 The feature extraction proceeds in such a way that for every pair of entities the list of comparison functions mentioned above gets applied to each them. Each one of these \textit{function applications} will generate a value which will come to be a \textit{feature} that characterizes the relationship between the two entities.
 
@@ -1218,7 +1115,7 @@ Once the feature vectors for all pairs become available, they may be fed to the 
 
 The linker receives the matrix of feature vectors from the previous step and feeds it to one of the machine learning algorithms presented in \autoref{chap:algorithms}, which will in turn tell the linker what is the probability, according to that algorithm, that each pair is a match.
 
-Besides this, the linker also applies a couple of \textit{post-classification} steps on the predictions. Specifically, what it does is apply the following \textit{linking rules} to each result in turn.
+Besides this, the linker also applies a couple of \textit{post-classification} steps on the predictions. Specifically, what it does is to apply the following \textit{linking rules} to each result in turn.
 
 \begin{description}
 \item[Wikidata URL] if the target in the corresponding pair thats currently processing has a URL, and said URL points to a Wikipedia/Wikidata page then it can automatically extract from said URL which Wikidata entity the target should be associated with. 
@@ -1235,20 +1132,14 @@ If this extracted entity is the same as the source entity in the pair then the p
 
 The first step performed by the ingester is to separate the given predictions into \textit{non-matches}, \textit{potential-matches}, and \textit{confident-matches}. This is done by simply separating the predictions according to some threshold. 
 
-
-
 For example, all predictions below 0.4 are \textit{non-matches}, above 0.4 but below 0.7 are \textit{potential-matches}, and everything above that are matches. 
-
 
 The reason for this separation is because \texttt{soweego} uploads directly to Wikidata only those predictions which are very likely to be true, whilst the \textit{potential-matches} are uploaded to a service called \textit{Mix'n'match}, where the Wikidata community can check manually each proposed pair and define if it is actually a match or not.
 
 Confident results are \textit{uploaded} by editing the relevant stamement of each Wikidata item. For examaple, if QID \textit{Q185002} is a match with IMDb TID \textit{nm0310359} then the ingester will proceed to create or update a statement on the item with the given QID, using the property \textit{P345}\footurl{https://www.wikidata.org/wiki/Property:P345} and using as a value the given TID. 
 
-
-
 The mentioned property is used to link an item with an IMDb ID (similar properties exist in Wikidata for all the other external catalogs used).
 
-\todo[inline]{Should talk about the validator and other funcitons? At the time it seems better to just keep related things}
 
 \section{Implementation Details}
 \label{sec:soweego-implementation-details}
@@ -1273,18 +1164,18 @@ Development of \texttt{soweego} happens locally and new releases are uploaded to
 \section{Data Exploration}
 \label{sec:data-exploration}
 
-This section will be dedicated to showing and exploring the data that was used (next section), then mentioning which pre-processing steps the data undergoes and what it's final shape is (\autoref{sec:data-preprocessing}). Finally the list of features extracted during the \textit{feature extraction} step of \texttt{soweego} will be discussed.
+This section will be dedicated to showing and exploring the data that was used (next section), then mentioning which pre-processing steps the data undergoes and what its final shape is (\autoref{sec:data-preprocessing}). Finally the list of features extracted during the \textit{feature extraction} step of \texttt{soweego} will be discussed.
 
 
 \subsection{Original Shape of the Data}
 \label{sec:orig-shape-of-data}
 
-This section will explore which shape the data received from the external catalogs, as well as that received from Wikidata, takes. Since they're all different, a section will be dedicated to each catalog. 
+This section will explore which shape the data received from the external catalogs, as well as that received from Wikidata, takes. Since they are all different, a section will be dedicated to each catalog. 
 
-It must be pointed out for the external catalogs, that even though they're maintained by a group of contributors and, in some cases, also by dedicated teams, it does not mean that the data is 100\% clean. 
+It must be pointed out for the external catalogs, that even though they are maintained by a group of contributors and, in some cases, also by dedicated teams, it does not mean that the data is 100\% clean. 
 
 
-During development there have been multiple encounters with impossible values (like birth or death dates in the future), spelling errors in  names, missing values (most commonly, missing birth and death dates), among others. 
+During development there have been multiple encounters with malformed values (like birth or death dates in the future), spelling errors in  names, missing values (most commonly, missing birth and death dates), among others. 
 
 
 
@@ -1296,7 +1187,7 @@ As such, it must be kept in mind that the information coming from the external c
 \subsubsection{IMDb}
 \label{sec:shape-imdb}
 
-IMDb provides multiple dumps of their data\footurl{https://www.imdb.com/interfaces/}, each is a snapshot of the database up until the current date, containing different information. The one used in this project, which is the one that contains information about the people in IMDb's database, is \texttt{name.basics}\footurl{https://datasets.imdbws.com/name.basics.tsv.gz}. The specific dump that is going to be discussed was downloaded from the site on \textit{3 October 2019}.
+IMDb provides multiple dumps of their data\footurl{https://www.imdb.com/interfaces/}, each is a snapshot of the database up until the current date, containing different information. The one used in this project, which is the one that contains information about people in IMDb's database, is \texttt{name.basics}\footurl{https://datasets.imdbws.com/name.basics.tsv.gz}. The specific dump that is going to be discussed was downloaded from the site on \textit{3 October 2019}.
 
 The data dump is one single tab separated file. It contains 6 different columns. An example of some rows, and explanation of each field are mentioned below.
 
@@ -1308,7 +1199,7 @@ nm0000001 & Fred Astaire    & 1899      & 1987              & actor,miscellaneou
 nm0000002 & Lauren Bacall   & 1924      & 2014              & actress,soundtrack             & tt0038355,tt0071877 \\
 nm0000003 & Brigitte Bardot & 1934      & \textbackslash{}N & actress,producer    & tt0054452,tt0057345
 \end{tabular}
-\caption{Sample of three rows from the raw IMDb data dump. The list of professions and \textit{knownForTitles} have been shortened to make the table fit. Note that IMDb uses \textbackslash{}N to symbolizes a null value.}
+\caption{Sample of three rows from the raw IMDb data dump. The list of professions and \textit{knownForTitles} have been shortened to make the table fit. Note that IMDb uses \textbackslash{}N to symbolize a null value.}
 \label{tab:imdb-raw-sample}
 \end{table}
 
@@ -1321,7 +1212,7 @@ nm0000003 & Brigitte Bardot & 1934      & \textbackslash{}N & actress,producer  
 
 \item[deathYear] The year in which the person died.
 
-\item[primaryProfession] This field contains a comma separated list of main professions each person has, this list may contain a maximm of three professions. These \textit{professions} are names which describe the ocupation the person is known for, that is, reasons for which the person appeared in the credits of a movie or TV-series. 
+\item[primaryProfession] This field contains a comma separated list of main professions each person has, this list may contain a maximum of three professions. These \textit{professions} are names which describe the ocupation the person is known for, that is, reasons for which the person appeared in the credits of a movie or TV-series. 
 
 These professions are not always specific, and sometimes act like clusters of similar, and more specific, professions.
 
@@ -1384,7 +1275,7 @@ There are a total of 9,613,243 entries in the dump. Of these, all of them have s
 \end{figure}
 
 
-Of all the entires, there are only 488,727 which have a \textit{birthDate}, and 170,613 have a \textit{deathDate}. The distplots in \autoref{fig:imdb-years-distplot} show the distributions of birth and death dates for IMDb. It can be noted that most of the entities were born around the 1900, and there are less entities from closer years (possibly because those individuals are still too young to have any reason to posses a page in IMDb). On the other hand, death dates behave in the inverse manner: the greatest amount of deceased entities seems to have died in the last years.
+Of all the entries, there are only 488,727 which have a \textit{birthDate}, and 170,613 have a \textit{deathDate}. The distplots in \autoref{fig:imdb-years-distplot} show the distributions of birth and death dates for IMDb. It can be noted that most of the entities were born around the 1900, and there are less entities from closer years (possibly because those individuals are still too young to have any reason to possess a page in IMDb). On the other hand, death dates behave in the inverse manner: the greatest amount of deceased entities seems to have died in the last years.
 
 \begin{figure}[]
   \centering \includegraphics[width=.9\textwidth]{birth_and_death_frequencies_imdb}
@@ -1416,7 +1307,7 @@ In \autoref{fig:imdb-profession-raw-counts} a barplot can be seen that shows the
 \end{figure}
 
 
-By looking at \autoref{fig:imdb-profession-coocurrence-heatmap} a heatmap can be seen that describes the co-occurrence of the different professions (how frequent is it that an entity has them listed together in its \textit{primarProfessions} field). Its possible to see there are some interesting correlations among them, for example, that the \textit{director} profession almost always appears together with the \textit{writer} profession. This shows that there is an underlying structure in the professions, which is another motivation to create a feature that leverages this field.
+By looking at \autoref{fig:imdb-profession-coocurrence-heatmap} a heatmap can be seen that describes the co-occurrence of the different professions (how frequent is it that an entity has them listed together in its \textit{primaryProfessions} field). Its possible to see there are some interesting correlations among them, for example, that the \textit{director} profession almost always appears together with the \textit{writer} profession. This shows that there is an underlying structure in the professions, which is another motivation to create a feature that leverages this field.
 
 \begin{figure}[]
   \centering \includegraphics[width=\textwidth]{imdb_profession_coorcurrence}
@@ -1431,11 +1322,7 @@ Its evident that the IMDb dump does not provide much information that can be use
 \subsubsection{Discogs}
 \label{sec:shape-discogs}
 
-Discogs provides multiple data dumps\footurl{https://data.discogs.com/}, and maintains records of dumps released in different dates. The ones used for this project are:
-
-\begin{itemize}
-    \item \textit{discogs\_20190901\_artists}, whose last revision was on \textit{2019-09-08T13:03:25.000Z}
-\end{itemize}
+Discogs provides multiple data dumps\footurl{https://data.discogs.com/}, and maintains records of dumps released in different dates. The one used for this project is \textit{discogs\_20190901\_artists}, whose last revision was on \textit{2019-09-08T13:03:25.000Z}.
 
 This dump contains information about artists, which can be either a single musicians or music groups. The dump is an XML file and for each entity (either band or musician) provides the following information:
 
@@ -1595,13 +1482,13 @@ There are 517,524 musicians and 266,206 bands which are associated with at least
 % mention for each catalog, and which entities it has. Potentially mention the
 % number of entities for each type of entity.
 
-For Wikidata we download training and classification \textit{dumps}, one pair for each concrete entity. As explained in \autoref{sec:importing-from-wikidata}, the training data already contains the labels, or true links, for each entity, and is what is used to train the different machine learning algorithms. This basically means that each Wikidata \textit{training} dump has a field named \textit{TID}, which is the ID of the  On the other hand, the classification data are the entities that don't have external references and need to be linked. This data is downloaded through Wikidatas public SPARQL endpoint\footurl{https://www.wikidata.org/wiki/Wikidata:SPARQL_query_service}. Which allows us to easily get the relevant statements about a given entity.
+For Wikidata we download training and classification \textit{sets}, one pair for each concrete entity. As explained in \autoref{sec:importing-from-wikidata}, the training data already contains the labels, or true links, for each entity, and is what is used to train the different machine learning algorithms. This basically means that each Wikidata \textit{training} dump has a field named \textit{TID}, which is the ID of the target catalog. On the other hand, the classification data are the entities that don't have target identifiers and need to be linked. This data is downloaded through Wikidatas public SPARQL endpoint,\footurl{https://www.wikidata.org/wiki/Wikidata:SPARQL_query_service} which allows us to easily get the relevant statements about a given entity.
 
-Following are the fields that can be found in the Wikidata dumps. Note that, as said above, \textit{TID} only appears in \textit{training} set. 
+Following are the fields that we gather from Wikidata. Note that, as said above, \textit{TID} only appears in \textit{training} set. 
 
 \begin{description}
 
-\item[TID] ID of the entity in a specific external catalog. Only found in the dumps used for training. The actual meaning of this value may change depending on which catalog this dump was downloaded for. For example: if the dump was downloaded to be used with IMDb, then the TIDs are reference to IMDb entities. If it was downloaded for Discogs, then the TID will reference Discogs entities. 
+\item[TID] ID of the entity in a specific external catalog. Only found in the dumps used for training. The actual values may change depending on which catalog this dump was downloaded for. For example: if the dump was downloaded to be used with IMDb, then the TIDs are reference to IMDb entities. If it was downloaded for Discogs, then the TID will reference Discogs entities. 
 
 \item[QID] This is the unique identifier of the Wikidata entity. This is what will be used as the \textit{source ID} while performing record linkage. Note that in the present work the terms \textit{QID} and \textit{source ID} will be used interchangeably.
 
@@ -1627,12 +1514,12 @@ Following are the fields that can be found in the Wikidata dumps. Note that, as 
 
 \item[birth\_name] The name of the entity, given at birth.
 
-\item[given\_name] The first nameor forename, of the entity.
+\item[given\_name] The first name or forename of the entity.
 
-\item[family\_name] The last name, or surname, of the entity.
+\item[family\_name] The last name or surname of the entity.
 \end{description}
 
-\autoref{tab:wikidata-dumps-sizes} shows which is the size of the datasets, both the training and classification ones, for each concrete entity. It seems that the datasets for both musicians are among the largest in both cases, in fact they are except for the \textit{IMDb Actor} training set, which is the largest by a bit more than $50k$. On the other hand we have that the smalles classification set is the one for \textit{IMDb Producer}, by almost $20k$. In the classification sets, the ones for IMDb \textit{producer} and \textit{director} are much tinier in comparison than all the other. 
+\autoref{tab:wikidata-dumps-sizes} shows which is the size of the datasets, both the training and classification ones, for each concrete entity. It seems that the datasets for both musicians are among the largest in both cases, in fact they are except for the \textit{IMDb Actor} training set, which is the largest by a bit more than $50k$. On the other hand, the smallest classification set is \textit{IMDb Producer}, by almost $20k$. In the classification sets, the ones for IMDb \textit{producer} and \textit{director} are much tinier in comparison than all the other. 
 
 \begin{table}[H]
 \centering
@@ -1654,14 +1541,14 @@ Musicbrainz & Musician & 118,107                  & 153,437                     
 
 
 
-\subsection{Data Preprocessing}
+\subsection{Preprocessing}
 \label{sec:data-preprocessing}
 
 The raw data needs to undergo a series of preprocessing steps in order for it to be used confidently.
 
 % will leave this section for later. It is not 100% necessary, but makes it easier to understand the overrall process
 
-In which way do we currently preprocess the data so that it is normalized?
+% In which way do we currently preprocess the data so that it is normalized?
 
 \subsubsection{Normalize Dates}
 \label{sec:data-preprocessiong-date-normalization}
@@ -1674,7 +1561,7 @@ In which way do we currently preprocess the data so that it is normalized?
 
 
 
-\subsection{Used Features}
+\subsection{Features}
 \label{sec:used-features}
 
 To extract features we leverage the functionality of the \textit{Python Record Linkage Toolkit} framework \cite{recordlinkage-library}, which allows us to extract features simply define a list of all the functions we want to use, and a definition on which fields said functions should be applied to. The framework will then automatically apply this functions to all pairs of possible matches defined in the \textit{blocking} step, and from these applications extract the feature vectors that will be used in the \textit{linking} step.
@@ -1687,7 +1574,7 @@ Note that not all features get extracted every time: they're only applied if pos
 \subsubsection{Exact match on names}
 \label{sec:feature-exact-match-names}
 
-This feature is extracted by taking the \textit{name} fields of both entities and checking if they're the same. This field may have more than one vale (e.g. in the case of name variations), so the feature compares all possible pairs of names, and optimistically \textit{1} if any of the comparisons is a match. Remember that the values of features may go from \textit{0} (not a match), to \textit{1} (perfect match). 
+This feature is extracted by taking the \textit{name} fields of both entities and checking if they're the same. This field may have more than one value (e.g., in the case of name variations), so the feature compares all possible pairs of names, and optimistically \textit{1} if any of the comparisons is a match. Remember that the values of features may go from \textit{0} (not a match), to \textit{1} (perfect match). 
 
 For clarification, below is the algorithm used to find the perfect match. Note that this same procedure can be applied when performing \textit{perfect match} on any two lists of values.
 
@@ -2155,6 +2042,8 @@ If training and classification sets were of the same quality then this differenc
 \chapter{Algorithms}
 \label{chap:algorithms}
 
+%  Stuart J. Russell, Peter Norvig (2010) Artificial Intelligence: A Modern Approach, Third Edition, Prentice Hall ISBN 9780136042594. 
+
 This chapter will cover the machine learning algorithms used in the project. The first section will talk about the \textit{baseline} classifiers, which are just normal classification algorithms. \autoref{sec:hyperpar-optimization} will talk about how and according to which procedures the hyperparameters for these baseline algorithms were chosen. Following that, \autoref{sec:ensemble-models} will talk about ensemble models, the motivation for using them, and which were employed in the project.
 
 As said in \autoref{sec:rl-workflow-linking}, the linking process is one of the main processes in the record linkage workflow. This linking can either be done using a rule based approach, or a machine learning algorithm can be used to learn when to mark a pair as a match based on the features extracted for that pair. As such, having a well tuned and well performing algorithm is essential for an effective record linkage.
@@ -2240,7 +2129,8 @@ Luckily there is the possibility to use more than one model at once, and join th
  gate classifier \\ 
  stack classifier \\
  vch \\
- vcs
+ vcs \\ 
+ And their structure
 }
 
 \subsection{Motivation} 
@@ -2378,56 +2268,56 @@ The table below shows the performance metrics for each classifier applied to eac
 \begin{longtable}{|l|l|l|l|l|l|l|l|l|}
 \hline
 Catalog     & Entity   & Model                & F1.Mean  & F1.STD   & Prec.Mean & Prec.STD & Rec.Mean & Rec.STD \\ \hline
-discogs     & band     & lsvm                 & 0.925262 & 0.001267 & 0.896373  & 0.002110 & 0.956090    & 0.003388   \\
 discogs     & musician & lsvm                 & 0.936944 & 0.001224 & 0.905424  & 0.002080 & 0.970741    & 0.000880   \\
-imdb        & writer   & lsvm                 & 0.928606 & 0.001983 & 0.919005  & 0.002274 & 0.938421    & 0.003574   \\
+discogs     & band     & lsvm                 & 0.925262 & 0.001267 & 0.896373  & 0.002110 & 0.956090    & 0.003388   \\
 imdb        & actor    & lsvm                 & 0.894011 & 0.000789 & 0.875260  & 0.002088 & 0.913592    & 0.001998   \\
 imdb        & director & lsvm                 & 0.912727 & 0.001597 & 0.880551  & 0.005850 & 0.947397    & 0.003670   \\
-imdb        & producer & lsvm                 & 0.905975 & 0.003885 & 0.894173  & 0.006799 & 0.918114    & 0.001219   \\
 imdb        & musician & lsvm                 & 0.917906 & 0.001399 & 0.909440  & 0.002345 & 0.926534    & 0.001067   \\
-musicbrainz & band     & lsvm                 & 0.913877 & 0.001689 & 0.961199  & 0.003976 & 0.871046    & 0.006050   \\
-musicbrainz & musician & lsvm                 & 0.954410 & 0.001406 & 0.942882  & 0.002112 & 0.966225    & 0.001090   \\ \hline
+imdb        & producer & lsvm                 & 0.905975 & 0.003885 & 0.894173  & 0.006799 & 0.918114    & 0.001219   \\
+imdb        & writer   & lsvm                 & 0.928606 & 0.001983 & 0.919005  & 0.002274 & 0.938421    & 0.003574   \\
+musicbrainz & musician & lsvm                 & 0.954410 & 0.001406 & 0.942882  & 0.002112 & 0.966225    & 0.001090   \\ 
+musicbrainz & band     & lsvm                 & 0.913877 & 0.001689 & 0.961199  & 0.003976 & 0.871046    & 0.006050   \\ \hline
 discogs     & musician & lr & 0.938138 & 0.001693 & 0.917022  & 0.002191 & 0.960250    & 0.001370   \\
 discogs     & band     & lr & 0.924791 & 0.001550 & 0.908952  & 0.001476 & 0.941198    & 0.003025   \\
+imdb        & actor    & lr & 0.893573 & 0.000579 & 0.878388  & 0.001838 & 0.909299    & 0.001406   \\
 imdb        & director & lr & 0.913846 & 0.000694 & 0.892154  & 0.004468 & 0.936658    & 0.003834   \\
 imdb        & producer & lr & 0.906045 & 0.002643 & 0.898064  & 0.005640 & 0.914192    & 0.000826   \\
-imdb        & actor    & lr & 0.893573 & 0.000579 & 0.878388  & 0.001838 & 0.909299    & 0.001406   \\
 imdb        & musician & lr & 0.917958 & 0.001717 & 0.908442  & 0.002911 & 0.927680    & 0.001280   \\
 imdb        & writer   & lr & 0.928108 & 0.002082 & 0.924621  & 0.001792 & 0.931635    & 0.004264   \\
-musicbrainz & band     & lr & 0.918022 & 0.002327 & 0.937643  & 0.002251 & 0.899217    & 0.003973   \\
-musicbrainz & musician & lr & 0.953083 & 0.001301 & 0.943755  & 0.002042 & 0.962600    & 0.001165   \\ \hline
-discogs     & band     & mlp                  & 0.928931 & 0.001310 & 0.915249  & 0.001875 & 0.943032    & 0.001727   \\
+musicbrainz & musician & lr & 0.953083 & 0.001301 & 0.943755  & 0.002042 & 0.962600    & 0.001165   \\ 
+musicbrainz & band     & lr & 0.918022 & 0.002327 & 0.937643  & 0.002251 & 0.899217    & 0.003973   \\ \hline
 discogs     & musician & mlp                  & 0.940715 & 0.001443 & 0.921507  & 0.001770 & 0.960754    & 0.003867   \\
-imdb        & director & mlp                  & 0.919340 & 0.000980 & 0.899994  & 0.002724 & 0.939548    & 0.002002   \\
+discogs     & band     & mlp                  & 0.928931 & 0.001310 & 0.915249  & 0.001875 & 0.943032    & 0.001727   \\
 imdb        & actor    & mlp                  & 0.896922 & 0.000400 & 0.880657  & 0.003412 & 0.913832    & 0.004129   \\
-imdb        & producer & mlp                  & 0.909398 & 0.002913 & 0.894253  & 0.007249 & 0.925119    & 0.003188   \\
+imdb        & director & mlp                  & 0.919340 & 0.000980 & 0.899994  & 0.002724 & 0.939548    & 0.002002   \\
 imdb        & musician & mlp                  & 0.925888 & 0.001165 & 0.942860  & 0.001545 & 0.909520    & 0.001863   \\
+imdb        & producer & mlp                  & 0.909398 & 0.002913 & 0.894253  & 0.007249 & 0.925119    & 0.003188   \\
 imdb        & writer   & mlp                  & 0.930302 & 0.002571 & 0.924571  & 0.003714 & 0.936149    & 0.006365   \\
-musicbrainz & band     & mlp                  & 0.921134 & 0.002588 & 0.926546  & 0.004402 & 0.915818    & 0.004989   \\
-musicbrainz & musician & mlp                  & 0.957375 & 0.001629 & 0.944146  & 0.004491 & 0.971004    & 0.002647   \\ \hline
+musicbrainz & musician & mlp                  & 0.957375 & 0.001629 & 0.944146  & 0.004491 & 0.971004    & 0.002647   \\ 
+musicbrainz & band     & mlp                  & 0.921134 & 0.002588 & 0.926546  & 0.004402 & 0.915818    & 0.004989   \\ \hline
 discogs     & musician & nb         & 0.931622 & 0.001314 & 0.903489  & 0.002155 & 0.961565    & 0.000812   \\
 discogs     & band     & nb         & 0.922386 & 0.001457 & 0.891462  & 0.001633 & 0.955542    & 0.003274   \\
+imdb        & actor    & nb         & 0.889563 & 0.001311 & 0.825956  & 0.002002 & 0.963789    & 0.001153   \\
 imdb        & musician & nb         & 0.904327 & 0.013959 & 0.868388  & 0.055110 & 0.948158    & 0.033475   \\
 imdb        & producer & nb         & 0.898657 & 0.004254 & 0.842785  & 0.008230 & 0.962525    & 0.001450   \\
 imdb        & director & nb         & 0.907755 & 0.002541 & 0.855312  & 0.005063 & 0.967075    & 0.001997   \\
 imdb        & writer   & nb         & 0.922121 & 0.002580 & 0.882778  & 0.004051 & 0.965145    & 0.002172   \\
-imdb        & actor    & nb         & 0.889563 & 0.001311 & 0.825956  & 0.002002 & 0.963789    & 0.001153   \\
 musicbrainz & musician & nb         & 0.952783 & 0.001847 & 0.953561  & 0.002394 & 0.952008    & 0.001847   \\
 musicbrainz & band     & nb         & 0.907094 & 0.001994 & 0.953012  & 0.001335 & 0.865401    & 0.002974   \\ \hline
-discogs     & band     & rf       & 0.921673 & 0.001084 & 0.909216  & 0.002648 & 0.934490    & 0.002988   \\
 discogs     & musician & rf       & 0.933460 & 0.002427 & 0.917496  & 0.003021 & 0.949992    & 0.002296   \\
+discogs     & band     & rf       & 0.921673 & 0.001084 & 0.909216  & 0.002648 & 0.934490    & 0.002988   \\
+imdb        & actor    & rf       & 0.899161 & 0.000836 & 0.879621  & 0.001427 & 0.919592    & 0.001620   \\
+imdb        & director & rf       & 0.916903 & 0.000940 & 0.892806  & 0.003096 & 0.942355    & 0.002601   \\
 imdb        & musician & rf       & 0.922135 & 0.000594 & 0.932216  & 0.000733 & 0.912272    & 0.001018   \\
 imdb        & producer & rf       & 0.906239 & 0.004720 & 0.895270  & 0.008984 & 0.917553    & 0.005214   \\
-imdb        & director & rf       & 0.916903 & 0.000940 & 0.892806  & 0.003096 & 0.942355    & 0.002601   \\
 imdb        & writer   & rf       & 0.929301 & 0.002919 & 0.922216  & 0.004160 & 0.936508    & 0.003393   \\
-imdb        & actor    & rf       & 0.899161 & 0.000836 & 0.879621  & 0.001427 & 0.919592    & 0.001620   \\
-musicbrainz & band     & rf       & 0.918844 & 0.002231 & 0.938321  & 0.005419 & 0.900192    & 0.003714   \\
-musicbrainz & musician & rf       & 0.953673 & 0.001146 & 0.943972  & 0.001591 & 0.963577    & 0.001052   \\ \hline
-discogs     & band     & slp                  & 0.925647 & 0.001462 & 0.908264  & 0.001465 & 0.943716    & 0.003188   \\
+musicbrainz & musician & rf       & 0.953673 & 0.001146 & 0.943972  & 0.001591 & 0.963577    & 0.001052   \\ 
+musicbrainz & band     & rf       & 0.918844 & 0.002231 & 0.938321  & 0.005419 & 0.900192    & 0.003714   \\ \hline
 discogs     & musician & slp                  & 0.938168 & 0.001664 & 0.917755  & 0.002291 & 0.959510    & 0.001258   \\
+discogs     & band     & slp                  & 0.925647 & 0.001462 & 0.908264  & 0.001465 & 0.943716    & 0.003188   \\
 imdb        & actor    & slp                  & 0.893205 & 0.000591 & 0.881499  & 0.001829 & 0.905232    & 0.001676   \\
-imdb        & musician & slp                  & 0.917503 & 0.001383 & 0.909845  & 0.002659 & 0.925296    & 0.000865   \\
 imdb        & director & slp                  & 0.914070 & 0.000545 & 0.895414  & 0.003822 & 0.933551    & 0.003516   \\
+imdb        & musician & slp                  & 0.917503 & 0.001383 & 0.909845  & 0.002659 & 0.925296    & 0.000865   \\
 imdb        & producer & slp                  & 0.905526 & 0.002380 & 0.903146  & 0.006456 & 0.907958    & 0.001993   \\
 imdb        & writer   & slp                  & 0.927724 & 0.001915 & 0.924983  & 0.002891 & 0.930499    & 0.003970   \\
 musicbrainz & musician & slp                  & 0.953054 & 0.001383 & 0.943662  & 0.002094 & 0.962638    & 0.001341   \\
@@ -2521,8 +2411,14 @@ It can also be appreciated that while \textit{mlp} almost always has the best pe
 \section{Ensemble Evaluation}
 \label{sec:ensemble-evaluation}
 
-This section presents the results obtained during the 5-fold cross validation procedure when applied to the ensemble models presented in \autoref{sec:ensemble-models}.
+This section presents the results obtained during the 5-fold cross validation procedure when applied to the ensemble models presented in \autoref{sec:ensemble-models}. The results are presented once for each concrete entity and model. Note that the names of the ensemble classifiers have been shortened to make the table fit properly. Below is the mapping from the full names of the classifiers to their shortened version/ 
 
+\begin{itemize}
+    \item Gated Classifier : gc
+    \item Stacked Classifier : sc
+    \item Hard Voting Classifier : vh
+    \item Soft Voting Classifier : vs
+\end{itemize}
 
 
 \begin{longtable}{|l|l|l|l|l|l|l|l|l|}
@@ -2530,42 +2426,48 @@ This section presents the results obtained during the 5-fold cross validation pr
 Catalog     & Entity   & Model                    & F1.Mean  & F1.STD   & Prec.Mean & Prec.STD & Rec.Mean & Rec.STD \\ \hline
 discogs     & musician & gc        & 0.936638 & 0.002652 & 0.922472  & 0.004920 & 0.951308    & 0.006874   \\
 discogs     & band     & gc        & 0.927455 & 0.001522 & 0.912845  & 0.002324 & 0.942566    & 0.004981   \\
+imdb        & actor    & gc        & 0.897257 & 0.002191 & 0.895105  & 0.003315 & 0.899486    & 0.007650   \\
 imdb        & director & gc        & 0.918505 & 0.001411 & 0.900678  & 0.002997 & 0.937067    & 0.003067   \\
 imdb        & musician & gc        & 0.924625 & 0.002018 & 0.943199  & 0.010644 & 0.906929    & 0.007107   \\
 imdb        & producer & gc        & 0.910555 & 0.003934 & 0.902453  & 0.007668 & 0.918955    & 0.010547   \\
 imdb        & writer   & gc        & 0.931719 & 0.002789 & 0.928561  & 0.007822 & 0.934984    & 0.005804   \\
-imdb        & actor    & gc        & 0.897257 & 0.002191 & 0.895105  & 0.003315 & 0.899486    & 0.007650   \\
-musicbrainz & band     & gc        & 0.918238 & 0.003816 & 0.948221  & 0.012288 & 0.890520    & 0.016863   \\
-musicbrainz & musician & gc        & 0.955526 & 0.001926 & 0.951364  & 0.006050 & 0.959821    & 0.007915   \\ \hline
-discogs     & band     & sc      & 0.927771 & 0.001080 & 0.911809  & 0.006866 & 0.944456    & 0.009776   \\
+musicbrainz & musician & gc        & 0.955526 & 0.001926 & 0.951364  & 0.006050 & 0.959821    & 0.007915   \\ 
+musicbrainz & band     & gc        & 0.918238 & 0.003816 & 0.948221  & 0.012288 & 0.890520    & 0.016863   \\ \hline
 discogs     & musician & sc      & 0.938836 & 0.002473 & 0.917001  & 0.002568 & 0.961746    & 0.003667   \\
-imdb        & musician & sc      & 0.924930 & 0.001915 & 0.947724  & 0.003561 & 0.903238    & 0.004935   \\
+discogs     & band     & sc      & 0.927771 & 0.001080 & 0.911809  & 0.006866 & 0.944456    & 0.009776   \\
 imdb        & actor    & sc      & 0.890012 & 0.007978 & 0.907933  & 0.016179 & 0.873941    & 0.029767   \\
+imdb        & director & sc      & 0.917923 & 0.001777 & 0.901563  & 0.004736 & 0.934969    & 0.007596   \\
+imdb        & musician & sc      & 0.924930 & 0.001915 & 0.947724  & 0.003561 & 0.903238    & 0.004935   \\
 imdb        & producer & sc      & 0.904998 & 0.008882 & 0.899323  & 0.020682 & 0.912508    & 0.035943   \\
 imdb        & writer   & sc      & 0.931043 & 0.003075 & 0.929588  & 0.007946 & 0.932652    & 0.009692   \\
-imdb        & director & sc      & 0.917923 & 0.001777 & 0.901563  & 0.004736 & 0.934969    & 0.007596   \\
 musicbrainz & musician & sc      & 0.955643 & 0.001373 & 0.955374  & 0.003750 & 0.955933    & 0.003327   \\
 musicbrainz & band     & sc      & 0.919791 & 0.003254 & 0.941948  & 0.011043 & 0.898935    & 0.013037   \\ \hline
-discogs     & band     & vch & 0.926795 & 0.001145 & 0.905189  & 0.001827 & 0.949465    & 0.002661   \\
-discogs     & musician & vch & 0.939658 & 0.001932 & 0.913881  & 0.002899 & 0.966938    & 0.002004   \\
-imdb        & director & vch & 0.918177 & 0.001400 & 0.890278  & 0.004667 & 0.947915    & 0.003379   \\
-imdb        & producer & vch & 0.907517 & 0.004611 & 0.901155  & 0.004867 & 0.914052    & 0.009619   \\
-imdb        & actor    & vch & 0.897184 & 0.000752 & 0.882077  & 0.009962 & 0.913098    & 0.012148   \\
-imdb        & writer   & vch & 0.931065 & 0.002249 & 0.920422  & 0.007199 & 0.942038    & 0.005549   \\
-imdb        & musician & vch & 0.921577 & 0.002711 & 0.918733  & 0.022289 & 0.925297    & 0.017423   \\
-musicbrainz & musician & vch & 0.956088 & 0.001293 & 0.946047  & 0.003334 & 0.966356    & 0.001537   \\
-musicbrainz & band     & vch & 0.917456 & 0.002139 & 0.953082  & 0.007505 & 0.884490    & 0.006698   \\ \hline
-discogs     & band     & vcs & 0.927576 & 0.001300 & 0.904116  & 0.002522 & 0.952312    & 0.004592   \\
-discogs     & musician & vcs & 0.938896 & 0.001494 & 0.909274  & 0.004537 & 0.970543    & 0.003097   \\
-imdb        & actor    & vcs & 0.899699 & 0.001028 & 0.887665  & 0.005118 & 0.912139    & 0.006529   \\
-imdb        & director & vcs & 0.919262 & 0.001497 & 0.894902  & 0.008123 & 0.945108    & 0.006606   \\
-imdb        & producer & vcs & 0.909610 & 0.003182 & 0.905090  & 0.005243 & 0.914192    & 0.002709   \\
-imdb        & musician & vcs & 0.926019 & 0.001244 & 0.939099  & 0.007632 & 0.913418    & 0.007684   \\
-imdb        & writer   & vcs & 0.931617 & 0.002161 & 0.929887  & 0.004030 & 0.933369    & 0.002867   \\
-musicbrainz & musician & vcs & 0.954936 & 0.001831 & 0.955208  & 0.002438 & 0.954666    & 0.001676   \\
-musicbrainz & band     & vcs & 0.916297 & 0.002493 & 0.954029  & 0.002458 & 0.881462    & 0.005454   \\ \hline
+discogs     & musician & vh & 0.939658 & 0.001932 & 0.913881  & 0.002899 & 0.966938    & 0.002004   \\
+discogs     & band     & vh & 0.926795 & 0.001145 & 0.905189  & 0.001827 & 0.949465    & 0.002661   \\
+imdb        & actor    & vh & 0.897184 & 0.000752 & 0.882077  & 0.009962 & 0.913098    & 0.012148   \\
+imdb        & director & vh & 0.918177 & 0.001400 & 0.890278  & 0.004667 & 0.947915    & 0.003379   \\
+imdb        & musician & vh & 0.921577 & 0.002711 & 0.918733  & 0.022289 & 0.925297    & 0.017423   \\
+imdb        & producer & vh & 0.907517 & 0.004611 & 0.901155  & 0.004867 & 0.914052    & 0.009619   \\
+imdb        & writer   & vh & 0.931065 & 0.002249 & 0.920422  & 0.007199 & 0.942038    & 0.005549   \\
+musicbrainz & musician & vh & 0.956088 & 0.001293 & 0.946047  & 0.003334 & 0.966356    & 0.001537   \\
+musicbrainz & band     & vh & 0.917456 & 0.002139 & 0.953082  & 0.007505 & 0.884490    & 0.006698   \\ \hline
+discogs     & musician & vs & 0.938896 & 0.001494 & 0.909274  & 0.004537 & 0.970543    & 0.003097   \\
+discogs     & band     & vs & 0.927576 & 0.001300 & 0.904116  & 0.002522 & 0.952312    & 0.004592   \\
+imdb        & actor    & vs & 0.899699 & 0.001028 & 0.887665  & 0.005118 & 0.912139    & 0.006529   \\
+imdb        & director & vs & 0.919262 & 0.001497 & 0.894902  & 0.008123 & 0.945108    & 0.006606   \\
+imdb        & musician & vs & 0.926019 & 0.001244 & 0.939099  & 0.007632 & 0.913418    & 0.007684   \\
+imdb        & producer & vs & 0.909610 & 0.003182 & 0.905090  & 0.005243 & 0.914192    & 0.002709   \\
+imdb        & writer   & vs & 0.931617 & 0.002161 & 0.929887  & 0.004030 & 0.933369    & 0.002867   \\
+musicbrainz & musician & vs & 0.954936 & 0.001831 & 0.955208  & 0.002438 & 0.954666    & 0.001676   \\
+musicbrainz & band     & vs & 0.916297 & 0.002493 & 0.954029  & 0.002458 & 0.881462    & 0.005454   \\ \hline
 
 \end{longtable}
+
+It can be seen that some of the observations made for the results of the baseline models in the previous section still hold for these results as well. For instance, also for ensembles it seems that \textit{Musicbrainz/Musician} is the concrete entity that has the better \textit{F1 score}. This is to be expected since ensembles are just joining the results from their base classifiers. 
+
+\textit{Discogs/Musician} seems to be the entity with the second best \textit{F1}.
+
+For precision, all ensemble models also have \textit{Musicbrainz/Musician} as their best score. However, for recall, it seems that in all cases except for the \textit{gated classifier}, the highest score is for \textit{Discogs/Musician} (\textit{gated classifier} has \textit{Musicbrainz/Musician} as the top recall). 
 
 
 
@@ -2600,6 +2502,8 @@ compare the results obtained with the baseline models and those obtained using e
 Ideas:
     - Compare model summaries, maybe best vs best? 
     - multi kde plot for comparing prec.vs.recall (maybe also best vs best)
+    
+See STDs. Should be higher for ensembles ? or lower? or same? 
 
 
 % Compare with the results exposed before, without ensemble (only the base models)
@@ -2648,6 +2552,51 @@ bibliografia in formato bibtex
 % sezione Allegati - opzionale
 \appendix
 \chapter{Appendix}
+
+\subsection{Glossary}
+\label{sec:apx-glossary}
+
+This section will review the terminology which is extensively used in this work when talking about data and it's sources.
+
+\subsubsection{Entity}
+\label{sec:rl-term-entity}
+
+An entity refers to a single data point in a dataset (catalog). \textit{Entities} are what is matched when performing record linkage. An entity is composed of one identifier, and a collection of fields (either quantitative or qualitative) which are specific to each problem. 
+  
+In the people use case, the entities will most likely have fields representing personal information \textit{(name, birth date, death date, etc.)}. If, on the other hand there is a problem where its necessary to perform record linkage on houses, then it would probably have fields like \texttt{total area, number of floors, number of rooms, etc}.
+
+
+\subsubsection{Catalog}
+\label{sec:rl-term-catalog}
+
+In the present work, any source of entities is called a \textit{catalog}. The terms \textit{catalog} and  \textit{dataset} are synonyms. Any source of data can be a catalog: books, databases, spreadsheets, etc. 
+
+Note that the term \textit{catalog} is not specific to Record Linkage. It is instead a term adopted from the Mix'n'Match\footurl{https://tools.wmflabs.org/mix-n-match} project, and it signifies \textit{sources of data which can be imported into Wikidata}. For our project, the term is changed slightly to mean \textit{any source of data}. 
+
+An \textit{external catalog} is a \textit{catalog} that is not \textit{Wikidata}, and from which information should be imported into the latter.
+
+As stated before, entities are always assigned an identifier. This said identifier is always unique, and specific to a distinct catalog (rarely this identifier is shared among different catalogs). 
+
+When performing record linkage, it is desirable to end up with a list of identifiers pairs, where each pair describes a single real-world entity, and its identifiers tells us which record in the corresponding dataset has information on the specific entity.
+
+
+\subsubsection{Source and Target}
+\label{sec:rl-term-source-and-target}
+
+As stated before, the goal is to take Wikidata entities and find their corresponding links in external catalogs. The relation between these two can be captured by the terms \textit{source} and \textit{target}. \textit{Source} is the catalog where the entities that should be matched are taken from (i.e. \textit{Wikidata}), and \textit{target} is the catalog against which the entities from the source should be matched (i.e. the external catalogs).
+
+This is especially useful when there is no need to match all the catalogs amongst
+themselves, since matching a \textit{source catalog} against multiple target ones
+requires a much more diminished number of comparisons than it would do if matching all catalogs among themselves.
+
+When using a \textit{source catalog}, the record linkage algorithm is no longer matching
+source entities into a unique latent (underlying) entity, rather, it will match
+them against a concrete entity (e.g. an entity from the source catalog).
+
+In related record linkage studies, these terms are also commonly referred to as \cite{Sayers2015}
+\textit{master file} (instead of source), and \textit{file of interest} (instead
+of target) .
+   
 
 \section{Mapping IMDb Professions to Wikidata}
 \label{sec:imdb-profs-to-wikidata}
