@@ -1574,7 +1574,7 @@ Note that not all features get extracted every time: they're only applied if pos
 \subsubsection{Exact match on names}
 \label{sec:feature-exact-match-names}
 
-This feature is extracted by taking the \textit{name} fields of both entities and checking if they're the same. This field may have more than one value (e.g., in the case of name variations), so the feature compares all possible pairs of names, and optimistically \textit{1} if any of the comparisons is a match. Remember that the values of features may go from \textit{0} (not a match), to \textit{1} (perfect match). 
+This feature is extracted by taking the \textit{name} fields of both entities and checking if they're the same. This field may have more than one value (e.g., in the case of name variations), so the feature compares all possible pairs of names, and optimistically yields \textit{1} if any of the comparisons is a match. Remember that the values of features may go from \textit{0} (not a match), to \textit{1} (perfect match). 
 
 For clarification, below is the algorithm used to find the perfect match. Note that this same procedure can be applied when performing \textit{perfect match} on any two lists of values.
 
