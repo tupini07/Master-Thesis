@@ -950,7 +950,7 @@ Specifically, the \texttt{soweego} pipeline is structured as follows:
   \label{fig:soweego-structure}
 \end{figure}
 
-A section will be dedicated to each step, but just to give an overview, below is brief description of each one.
+A section will be dedicated to each step, but just to give an overview, below is brief description of each one. To clarify the figure above, the \textit{Workflow} is a module which contains functionality for data cleaning and feature extraction. And the \textit{linker} is a module which contains functionality for blocking, the \textit{workflow}, and \textit{train, link, evaluate}.
 
 \begin{enumerate}
 \item \texttt{Importer}: 
@@ -1029,7 +1029,7 @@ When performing the \textit{blocking} procedure, \soweego compares the entities 
 
 When performing blocking, the first thing that need to be done is to receive a Wikidata set, and the concrete entity type for which \texttt{soweego} is currently running. Then, for every entity in the Wikidata set, the blocking is made by getting all entities in the external catalog which share \textit{name tokens} with the Wikidata entity. 
 
-To prevent getting too many results its allowed for only a maximum of 10 external entities to be retrieved for each Wikidata entity.
+To prevent getting too many results it is allowed for only a maximum of 10 external entities to be retrieved for each Wikidata entity.
 
 For example, suppose a Wikidata entity is  currently processed, and in it's \textit{name\_tokens} field it has the following list of tokens: \texttt{[George, Hamilton]}, and suppose that the external catalog dataset for said entity is as follows:
 
@@ -1048,23 +1048,24 @@ name\_tokens        & TID   \\ \hline
 
 After blocking with the rule mentioned above, its possible to find that the Wikidata entity may be a possible match with \texttt{[m3289, m2390, and m9932]}, but is not a match with \texttt{n5932}.
 
-This might be a very simple blocking rule, and in some cases returns much more matches than stricter rules. However, it may be empirically observed that its performance is quite good. The reason this blocking rule was chosen is because all entities have a name field from which the tokens can be derived. 
-
+The main reason this blocking rule was chosen, is because all entities have a name field from which the tokens can be derived.  
 
 Choosing another field (like \textit{birth date + death date}) might yield better results, but some entities do not have said field, which makes the blocking difficult. 
+
+\subsection{Data Cleaning}
+\label{sec:soweego-st-data-cleaning}
+
+Data cleaning is a step of the \textit{workflow}, and is executed for each entity in the pairs defined during the previous \textit{blocking} step before giving these \textit{cleaned} entities to \textit{feature extraction}. 
+
+The ways in which the entities get \textit{cleaned} is defined in depth in \autoref{sec:soweego-st-data-cleaning}. 
 
 
 \subsection{Feature Extractor}
 \label{sec:soweego-st-feature-ext}
 
-
-
 An in depth description of each feature used will be given in \autoref{sec:used-features}, for the moment it will be mentioned at a high level how the \textit{feature extraction} step works in \texttt{soweego}. 
 
 The project leverages the \texttt{Python Record Linkage Toolkit} \cite{recordlinkage-library} to extract the features. By using this framework the process gets simplified, it only needs the definition of which feature functions to use, and to which fields they should be applied. 
-
-
-
 After this is done, the only thing that remains is feeding to the framework the pairs of potential matches as extracted during the blocking step, and it will automatically yield the extracted features for said pairs.
 
 For example, consider that this step gets as an input the list of potential matches extracted during the previous blocking procedure. An example of such list of pairs can be: 
@@ -1074,8 +1075,6 @@ For example, consider that this step gets as an input the list of potential matc
 \end{center}
 
 Where the first element in each pair is the QID of a Wikidata item, and the second element is the ID of the element in an external catalog (in this case, these are the IDs of entities in the IMDb catalog). Besides these pairs, there is also access to the information about each entity (its fields). 
-
-
 
 Finally, the feature extraction procedure also defines a list of which comparison functions to apply to which fields of the source (Wikidata) and target (IMDb in this case) entities.
 
@@ -1107,15 +1106,17 @@ Pair                     & Lev\_name             & Lev\_description      \\ \hli
 
 For \texttt{soweego}, the list of functions applied may change depending on which fields are available in the target and source catalogs. For example, extracting a feature that compares the \texttt{description} of both entities only if both have said field. This means that the amount of feature vectors extracted for different concrete entities may be different. 
 
-Once the feature vectors for all pairs become available, they may be fed to the linker. 
+Once the feature vectors for all pairs become available, they may be fed to the \textit{train/evaluate/link} modules. 
 
 
-\subsection{Linker}
-\label{sec:soweego-st-linker}
+\subsection{Train, Evaluate, Link}
+\label{sec:soweego-st-train-evaluate-link}
 
-The linker receives the matrix of feature vectors from the previous step and feeds it to one of the machine learning algorithms presented in \autoref{chap:algorithms}, which will in turn tell the linker what is the probability, according to that algorithm, that each pair is a match.
+These three can be treated described as one module since their functionality is very similar. The \textit{train} module trains one of the machine learning classifiers presented \autoref{chap:algorithms} on a given dataset. The \textit{evaluate} module performs the evaluation of said classifier (the evaluation step is explained more in depth in \autoref{chap:results}). And the \textit{link} module uses the trained classifier to predict whether the unlabelled pairs given by the blocking step are matches or not.
 
-Besides this, the linker also applies a couple of \textit{post-classification} steps on the predictions. Specifically, what it does is to apply the following \textit{linking rules} to each result in turn.
+All of these modules receive their as input the matrix of feature vectors from the previous step and feeds it to one of the machine learning algorithms.
+
+Besides this, the \textit{link} module also applies a couple of \textit{post-classification} steps on the predictions. Specifically, what it does is to apply the following \textit{linking rules} to each result in turn.
 
 \begin{description}
 \item[Wikidata URL] if the target in the corresponding pair thats currently processing has a URL, and said URL points to a Wikipedia/Wikidata page then it can automatically extract from said URL which Wikidata entity the target should be associated with. 
@@ -1161,30 +1162,20 @@ Development of \texttt{soweego} happens locally and new releases are uploaded to
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{Data Exploration}
-\label{sec:data-exploration}
-
-This section will be dedicated to showing and exploring the data that was used (next section), then mentioning which pre-processing steps the data undergoes and what its final shape is (\autoref{sec:data-preprocessing}). Finally the list of features extracted during the \textit{feature extraction} step of \texttt{soweego} will be discussed.
-
-
-\subsection{Original Shape of the Data}
+\section{Original Shape of the Data}
 \label{sec:orig-shape-of-data}
 
 This section will explore which shape the data received from the external catalogs, as well as that received from Wikidata, takes. Since they are all different, a section will be dedicated to each catalog. 
 
 It must be pointed out for the external catalogs, that even though they are maintained by a group of contributors and, in some cases, also by dedicated teams, it does not mean that the data is 100\% clean. 
 
-
 During development there have been multiple encounters with malformed values (like birth or death dates in the future), spelling errors in  names, missing values (most commonly, missing birth and death dates), among others. 
-
-
 
 As such, it must be kept in mind that the information coming from the external catalogs should not be considered the absolute truth.
 
-\todo[inline]{add more? maybe about common points, TIDs, QIDs, and etc}
 
 
-\subsubsection{IMDb}
+\subsection{IMDb}
 \label{sec:shape-imdb}
 
 IMDb provides multiple dumps of their data\footurl{https://www.imdb.com/interfaces/}, each is a snapshot of the database up until the current date, containing different information. The one used in this project, which is the one that contains information about people in IMDb's database, is \texttt{name.basics}\footurl{https://datasets.imdbws.com/name.basics.tsv.gz}. The specific dump that is going to be discussed was downloaded from the site on \textit{3 October 2019}.
@@ -1319,7 +1310,7 @@ Its evident that the IMDb dump does not provide much information that can be use
 
 
 
-\subsubsection{Discogs}
+\subsection{Discogs}
 \label{sec:shape-discogs}
 
 Discogs provides multiple data dumps\footurl{https://data.discogs.com/}, and maintains records of dumps released in different dates. The one used for this project is \textit{discogs\_20190901\_artists}, whose last revision was on \textit{2019-09-08T13:03:25.000Z}.
@@ -1409,7 +1400,7 @@ The \textit{data\_quality} field shows how good the data about a certain entity 
 \end{figure}
 
 
-\subsubsection{Musicbrainz}
+\subsection{Musicbrainz}
 \label{sec:shape-musicbrainz}
 
 The Musicbrainz dump\footurl{https://musicbrainz.org/doc/MusicBrainz_Database/Download} is a snapshot of the whole dataset. As such, it contains a lot of data which is not of any interest for this project. The dump used for this catalog is the following:
@@ -1440,7 +1431,7 @@ In the dump there are a total of 1,003,366 musicians and 437,287 bands. The dump
 \item[relations with bands] It specifies the relation among artists and bands, specifically, the list of bands to which they belong. 
 \end{description}
 
-All entities have a name associated to them. \autoref{fig:musicbrainz-name-tokens-pie} shows the distributions for said number of tokens. It is interesting to note that most people have names composed of two tokens, and bands are almost as likely to have a name composed by a single token than they are to have one with two. Another interesting thing is that names of bands are more likely than those of people to contain more than two tokens.
+All entities have a name associated to them. \autoref{fig:musicbrainz-name-tokens-pie} shows the distributions for said number of tokens. It is interesting to note that bands are almost as likely to have a name composed by a single token than they are to have one with two. Another interesting thing is that names of bands are more likely than those of people to contain more than two tokens.
 
 \begin{figure}[]
   \centering \includegraphics[width=\textwidth]{musicbrainz_token_names_entities} 
@@ -1476,7 +1467,7 @@ There are 517,524 musicians and 266,206 bands which are associated with at least
 \end{figure}
 
 
-\subsubsection{Wikidata}
+\subsection{Wikidata}
 \label{sec:shape-wikidata}
 
 % mention for each catalog, and which entities it has. Potentially mention the
@@ -1541,12 +1532,11 @@ Musicbrainz & Musician & 118,107                  & 153,437                     
 
 
 
-\subsection{Preprocessing}
+\section{Preprocessing}
 \label{sec:data-preprocessing}
 
 The raw data needs to undergo a series of preprocessing steps in order for it to be used confidently.
 
-% will leave this section for later. It is not 100% necessary, but makes it easier to understand the overrall process
 
 % In which way do we currently preprocess the data so that it is normalized?
 
@@ -1561,10 +1551,8 @@ The raw data needs to undergo a series of preprocessing steps in order for it to
 
 
 
-\subsection{Features}
+\section{Features}
 \label{sec:used-features}
-
-To extract features we leverage the functionality of the \textit{Python Record Linkage Toolkit} framework \cite{recordlinkage-library}, which allows us to extract features simply define a list of all the functions we want to use, and a definition on which fields said functions should be applied to. The framework will then automatically apply this functions to all pairs of possible matches defined in the \textit{blocking} step, and from these applications extract the feature vectors that will be used in the \textit{linking} step.
 
 This section will be centered around explaining said list of functions, and on what fields they're applied. Each feature will be explained in depth in it's own subsection.
 
@@ -1598,7 +1586,8 @@ Similarly to the feature defined above, both source and target entities may have
 
 This feature expects that both entities that are being compared have a list of URL tokens (which were extracted during the preprocessing step: \autoref{sec:data-preprocessiong-URL-tokenization}). Besides this, it also receives a set of stop words $\beta$, which are words that shouldn't be considered during the comparison process.
 
-This function takes all the URL tokens for each entity $i$ and converts them to a set, so there are two sets $\sigma_i$ which contain all URL tokens for a specific entity. All stop words are then removed from these sets $\sigma_i = \sigma_i \setminus \beta$. Finally the final score is calculated as follows:
+This function takes all the URL tokens for each entity $i$ and converts them to a set, so there are two sets $\alpha$ which contain all URL tokens for a specific entity. All stop words are then removed from these sets $\sigma = \alpha
+\setminus \beta$. Finally the final score is calculated as follows:
 
 \begin{equation*}
     \frac{
@@ -1610,6 +1599,8 @@ Basically, this function measures the percentage of elements of the smallest set
 
 Using a set of stop words greatly diminishes the amount of times the function classifies as similar URLs which are not really similar. This set of stop words was constructed by taking all URL tokens in the database, counting them, and choosing the most common 850. Terms in this set are mainly domains to common websites like \textit{Facebook}, \textit{YouTube}, etc, as well as common words and names.
 
+\todo[inline,backgroundcolor=blue!25]{if time: add graphics relating urls and stopwords}
+
 
 \subsubsection{Similar Birth Dates}
 \label{sec:feature-similar-birth-dates}
@@ -1618,7 +1609,7 @@ Using a set of stop words greatly diminishes the amount of times the function cl
  
  This means that dates coming from \textit{Musicbrainz} have a variable precision, depending on what was specified in for the entity in the dump file, but the highest possible precision to know all three of these. For IMDb, on the other hand, only the year of the dates can be assumed to be correct.
  
- The \textit{date precision} specifies which parts of the dates can be trusted. It goes from less specific to more specific. For example the most general a precision can be is to have only the year as the trusted part of the date. The next, more specific step, is to trust the month, followed by the day, etc. The most specific precision is the nanosecond. 
+ The \textit{date precision} specifies which parts of the dates can be trusted. It goes from less specific to more specific. For example the most general a precision can be is to have only the year as the trusted part of the date. The next, more specific step, is to trust the month, followed by the day, etc.
  
 This feature function supposes that the entities have a birth date $\delta_i$, and also have a specified precision $\phi_i$ for said date. A date has at most 3 parts (year, month, and day), and as such also has a maximum precision of 3, since the most precise part of the date is the day. A given pair of dates can only be compared up to the lowest common precision, this is just $min(\phi_{target}, \phi_{source})$. 
 
@@ -1627,10 +1618,10 @@ The comparison can start from the lowest precision and keeping a counter $\omega
 More formally, the following pseudocode defines the algorithm:
 
 \begin{lstlisting}
-max_precision = min((*$\phi_{target}, \phi_{source}$*)) # the maximum precision we can compare
+shared_precision = min((*$\phi_{target}, \phi_{source}$*)) # the maximum precision we can compare
 (*$\omega$*) = 0 # counter to track how many parts the dates have in common
 
-for date_part in 0..max_precision:
+for date_part in 0..shared_precision:
 
     # get the part corresponding to the current precision, starting from the 
     # lowest, which is the year
@@ -1656,7 +1647,7 @@ For IMDb dates this function just compares the years, and if they're the same th
 Note that if entities have more than one birth date then all the possible pairs are compared and the best result is returned.  
  
  
-\subsubsection{Similar Birth Dates}
+\subsubsection{Similar Death Dates}
 \label{sec:feature-similar-death-dates}
  
 This feature is exactly the same as the one shown above for birth dates, but is applied to death dates instead.
@@ -1705,21 +1696,21 @@ If the entities have more than one set of name tokens (i.e. they have multiple n
 
 Cosine similarity has long been used in the field of information retrieval \cite{singhal_modern_information_retrieval} since it allows to measure the distance between two \textit{documents} by checking which words they have in common. This behaviour is similar to what the current function should to, the difference is that instead of names we want to count the occurrence of \textit{bi-grams}. 
 
-More in general, $n$-grams, are defined as all the possible, $n$ sequential elements in a piece of text. The \textit{elements} in question can be letters, words, or etc. For example, taking the name \textit{Sarah}, and considering the possible $n$-grams of characters, the following table can be generated.
+More in general, $n$-grams, are defined as all the possible, $n$ sequential elements in a piece of text. The \textit{elements} in question can be letters, words, or etc. For example, taking the name \textit{Sarah}, and considering the possible $n$-grams of characters, the following table can be generated. Note that the \textit{white space} before and after the name are being considered as characters, this will be shown as an underscore (\textit{\_}) in the examples below
 
 \begin{table}[H]
 \centering
 \begin{tabular}{l|l}
-Name                       & sarah                     \\ \hline
-1-gram (uni-gram)          & s-a-r-a-h                 \\ \hline
-2-gram (bi-gram)           & s-sa-ar-ra-ah-h           \\ \hline
-3-gram (tri-gram)          & sa-sar-ara-rah-ah         \\ \hline
+Name                       & \_sarah\_                     \\ \hline
+1-gram (uni-gram)          & \_-s-a-r-a-h-\_                 \\ \hline
+2-gram (bi-gram)           & \_s-sa-ar-ra-ah-h\_           \\ \hline
+3-gram (tri-gram)          & \_sa-sar-ara-rah-ah\_         \\ \hline
 \multicolumn{1}{c|}{\vdots} & \multicolumn{1}{c}{\vdots}
 \end{tabular}
 \label{tab:ngram-generation-example}
 \end{table}
 
-This function compares the names of two entities by first extracting bi-grams from the the names and then constructing a vector specifying which bi-grams are contained in each of the names. These vectors are finally compared using \textit{cosine similarity}. 
+This function compares the names of two entities by first extracting bi-grams from the names and then constructing a vector specifying which bi-grams are contained in each of the names. These vectors are finally compared using \textit{cosine similarity}. 
 
 For example, suppose the function is being applied to \textit{Sarah} and \textit{Sara}. The corresponding bigrams would be: \textit{s-sa-ar-ra-ah-h} for the first, and \textit{s-sa-ar-ra-a} for the second. These two sets of bi-grams can them be joined into a single set $\beta = \{s, sa, ar, ra, ah, h, a\}$. This last set represents all the possible bi-grams that can be found in any of the two names. 
 
@@ -1732,7 +1723,7 @@ By traversing this set, a vector $\rho$ can be constructor for each entity $e$, 
         \end{cases} 
 \end{equation*}
 
-For example, the the resulting vectors for \textit{sarah} and \textit{sara}, considering the $\beta$ defined above would be $\rho_1 = [1, 1, 1, 1, 1, 1, 0]$ and $\rho_2 = [1, 1, 1, 1, 0, 0, 1]$ respectively.
+For example, the resulting vectors for \textit{sarah} and \textit{sara}, considering the $\beta$ defined above would be $\rho_1 = [1, 1, 1, 1, 1, 1, 0]$ and $\rho_2 = [1, 1, 1, 1, 0, 0, 1]$ respectively.
 
 These vectors can then be passed to the cosine similarity function, which is defined as the dot product of the vectors normalized by their lengths:
 
@@ -1755,7 +1746,7 @@ If the entities are associated with more than one name, then this procedure is a
 \subsubsection{Weighted intersection of name tokens}
 \label{sec:feature-wighted-name-intersection}
 
-This function is similar to \autoref{sec:feature-shared-tokens-plus-urls}, in that the amount of shared tokens are the key part of the feature. This function supposes that both entities have the list of name tokens. It proceeds to transform this lists into a set of all tokens $\tau_e$ for each entity. The common tokens are defined as the set $\iota = \tau_{source} \cap \tau_{target}$, and the set of all tokens is defined as $\upsilon = \tau_{source} \cup \tau_{target}$. 
+This function is similar to \autoref{sec:feature-shared-tokens-plus-urls}, in that the amount of shared tokens are the key part of the feature. This function supposes that both entities have the list of name tokens. It proceeds to transform these lists into a set of all tokens $\tau_e$ for each entity. The common tokens are defined as the set $\iota = \tau_{source} \cap \tau_{target}$, and the set of all tokens is defined as $\upsilon = \tau_{source} \cup \tau_{target}$. 
 
 This function also makes use of a list of words which get penalized. This contains mainly common filler words in the names of bands. For example, words like: \textit{the}, \textit{band}, \textit{orchestra}, \textit{boys}, etc. Using this set $\mu$, it is possible to find how many of the shared words should be penalized: $\phi = |\iota \cap \mu|$.
 
@@ -1782,13 +1773,13 @@ Similarly to \autoref{sec:feature-kernel-similarity-name-tokens}, this function 
 \subsubsection{Match on occupation QIDs}
 \label{sec:feature-occupations}
 
-This feature function is currently only used for IMDb entities since those are the only which have an \textit{occupation} field. Remember that \autoref{sec:shape-imdb} mentioned how IMDb provided information about the three most profession each entity is associated with, and that these \textit{imdb-professions} can be mapped to the QIDs of professions in Wikidata. This function leverages this relation. 
+This feature function is currently only used for IMDb entities since those are the only which have an \textit{occupation} field. Remember that \autoref{sec:shape-imdb} mentioned how IMDb provided information about the three most frequent professions each entity is associated with, and that these \textit{imdb-professions} can be mapped to the QIDs of professions in Wikidata. This function leverages this relation. 
 
 Data coming from Wikidata, when downloaded for IMDb entities, contains all the occupation QIDs associated with the entity. These might not always be the same as those saved in IMDb. For example, the occupation for the Wikidata entity might be a more specific occupation than that in IMDb, or on the other hand it may be less specific. A concrete example of this might be the occupation \textit{voice actor (Q2405480)} in Wikidata. There is no profession in IMDb which matches \textit{voice actor}, however it could be considered as a kind of \textit{actor}, and someone with profession \textit{actor} in IMDb should be considered as a positive match with a Wikidata entity who is a \textit{voice actor} (at least when considering the occupations).
 
-For this reason, this function does not compare the occupations directly, instead it also considers all \textit{sub} and \textit{super} classes of said occupations (more specific and more general versions, respectively). For example, the occupation \textit{voice actor (Q2405480)} is a sub-class of \textit{actor (Q33999)}, and this is turn is a sub-class of \textit{artist (Q483501)}. 
+For this reason, this function does not compare the occupations directly, instead it also considers all \textit{sub} and \textit{super} classes of said occupations (more specific and more general versions, respectively). For example, the occupation \textit{voice actor (Q2405480)} is a sub-class of \textit{actor (Q33999)}, and this in turn is a sub-class of \textit{artist (Q483501)}. 
 
-The information about which are the super and sub-classes is obtained directly from Wikidata by means of queries to it's SPARQL API. Note that this proceedure gets \textit{all} sub and super classes not only the immediately super or sub. For example, the result of getting the sub-classes of \textit{artist (Q483501)} will include both \textit{actor} and \textit{voice actor}. The process can also be thought of as getting the elements from a tree, where the root is the more general super-class, and the leafs are the most specific sub-classes. 
+The information about which are the super and sub-classes is obtained directly from Wikidata by means of queries to it's SPARQL API\footurl{https://query.wikidata.org/sparql}. Note that this proceedure gets \textit{all} sub and super classes not only the immediately super or sub. For example, the result of getting the sub-classes of \textit{artist (Q483501)} will include both \textit{actor} and \textit{voice actor}. The process can also be thought of as getting the elements from a tree, where the root is the most general super-class, and the leaves are the most specific sub-classes. 
 
 The function starts by getting the occupation sets from two entities, these are then extended to include all the sub and super \textit{occupations} of the original occupations in those sets, creating one $\omega_e$ for each entity. The result of the function is then calculated as:
 
@@ -1802,7 +1793,7 @@ The function starts by getting the occupation sets from two entities, these are 
 
 This is basically the percentage of the smallest set of occupations which is contained in the largest set. If the base occupations are the same then the sets will also be the same. If the base occupations are the same, but one of the entities has one extra (or more) different occupations, then the smallest set will still be contained in the largest one, and it will be considered as a perfect match. When the base occupations are different, but related (e.g. all occupations are related with music) then it is expected that some non-negligible subset of the super classes will be the same.
 
-Currently, the smallest set is usually IMDb. As seen in \autoref{fig:imdb-profession-count-pie}, most IMDb entities only have only one occupation associated with them, and they can have at most three. On the other hand, Wikidata entities have no limit as to how many entities they can be associated with. 
+Currently, the smallest set is usually IMDb. As seen in \autoref{fig:imdb-profession-count-pie}, most IMDb entities only have one occupation associated with them, and they can have at most three. On the other hand, Wikidata entities have no limit as to how many entities they can be associated with. 
 
 % GENRES - not describing it since it's not used for people nor bands
 
@@ -1810,9 +1801,9 @@ Currently, the smallest set is usually IMDb. As seen in \autoref{fig:imdb-profes
 \subsubsection{Feature Exploration}
 \label{sec:feature-viz}
 
-To understand the features exposed in the last function better, and to learn what is their behaviour in a real world scenario, this section will proceed to mention some basic statistical information about them. Questions of special interest are: which is the average value and standard deviation for a feature, which features are always zero, and knowledge of the features that are extracted for a specific catalog. It would also be interesting to see if the features extracted vary between the classification and training sets, or between the positive and negative examples in the training set. This section strives to answer all these questions.
+To better understand the features exposed in the section above, and to learn what is their behaviour in a real-world scenario, this section will proceed to mention some basic statistical information about them. Questions of special interest are: which is the average value and standard deviation for a feature, which features are always zero, and knowledge of the features that are extracted for a specific catalog. It would also be interesting to see if the features extracted vary between the classification and training sets, or between the positive and negative samples in the training set. This section strives to answer all these questions.
 
-\autoref{tab:features-viz-average-std-classification}, presents the features extracted for each concrete entity in the \textit{classification set}. The first number in each cell is the average value, and the number below it, in parenthesis, is the standard deviation. If a cell has no value then it means that specific concrete entity does not have the required fields to extract said features and so it was not used. An example of this is the \textit{born\_similar} which was not applied to entities of the \textit{Discogs} catalog since they do not have birth dates. Note that to make the tables fit nicely in the page, the names of the features have been shortened. Below is a mapping from the complete feature name to its shortened version:
+\autoref{tab:features-viz-average-std-classification}, presents the features extracted for each concrete entity in the \textit{classification set}. The first number in each cell is the average value, and the number below it, in parenthesis, is the standard deviation. If a cell has no value then it means that the given concrete entity does not have the required fields to extract said features and so it was not used. An example of this is the \textit{born\_similar} which was not applied to entities of the \textit{Discogs} catalog since they do not have birth dates. Note that to make the tables fit nicely in the page, the names of the features have been shortened. Below is a mapping from the complete feature name to its shortened version:
 
 \begin{itemize}
     \item born\_similar : brn.sim
@@ -1829,9 +1820,9 @@ To understand the features exposed in the last function better, and to learn wha
 
 By looking at \autoref{tab:features-viz-average-std-classification}, the first thing one can notice is that all catalogs have seven features, except for \textit{Musicbrainz} which has eight. It is also clear which features were extracted from which catalogs. 
 
-The mean for some features seem to be maintained similar across each concrete entity. For example the born similarity is \textit{0.005 $\pm$ 0.001} in 5 our of 7 concrete entities that have it. However, \textit{nm.exct} varies a bit more, with it going from \textit{0.04} for \textit{Discogs/Musician} to \textit{0.14} for \textit{Musicbrainz/Band}. 
+The mean for some features seem to be maintained similar across each concrete entity. For example the born similarity is \textit{0.005 $\pm$ 0.001} in 5 out of 7 concrete entities that have it. However, \textit{nm.exct} varies a bit more, with it going from \textit{0.04} for \textit{Discogs/Musician} to \textit{0.14} for \textit{Musicbrainz/Band}. 
 
-For some features it also seems that the the mean values are lower than for others. An example of this is the feature \textit{die.sim} whose mean is $\leq 0.003$ for all concrete entities, while \textit{nmt.cos} is always above \textit{0.5}. 
+For some features it also seems that the mean values are lower than for others. An example of this is the feature \textit{die.sim} whose mean is $\leq 0.003$ for all concrete entities, while \textit{nmt.cos} is always above \textit{0.5}. 
 
 Among these features, those associated with flexible name similarities (\textit{nmt.lev}, \textit{nmt.shr}, \textit{nmt.cos}) seem to be the ones with the higher average value. \textit{url.exct} has a lower average, in all cases, than \textit{url.shr}, and it's mean is quite low for almost all concrete entities. 
 
@@ -1860,7 +1851,7 @@ When it comes to \textit{standard deviation}, it seems that all name similarity 
 \end{table}
 
 
-On the other hand, \autoref{tab:features-viz-average-std-training} shows the mean and standard deviation for features extracted from the training set. The first thing that can be noticed is that in almost all cases the \textit{mean} is higher for features in the training set thank for the respective feature/concrete-entity in the classification set. Besides this, features in the training set seem to behave similarly than those in the classification set. For instance, the non-exact name measures are those with the higher mean. Another thing which can be noticed is that the standard deviation in the training data features is also higher in most cases. 
+On the other hand, \autoref{tab:features-viz-average-std-training} shows the mean and standard deviation for features extracted from the training set. The first thing that can be noticed is that in almost all cases the \textit{mean} is higher for features in the training set than for the respective feature/concrete-entity in the classification set. Besides this, features in the training set seem to behave similarly than those in the classification set. For instance, the non-exact name measures are those with the higher mean. Another thing which can be noticed is that the standard deviation in the training data features is also higher in most cases. 
 
 The above suggests that there is a substantial difference among training and classification data. To better understand this difference, \autoref{fig:average-features-classification-training} shows two heatmaps which have been generated by drawing the respective mean feature values. The heatmap shows in gray those feature/concrete-entities for which there is no value, and the rest is showed in some shade of red. It is easy to see that features do behave similarly across the different heatmaps. For instance, features which are darker (higher mean) in the classification set are also, generally, darker in the training set. However, many features seem to have a much lower mean in the classification set than in the training set. Examples which can readily be discerned from the graphic are: \textit{name\_exact}, \textit{born and died similar}, \textit{occupations\_shared}, \textit{url\_exact}, \textit{url\_tokens\_shared}, and \textit{description\_cosine}. Interestingly, it also seems that \textit{name\_tokens\_shared} has, in most cases, a higher mean than the respective entries in the classification set.
 
@@ -1886,11 +1877,11 @@ The above suggests that there is a substantial difference among training and cla
 \end{table}
 
 
-Now, the used features can be said to be effective if they acually separate the positive from negative examples. For this purpose, \autoref{tab:features-viz-average-std-positive} and \autoref{tab:features-viz-average-std-negative} present the mean and standard deviation values for positive and negative training examples respectively. It is easily seen that in most cases the mean values in the positive samples are much higher than those in the negative samples, meaning that the features actually are significative for characterizing when a samples if either of those classes.
+Now, the used features can be said to be effective if they acually separate the positive from negative examples. For this purpose, \autoref{tab:features-viz-average-std-positive} and \autoref{tab:features-viz-average-std-negative} present the mean and standard deviation values for positive and negative training examples respectively. It is easily seen that in most cases the mean values in the positive samples are much higher than those in the negative samples, meaning that the features are indeed significant to distinguish whether a sample is positive or not.
 
-\autoref{fig:average-features-positive-negative} shows two heatmaps similar to those described for the classification and training sets. It is easy to see that training examples have a higher mean value for almost all features/concrete-entities. An interesting thing to notice, however, is that \textit{name token levenshtein} and \textit{name tokens string kernal cosine} have quite high mean values compared with all the other values in the \textit{negative set}, and in some cases, for \textit{Discogs/Musician}, the mean value in the negative set is actually higher than the corresponding value in the positive set. 
+\autoref{fig:average-features-positive-negative} shows two heatmaps similar to those described for the classification and training sets. It is easy to see that training samples have a higher mean value for almost all features/concrete-entities. An interesting thing to notice, however, is that \textit{name token levenshtein} and \textit{name tokens string kernal cosine} have quite high mean values compared to all the other values in the \textit{negative set}, and in some cases, for \textit{Discogs/Musician}, the mean value in the negative set is actually higher than the corresponding value in the positive set. 
 
-Among all features it seems that those most significative for separating positive and negative samples are: \textit{name\_exact}, which is almost 1 in the positive set, and very low in the negative set, also \textit{born and died similar} are much higher for the positive set, and finally the url features are also much higher for positive samples. Finally, it should also be pointed out that the \textit{occupations\_shared} feature is similar in value between the two sets, but is a little higher in positive samples. An exception to this last is \textit{IMDb/Actor}, which seems to have the same mean value for this feature in both sets.
+Among all features it seems that the most significant ones for separating positive and negative samples are: \textit{name\_exact}, which is almost 1 in the positive set, and very low in the negative set, also \textit{born and died similar} are much higher for the positive set, and finally the url features are also much higher for positive samples. Finally, it should also be pointed out that the \textit{occupations\_shared} feature is similar in value between the two sets, but is a little higher in positive samples. An exception to this last is \textit{IMDb/Actor}, which seems to have the same mean value for this feature in both sets.
 
 
 \begin{table}[h]
@@ -1964,7 +1955,7 @@ For completeness, \autoref{sec:apx-feature-distribution} contains distribution p
 %  "On Lines and Planes of Closest Fit to Systems of Points in Space". Philosophical Magazine. 2 (11): 559–572. doi:10.1080/14786440109462720.
 
 
-\subsection{Difference between training and real world data}
+\section{Difference between training and real-world data}
 \label{sec:training-real-data-difference}
 
 Seeing that the catalogs used are maintained mainly by contributors, one may think that more important people/bands have more information on them than less important ones. From this follows that these entities may have already been linked with the respective external catalog entity. As such, one can assume that the training data is composed mainly of these already labelled \textit{more important} entities, and the classification data are \textit{less important} entities, and less accurately labelled. 
@@ -2031,7 +2022,6 @@ If training and classification sets were of the same quality then this differenc
 
 
 
-% Consider an horizontal bar plot, showing the average values for features in classifications and in training.
 % \^-- consider also make comparative distplots of each feature. There are many, 10 features to be exact, which could be separated into 2x5 subplots? .. Just compare all entities with the feature, no need to separate amongst catalogs and etc.
 
 % Also show if some are NaN in classification while not-nan in training (doubt it) 
@@ -2261,68 +2251,69 @@ The table below shows the performance metrics for each classifier applied to eac
     \item Multi layer perceptron: mlp
     \item Naive Bayes: nb
     \item Random Forest: rf
-    \item Single layer perceptron: s;p
+    \item Single layer perceptron: slp
 \end{itemize}
 
 
 \begin{longtable}{|l|l|l|l|l|l|l|l|l|}
 \hline
-Catalog     & Entity   & Model                & F1.Mean  & F1.STD   & Prec.Mean & Prec.STD & Rec.Mean & Rec.STD \\ \hline
-discogs     & musician & lsvm                 & 0.936944 & 0.001224 & 0.905424  & 0.002080 & 0.970741    & 0.000880   \\
-discogs     & band     & lsvm                 & 0.925262 & 0.001267 & 0.896373  & 0.002110 & 0.956090    & 0.003388   \\
-imdb        & actor    & lsvm                 & 0.894011 & 0.000789 & 0.875260  & 0.002088 & 0.913592    & 0.001998   \\
-imdb        & director & lsvm                 & 0.912727 & 0.001597 & 0.880551  & 0.005850 & 0.947397    & 0.003670   \\
-imdb        & musician & lsvm                 & 0.917906 & 0.001399 & 0.909440  & 0.002345 & 0.926534    & 0.001067   \\
-imdb        & producer & lsvm                 & 0.905975 & 0.003885 & 0.894173  & 0.006799 & 0.918114    & 0.001219   \\
-imdb        & writer   & lsvm                 & 0.928606 & 0.001983 & 0.919005  & 0.002274 & 0.938421    & 0.003574   \\
-musicbrainz & musician & lsvm                 & 0.954410 & 0.001406 & 0.942882  & 0.002112 & 0.966225    & 0.001090   \\ 
-musicbrainz & band     & lsvm                 & 0.913877 & 0.001689 & 0.961199  & 0.003976 & 0.871046    & 0.006050   \\ \hline
-discogs     & musician & lr & 0.938138 & 0.001693 & 0.917022  & 0.002191 & 0.960250    & 0.001370   \\
-discogs     & band     & lr & 0.924791 & 0.001550 & 0.908952  & 0.001476 & 0.941198    & 0.003025   \\
-imdb        & actor    & lr & 0.893573 & 0.000579 & 0.878388  & 0.001838 & 0.909299    & 0.001406   \\
-imdb        & director & lr & 0.913846 & 0.000694 & 0.892154  & 0.004468 & 0.936658    & 0.003834   \\
-imdb        & producer & lr & 0.906045 & 0.002643 & 0.898064  & 0.005640 & 0.914192    & 0.000826   \\
-imdb        & musician & lr & 0.917958 & 0.001717 & 0.908442  & 0.002911 & 0.927680    & 0.001280   \\
-imdb        & writer   & lr & 0.928108 & 0.002082 & 0.924621  & 0.001792 & 0.931635    & 0.004264   \\
-musicbrainz & musician & lr & 0.953083 & 0.001301 & 0.943755  & 0.002042 & 0.962600    & 0.001165   \\ 
-musicbrainz & band     & lr & 0.918022 & 0.002327 & 0.937643  & 0.002251 & 0.899217    & 0.003973   \\ \hline
-discogs     & musician & mlp                  & 0.940715 & 0.001443 & 0.921507  & 0.001770 & 0.960754    & 0.003867   \\
-discogs     & band     & mlp                  & 0.928931 & 0.001310 & 0.915249  & 0.001875 & 0.943032    & 0.001727   \\
-imdb        & actor    & mlp                  & 0.896922 & 0.000400 & 0.880657  & 0.003412 & 0.913832    & 0.004129   \\
-imdb        & director & mlp                  & 0.919340 & 0.000980 & 0.899994  & 0.002724 & 0.939548    & 0.002002   \\
-imdb        & musician & mlp                  & 0.925888 & 0.001165 & 0.942860  & 0.001545 & 0.909520    & 0.001863   \\
-imdb        & producer & mlp                  & 0.909398 & 0.002913 & 0.894253  & 0.007249 & 0.925119    & 0.003188   \\
-imdb        & writer   & mlp                  & 0.930302 & 0.002571 & 0.924571  & 0.003714 & 0.936149    & 0.006365   \\
-musicbrainz & musician & mlp                  & 0.957375 & 0.001629 & 0.944146  & 0.004491 & 0.971004    & 0.002647   \\ 
-musicbrainz & band     & mlp                  & 0.921134 & 0.002588 & 0.926546  & 0.004402 & 0.915818    & 0.004989   \\ \hline
-discogs     & musician & nb         & 0.931622 & 0.001314 & 0.903489  & 0.002155 & 0.961565    & 0.000812   \\
-discogs     & band     & nb         & 0.922386 & 0.001457 & 0.891462  & 0.001633 & 0.955542    & 0.003274   \\
-imdb        & actor    & nb         & 0.889563 & 0.001311 & 0.825956  & 0.002002 & 0.963789    & 0.001153   \\
-imdb        & musician & nb         & 0.904327 & 0.013959 & 0.868388  & 0.055110 & 0.948158    & 0.033475   \\
-imdb        & producer & nb         & 0.898657 & 0.004254 & 0.842785  & 0.008230 & 0.962525    & 0.001450   \\
-imdb        & director & nb         & 0.907755 & 0.002541 & 0.855312  & 0.005063 & 0.967075    & 0.001997   \\
-imdb        & writer   & nb         & 0.922121 & 0.002580 & 0.882778  & 0.004051 & 0.965145    & 0.002172   \\
-musicbrainz & musician & nb         & 0.952783 & 0.001847 & 0.953561  & 0.002394 & 0.952008    & 0.001847   \\
-musicbrainz & band     & nb         & 0.907094 & 0.001994 & 0.953012  & 0.001335 & 0.865401    & 0.002974   \\ \hline
-discogs     & musician & rf       & 0.933460 & 0.002427 & 0.917496  & 0.003021 & 0.949992    & 0.002296   \\
-discogs     & band     & rf       & 0.921673 & 0.001084 & 0.909216  & 0.002648 & 0.934490    & 0.002988   \\
-imdb        & actor    & rf       & 0.899161 & 0.000836 & 0.879621  & 0.001427 & 0.919592    & 0.001620   \\
-imdb        & director & rf       & 0.916903 & 0.000940 & 0.892806  & 0.003096 & 0.942355    & 0.002601   \\
-imdb        & musician & rf       & 0.922135 & 0.000594 & 0.932216  & 0.000733 & 0.912272    & 0.001018   \\
-imdb        & producer & rf       & 0.906239 & 0.004720 & 0.895270  & 0.008984 & 0.917553    & 0.005214   \\
-imdb        & writer   & rf       & 0.929301 & 0.002919 & 0.922216  & 0.004160 & 0.936508    & 0.003393   \\
-musicbrainz & musician & rf       & 0.953673 & 0.001146 & 0.943972  & 0.001591 & 0.963577    & 0.001052   \\ 
-musicbrainz & band     & rf       & 0.918844 & 0.002231 & 0.938321  & 0.005419 & 0.900192    & 0.003714   \\ \hline
-discogs     & musician & slp                  & 0.938168 & 0.001664 & 0.917755  & 0.002291 & 0.959510    & 0.001258   \\
-discogs     & band     & slp                  & 0.925647 & 0.001462 & 0.908264  & 0.001465 & 0.943716    & 0.003188   \\
-imdb        & actor    & slp                  & 0.893205 & 0.000591 & 0.881499  & 0.001829 & 0.905232    & 0.001676   \\
-imdb        & director & slp                  & 0.914070 & 0.000545 & 0.895414  & 0.003822 & 0.933551    & 0.003516   \\
-imdb        & musician & slp                  & 0.917503 & 0.001383 & 0.909845  & 0.002659 & 0.925296    & 0.000865   \\
-imdb        & producer & slp                  & 0.905526 & 0.002380 & 0.903146  & 0.006456 & 0.907958    & 0.001993   \\
-imdb        & writer   & slp                  & 0.927724 & 0.001915 & 0.924983  & 0.002891 & 0.930499    & 0.003970   \\
-musicbrainz & musician & slp                  & 0.953054 & 0.001383 & 0.943662  & 0.002094 & 0.962638    & 0.001341   \\
-musicbrainz & band     & slp                  & 0.915977 & 0.002302 & 0.946439  & 0.002538 & 0.887441    & 0.005184  \\ \hline
+Catalog     & Entity   & Model & F1.Mean  & F1.STD   & Prec.Mean & Prec.STD & Rec.Mean & Rec.STD  \\ \hline
+discogs     & musician & lsvm  & 0.936944 & 0.001224 & 0.905424  & 0.002080 & 0.970741 & 0.000880 \\
+discogs     & band     & lsvm  & 0.925262 & 0.001267 & 0.896373  & 0.002110 & 0.956090 & 0.003388 \\
+imdb        & actor    & lsvm  & 0.894011 & 0.000789 & 0.875260  & 0.002088 & 0.913592 & 0.001998 \\
+imdb        & director & lsvm  & 0.912727 & 0.001597 & 0.880551  & 0.005850 & 0.947397 & 0.003670 \\
+imdb        & musician & lsvm  & 0.917906 & 0.001399 & 0.909440  & 0.002345 & 0.926534 & 0.001067 \\
+imdb        & producer & lsvm  & 0.905975 & 0.003885 & 0.894173  & 0.006799 & 0.918114 & 0.001219 \\
+imdb        & writer   & lsvm  & 0.928606 & 0.001983 & 0.919005  & 0.002274 & 0.938421 & 0.003574 \\
+musicbrainz & musician & lsvm  & 0.954410 & 0.001406 & 0.942882  & 0.002112 & 0.966225 & 0.001090 \\ 
+musicbrainz & band     & lsvm  & 0.913877 & 0.001689 & 0.961199  & 0.003976 & 0.871046 & 0.006050 \\ \hline
+discogs     & musician & lr    & 0.938138 & 0.001693 & 0.917022  & 0.002191 & 0.960250 & 0.001370 \\
+discogs     & band     & lr    & 0.924791 & 0.001550 & 0.908952  & 0.001476 & 0.941198 & 0.003025 \\
+imdb        & actor    & lr    & 0.893573 & 0.000579 & 0.878388  & 0.001838 & 0.909299 & 0.001406 \\
+imdb        & director & lr    & 0.913846 & 0.000694 & 0.892154  & 0.004468 & 0.936658 & 0.003834 \\
+imdb        & producer & lr    & 0.906045 & 0.002643 & 0.898064  & 0.005640 & 0.914192 & 0.000826 \\
+imdb        & musician & lr    & 0.917958 & 0.001717 & 0.908442  & 0.002911 & 0.927680 & 0.001280 \\
+imdb        & writer   & lr    & 0.928108 & 0.002082 & 0.924621  & 0.001792 & 0.931635 & 0.004264 \\
+musicbrainz & musician & lr    & 0.953083 & 0.001301 & 0.943755  & 0.002042 & 0.962600 & 0.001165 \\ 
+musicbrainz & band     & lr    & 0.918022 & 0.002327 & 0.937643  & 0.002251 & 0.899217 & 0.003973 \\ \hline
+discogs     & musician & mlp   & 0.940715 & 0.001443 & 0.921507  & 0.001770 & 0.960754 & 0.003867 \\
+discogs     & band     & mlp   & 0.928931 & 0.001310 & 0.915249  & 0.001875 & 0.943032 & 0.001727 \\
+imdb        & actor    & mlp   & 0.896922 & 0.000400 & 0.880657  & 0.003412 & 0.913832 & 0.004129 \\
+imdb        & director & mlp   & 0.919340 & 0.000980 & 0.899994  & 0.002724 & 0.939548 & 0.002002 \\
+imdb        & musician & mlp   & 0.925888 & 0.001165 & 0.942860  & 0.001545 & 0.909520 & 0.001863 \\
+imdb        & producer & mlp   & 0.909398 & 0.002913 & 0.894253  & 0.007249 & 0.925119 & 0.003188 \\
+imdb        & writer   & mlp   & 0.930302 & 0.002571 & 0.924571  & 0.003714 & 0.936149 & 0.006365 \\
+musicbrainz & musician & mlp   & 0.957375 & 0.001629 & 0.944146  & 0.004491 & 0.971004 & 0.002647 \\ 
+musicbrainz & band     & mlp   & 0.921134 & 0.002588 & 0.926546  & 0.004402 & 0.915818 & 0.004989 \\ \hline
+discogs     & musician & nb    & 0.931622 & 0.001314 & 0.903489  & 0.002155 & 0.961565 & 0.000812 \\
+discogs     & band     & nb    & 0.922386 & 0.001457 & 0.891462  & 0.001633 & 0.955542 & 0.003274 \\
+imdb        & actor    & nb    & 0.889563 & 0.001311 & 0.825956  & 0.002002 & 0.963789 & 0.001153 \\
+imdb        & musician & nb    & 0.904327 & 0.013959 & 0.868388  & 0.055110 & 0.948158 & 0.033475 \\
+imdb        & producer & nb    & 0.898657 & 0.004254 & 0.842785  & 0.008230 & 0.962525 & 0.001450 \\
+imdb        & director & nb    & 0.907755 & 0.002541 & 0.855312  & 0.005063 & 0.967075 & 0.001997 \\
+imdb        & writer   & nb    & 0.922121 & 0.002580 & 0.882778  & 0.004051 & 0.965145 & 0.002172 \\
+musicbrainz & musician & nb    & 0.952783 & 0.001847 & 0.953561  & 0.002394 & 0.952008 & 0.001847 \\
+musicbrainz & band     & nb    & 0.907094 & 0.001994 & 0.953012  & 0.001335 & 0.865401 & 0.002974 \\ \hline
+discogs     & musician & rf    & 0.933460 & 0.002427 & 0.917496  & 0.003021 & 0.949992 & 0.002296 \\
+discogs     & band     & rf    & 0.921673 & 0.001084 & 0.909216  & 0.002648 & 0.934490 & 0.002988 \\
+imdb        & actor    & rf    & 0.899161 & 0.000836 & 0.879621  & 0.001427 & 0.919592 & 0.001620 \\
+imdb        & director & rf    & 0.916903 & 0.000940 & 0.892806  & 0.003096 & 0.942355 & 0.002601 \\
+imdb        & musician & rf    & 0.922135 & 0.000594 & 0.932216  & 0.000733 & 0.912272 & 0.001018 \\
+imdb        & producer & rf    & 0.906239 & 0.004720 & 0.895270  & 0.008984 & 0.917553 & 0.005214 \\
+imdb        & writer   & rf    & 0.929301 & 0.002919 & 0.922216  & 0.004160 & 0.936508 & 0.003393 \\
+musicbrainz & musician & rf    & 0.953673 & 0.001146 & 0.943972  & 0.001591 & 0.963577 & 0.001052 \\ 
+musicbrainz & band     & rf    & 0.918844 & 0.002231 & 0.938321  & 0.005419 & 0.900192 & 0.003714 \\ \hline
+discogs     & musician & slp   & 0.938168 & 0.001664 & 0.917755  & 0.002291 & 0.959510 & 0.001258 \\
+discogs     & band     & slp   & 0.925647 & 0.001462 & 0.908264  & 0.001465 & 0.943716 & 0.003188 \\
+imdb        & actor    & slp   & 0.893205 & 0.000591 & 0.881499  & 0.001829 & 0.905232 & 0.001676 \\
+imdb        & director & slp   & 0.914070 & 0.000545 & 0.895414  & 0.003822 & 0.933551 & 0.003516 \\
+imdb        & musician & slp   & 0.917503 & 0.001383 & 0.909845  & 0.002659 & 0.925296 & 0.000865 \\
+imdb        & producer & slp   & 0.905526 & 0.002380 & 0.903146  & 0.006456 & 0.907958 & 0.001993 \\
+imdb        & writer   & slp   & 0.927724 & 0.001915 & 0.924983  & 0.002891 & 0.930499 & 0.003970 \\
+musicbrainz & musician & slp   & 0.953054 & 0.001383 & 0.943662  & 0.002094 & 0.962638 & 0.001341 \\
+musicbrainz & band     & slp   & 0.915977 & 0.002302 & 0.946439  & 0.002538 & 0.887441 & 0.005184 \\ \hline
 \end{longtable}
+
 
 The columns name \textit{*.Mean} are the mean value of the relative metric obtained during the cross validation procedure. Similarly, the columns named \textit{*.STD} are the standard deviation of said metrics. 
 
@@ -2332,32 +2323,33 @@ When it comes to \textit{precision} things are less \textit{unanimous}. Most mod
 
 For \textit{Recall}, all models except for \textit{lsvm} and \textit{Naive Bayes} have \textit{Musicbrainz/Musician} as their top concrete entity. \textit{lsvm} and \textit{naive bayes} have \textit{Discogs/Musician} and \textit{IMDb/Director} respectively. All models except \textit{lsvm} and \textit{Naive Bayes} have \textit{Discogs/Musician} as their second best. \textit{lsvm} and \textit{naive bayes} have \textit{Musicbrainz/Musician} and \textit{IMDb/Writer} respectively.
 
-The results presented above are quite interesting since they show that features extracted for \textit{Musicbrainz/Musicians} are most definitely more informative than those for other concrete entities. Another reason for this may be, as seen in \autoref{sec:feature-viz}, that the \textit{Musicbrainz} catalogs has eight possible features while all other catalogs have seven. 
+The results presented above are quite interesting since they show that features extracted for \textit{Musicbrainz/Musicians} are more informative than those for other concrete entities. Another reason for this may be, as seen in \autoref{sec:feature-viz}, that the \textit{Musicbrainz} catalogs has eight possible features while all other catalogs have seven. 
 
 The table below shows which was the average performance of each model on each catalog in general. The rows have been ordered by \textit{F1 Score}. It can be noted that the average \textit{STD} is quite low compared to the score values. 
 
 \begin{longtable}{|l|l|l|l|l|l|l|l|}
 \hline
-Catalog     & Model                             & Avg.F1 & Avg.F1.STD & Avg.Prec & Avg.Prec.STD & Avg.Rec & Avg.Rec.STD \\ \hline
-musicbrainz & mlp          & 0.939254   & 0.002109       & 0.935346     & 0.004446         & 0.943411       & 0.003818           \\
-musicbrainz & rf                    & 0.936259   & 0.001688       & 0.941146     & 0.003505         & 0.931885       & 0.002383           \\
-musicbrainz & lr              & 0.935553   & 0.001814       & 0.940699     & 0.002146         & 0.930909       & 0.002569           \\
-musicbrainz & slp         & 0.934516   & 0.001842       & 0.945051     & 0.002316         & 0.925040       & 0.003263           \\
-musicbrainz & lsvm & 0.934144   & 0.001548       & 0.952041     & 0.003044         & 0.918635       & 0.003570           \\
-musicbrainz & nb                      & 0.929939   & 0.001920       & 0.953287     & 0.001865         & 0.908705       & 0.002410           \\ \hline
-imdb        & mlp          & 0.916370   & 0.001606       & 0.908467     & 0.003729         & 0.924834       & 0.003509           \\
-imdb        & rf                    & 0.914748   & 0.002002       & 0.904426     & 0.003680         & 0.925656       & 0.002769           \\
-imdb        & lr              & 0.911906   & 0.001543       & 0.900334     & 0.003330         & 0.923893       & 0.002322           \\
-imdb        & lsvm & 0.911845   & 0.001931       & 0.895686     & 0.003871         & 0.928812       & 0.002306           \\
-imdb        & slp         & 0.911606   & 0.001363       & 0.902977     & 0.003531         & 0.920507       & 0.002404           \\
-imdb        & nb                      & 0.904485   & 0.004929       & 0.855044     & 0.014891         & 0.961338       & 0.008049           \\ \hline
-discogs     & mlp          & 0.934823   & 0.001377       & 0.918378     & 0.001822         & 0.951893       & 0.002797           \\
-discogs     & slp         & 0.931907   & 0.001563       & 0.913009     & 0.001878         & 0.951613       & 0.002223           \\
-discogs     & lr              & 0.931464   & 0.001622       & 0.912987     & 0.001833         & 0.950724       & 0.002197           \\
-discogs     & lsvm & 0.931103   & 0.001246       & 0.900899     & 0.002095         & 0.963415       & 0.002134           \\
-discogs     & rf                    & 0.927566   & 0.001755       & 0.913356     & 0.002835         & 0.942241       & 0.002642           \\
-discogs     & nb                      & 0.927004   & 0.001386       & 0.897476     & 0.001894         & 0.958554       & 0.002043           \\ \hline
+Catalog     & Model & Avg.F1   & Avg.F1.STD & Avg.Prec & Avg.Prec.STD & Avg.Rec  & Avg.Rec.STD \\ \hline
+musicbrainz & mlp   & 0.939254 & 0.002109   & 0.935346 & 0.004446     & 0.943411 & 0.003818    \\
+musicbrainz & rf    & 0.936259 & 0.001688   & 0.941146 & 0.003505     & 0.931885 & 0.002383    \\
+musicbrainz & lr    & 0.935553 & 0.001814   & 0.940699 & 0.002146     & 0.930909 & 0.002569    \\
+musicbrainz & slp   & 0.934516 & 0.001842   & 0.945051 & 0.002316     & 0.925040 & 0.003263    \\
+musicbrainz & lsvm  & 0.934144 & 0.001548   & 0.952041 & 0.003044     & 0.918635 & 0.003570    \\
+musicbrainz & nb    & 0.929939 & 0.001920   & 0.953287 & 0.001865     & 0.908705 & 0.002410    \\ \hline
+imdb        & mlp   & 0.916370 & 0.001606   & 0.908467 & 0.003729     & 0.924834 & 0.003509    \\
+imdb        & rf    & 0.914748 & 0.002002   & 0.904426 & 0.003680     & 0.925656 & 0.002769    \\
+imdb        & lr    & 0.911906 & 0.001543   & 0.900334 & 0.003330     & 0.923893 & 0.002322    \\
+imdb        & lsvm  & 0.911845 & 0.001931   & 0.895686 & 0.003871     & 0.928812 & 0.002306    \\
+imdb        & slp   & 0.911606 & 0.001363   & 0.902977 & 0.003531     & 0.920507 & 0.002404    \\
+imdb        & nb    & 0.904485 & 0.004929   & 0.855044 & 0.014891     & 0.961338 & 0.008049    \\ \hline
+discogs     & mlp   & 0.934823 & 0.001377   & 0.918378 & 0.001822     & 0.951893 & 0.002797    \\
+discogs     & slp   & 0.931907 & 0.001563   & 0.913009 & 0.001878     & 0.951613 & 0.002223    \\
+discogs     & lr    & 0.931464 & 0.001622   & 0.912987 & 0.001833     & 0.950724 & 0.002197    \\
+discogs     & lsvm  & 0.931103 & 0.001246   & 0.900899 & 0.002095     & 0.963415 & 0.002134    \\
+discogs     & rf    & 0.927566 & 0.001755   & 0.913356 & 0.002835     & 0.942241 & 0.002642    \\
+discogs     & nb    & 0.927004 & 0.001386   & 0.897476 & 0.001894     & 0.958554 & 0.002043    \\ \hline
 \end{longtable}
+
 
 
 \begin{table}[H]
@@ -2372,7 +2364,7 @@ discogs     & nb                      & 0.927004   & 0.001386       & 0.897476  
 \label{tab:best-model-per-metric-average}
 \end{table}
 
-It seems that overrall \textit{mlp} is the best performing baseline model. It is interesting to note that although \textit{naive bayes} appears to have the highest \textit{precision} for \textit{Musicbrainz} is is also the model that has the lowest \textit{recall} for that catalog. The same happens for IMDb, \textit{naive bayes} has the best \textit{recall} but the lowest precision. A slight exception is Discogs, where \textit{lsvm} has the best \textit{recall}, and is the second worse in \textit{precision}.
+It seems that overrall \textit{mlp} is the best performing baseline model. It is interesting to note that although \textit{naive bayes} appears to have the highest \textit{precision} for \textit{Musicbrainz} is is also the model that has the lowest \textit{recall} for that same catalog. The same happens for IMDb, \textit{naive bayes} has the best \textit{recall} but the lowest precision. A slight exception is Discogs, where \textit{lsvm} has the best \textit{recall}, and is the second worse in \textit{precision}.
 
 
 
@@ -2381,13 +2373,13 @@ Finally, the table below contains a summary of the metrics obtained by each clas
 \begin{table}[H]
 \centering
 \begin{tabular}{l|l|l|l|l|l|l}
-Model                             & Avg.F1 & Avg.F1.STD & Avg.Prec & Avg.Prec.STD & Avg.Recall & Avg.Recall.STD \\ \hline
-mlp          & 0.925556   & 0.001667       & 0.916643     & 0.003465         & 0.934975       & 0.003420           \\
-random\_forest                    & 0.922377   & 0.001877       & 0.914570     & 0.003453         & 0.930726       & 0.002655           \\
-logistic\_regression              & 0.921507   & 0.001621       & 0.912116     & 0.002734         & 0.931414       & 0.002349           \\
-slp         & 0.921208   & 0.001514       & 0.914556     & 0.002894         & 0.928427       & 0.002555           \\
-lsvm & 0.921080   & 0.001693       & 0.909367     & 0.003293         & 0.934240       & 0.002548           \\
-naive\_bayes                      & 0.915145   & 0.003473       & 0.886305     & 0.009108         & 0.949023       & 0.005462          
+Model & Avg.F1   & Avg.F1.STD & Avg.Prec & Avg.Prec.STD & Avg.Recall & Avg.Recall.STD \\ \hline
+mlp   & 0.925556 & 0.001667   & 0.916643 & 0.003465     & 0.934975   & 0.003420       \\
+rf    & 0.922377 & 0.001877   & 0.914570 & 0.003453     & 0.930726   & 0.002655       \\
+lr    & 0.921507 & 0.001621   & 0.912116 & 0.002734     & 0.931414   & 0.002349       \\
+slp   & 0.921208 & 0.001514   & 0.914556 & 0.002894     & 0.928427   & 0.002555       \\
+lsvm  & 0.921080 & 0.001693   & 0.909367 & 0.003293     & 0.934240   & 0.002548       \\
+nb    & 0.915145 & 0.003473   & 0.886305 & 0.009108     & 0.949023   & 0.005462          
 \end{tabular}
 \caption{Average metrics obtained for the baseline classifiers.}
 \label{tab:metrics-summary-baseline}
@@ -2396,7 +2388,7 @@ naive\_bayes                      & 0.915145   & 0.003473       & 0.886305     &
 
 It can be seen in \autoref{tab:metrics-summary-baseline} that \textit{mlp} is the model with the best \textit{F1 score} (as expected). It also seems that \textit{mlp} has the best average \textit{precision} and is second in best \textit{recall}, with the first place being taken by \textit{naive bayes}.
 
-\begin{figure}[h]
+\begin{figure}[H]
   \centering \includegraphics[width=\textwidth]{baseline_evluation_main_metrics_barplot} 
   \caption{Barplots of the evaluation metrics for the baseline models. Separated by concrete entity.}
   \label{fig:baseline-evaluation-barplots}
@@ -2423,70 +2415,132 @@ This section presents the results obtained during the 5-fold cross validation pr
 
 \begin{longtable}{|l|l|l|l|l|l|l|l|l|}
 \hline
-Catalog     & Entity   & Model                    & F1.Mean  & F1.STD   & Prec.Mean & Prec.STD & Rec.Mean & Rec.STD \\ \hline
-discogs     & musician & gc        & 0.936638 & 0.002652 & 0.922472  & 0.004920 & 0.951308    & 0.006874   \\
-discogs     & band     & gc        & 0.927455 & 0.001522 & 0.912845  & 0.002324 & 0.942566    & 0.004981   \\
-imdb        & actor    & gc        & 0.897257 & 0.002191 & 0.895105  & 0.003315 & 0.899486    & 0.007650   \\
-imdb        & director & gc        & 0.918505 & 0.001411 & 0.900678  & 0.002997 & 0.937067    & 0.003067   \\
-imdb        & musician & gc        & 0.924625 & 0.002018 & 0.943199  & 0.010644 & 0.906929    & 0.007107   \\
-imdb        & producer & gc        & 0.910555 & 0.003934 & 0.902453  & 0.007668 & 0.918955    & 0.010547   \\
-imdb        & writer   & gc        & 0.931719 & 0.002789 & 0.928561  & 0.007822 & 0.934984    & 0.005804   \\
-musicbrainz & musician & gc        & 0.955526 & 0.001926 & 0.951364  & 0.006050 & 0.959821    & 0.007915   \\ 
-musicbrainz & band     & gc        & 0.918238 & 0.003816 & 0.948221  & 0.012288 & 0.890520    & 0.016863   \\ \hline
-discogs     & musician & sc      & 0.938836 & 0.002473 & 0.917001  & 0.002568 & 0.961746    & 0.003667   \\
-discogs     & band     & sc      & 0.927771 & 0.001080 & 0.911809  & 0.006866 & 0.944456    & 0.009776   \\
-imdb        & actor    & sc      & 0.890012 & 0.007978 & 0.907933  & 0.016179 & 0.873941    & 0.029767   \\
-imdb        & director & sc      & 0.917923 & 0.001777 & 0.901563  & 0.004736 & 0.934969    & 0.007596   \\
-imdb        & musician & sc      & 0.924930 & 0.001915 & 0.947724  & 0.003561 & 0.903238    & 0.004935   \\
-imdb        & producer & sc      & 0.904998 & 0.008882 & 0.899323  & 0.020682 & 0.912508    & 0.035943   \\
-imdb        & writer   & sc      & 0.931043 & 0.003075 & 0.929588  & 0.007946 & 0.932652    & 0.009692   \\
-musicbrainz & musician & sc      & 0.955643 & 0.001373 & 0.955374  & 0.003750 & 0.955933    & 0.003327   \\
-musicbrainz & band     & sc      & 0.919791 & 0.003254 & 0.941948  & 0.011043 & 0.898935    & 0.013037   \\ \hline
-discogs     & musician & vh & 0.939658 & 0.001932 & 0.913881  & 0.002899 & 0.966938    & 0.002004   \\
-discogs     & band     & vh & 0.926795 & 0.001145 & 0.905189  & 0.001827 & 0.949465    & 0.002661   \\
-imdb        & actor    & vh & 0.897184 & 0.000752 & 0.882077  & 0.009962 & 0.913098    & 0.012148   \\
-imdb        & director & vh & 0.918177 & 0.001400 & 0.890278  & 0.004667 & 0.947915    & 0.003379   \\
-imdb        & musician & vh & 0.921577 & 0.002711 & 0.918733  & 0.022289 & 0.925297    & 0.017423   \\
-imdb        & producer & vh & 0.907517 & 0.004611 & 0.901155  & 0.004867 & 0.914052    & 0.009619   \\
-imdb        & writer   & vh & 0.931065 & 0.002249 & 0.920422  & 0.007199 & 0.942038    & 0.005549   \\
-musicbrainz & musician & vh & 0.956088 & 0.001293 & 0.946047  & 0.003334 & 0.966356    & 0.001537   \\
-musicbrainz & band     & vh & 0.917456 & 0.002139 & 0.953082  & 0.007505 & 0.884490    & 0.006698   \\ \hline
-discogs     & musician & vs & 0.938896 & 0.001494 & 0.909274  & 0.004537 & 0.970543    & 0.003097   \\
-discogs     & band     & vs & 0.927576 & 0.001300 & 0.904116  & 0.002522 & 0.952312    & 0.004592   \\
-imdb        & actor    & vs & 0.899699 & 0.001028 & 0.887665  & 0.005118 & 0.912139    & 0.006529   \\
-imdb        & director & vs & 0.919262 & 0.001497 & 0.894902  & 0.008123 & 0.945108    & 0.006606   \\
-imdb        & musician & vs & 0.926019 & 0.001244 & 0.939099  & 0.007632 & 0.913418    & 0.007684   \\
-imdb        & producer & vs & 0.909610 & 0.003182 & 0.905090  & 0.005243 & 0.914192    & 0.002709   \\
-imdb        & writer   & vs & 0.931617 & 0.002161 & 0.929887  & 0.004030 & 0.933369    & 0.002867   \\
-musicbrainz & musician & vs & 0.954936 & 0.001831 & 0.955208  & 0.002438 & 0.954666    & 0.001676   \\
-musicbrainz & band     & vs & 0.916297 & 0.002493 & 0.954029  & 0.002458 & 0.881462    & 0.005454   \\ \hline
-
+Catalog     & Entity   & Model & F1.Mean  & F1.STD   & Prec.Mean & Prec.STD & Rec.Mean & Rec.STD  \\ \hline
+discogs     & musician & gc    & 0.936638 & 0.002652 & 0.922472  & 0.004920 & 0.951308 & 0.006874 \\
+discogs     & band     & gc    & 0.927455 & 0.001522 & 0.912845  & 0.002324 & 0.942566 & 0.004981 \\
+imdb        & actor    & gc    & 0.897257 & 0.002191 & 0.895105  & 0.003315 & 0.899486 & 0.007650 \\
+imdb        & director & gc    & 0.918505 & 0.001411 & 0.900678  & 0.002997 & 0.937067 & 0.003067 \\
+imdb        & musician & gc    & 0.924625 & 0.002018 & 0.943199  & 0.010644 & 0.906929 & 0.007107 \\
+imdb        & producer & gc    & 0.910555 & 0.003934 & 0.902453  & 0.007668 & 0.918955 & 0.010547 \\
+imdb        & writer   & gc    & 0.931719 & 0.002789 & 0.928561  & 0.007822 & 0.934984 & 0.005804 \\
+musicbrainz & musician & gc    & 0.955526 & 0.001926 & 0.951364  & 0.006050 & 0.959821 & 0.007915 \\ 
+musicbrainz & band     & gc    & 0.918238 & 0.003816 & 0.948221  & 0.012288 & 0.890520 & 0.016863 \\ \hline
+discogs     & musician & sc    & 0.938836 & 0.002473 & 0.917001  & 0.002568 & 0.961746 & 0.003667 \\
+discogs     & band     & sc    & 0.927771 & 0.001080 & 0.911809  & 0.006866 & 0.944456 & 0.009776 \\
+imdb        & actor    & sc    & 0.890012 & 0.007978 & 0.907933  & 0.016179 & 0.873941 & 0.029767 \\
+imdb        & director & sc    & 0.917923 & 0.001777 & 0.901563  & 0.004736 & 0.934969 & 0.007596 \\
+imdb        & musician & sc    & 0.924930 & 0.001915 & 0.947724  & 0.003561 & 0.903238 & 0.004935 \\
+imdb        & producer & sc    & 0.904998 & 0.008882 & 0.899323  & 0.020682 & 0.912508 & 0.035943 \\
+imdb        & writer   & sc    & 0.931043 & 0.003075 & 0.929588  & 0.007946 & 0.932652 & 0.009692 \\
+musicbrainz & musician & sc    & 0.955643 & 0.001373 & 0.955374  & 0.003750 & 0.955933 & 0.003327 \\
+musicbrainz & band     & sc    & 0.919791 & 0.003254 & 0.941948  & 0.011043 & 0.898935 & 0.013037 \\ \hline
+discogs     & musician & vh    & 0.939658 & 0.001932 & 0.913881  & 0.002899 & 0.966938 & 0.002004 \\
+discogs     & band     & vh    & 0.926795 & 0.001145 & 0.905189  & 0.001827 & 0.949465 & 0.002661 \\
+imdb        & actor    & vh    & 0.897184 & 0.000752 & 0.882077  & 0.009962 & 0.913098 & 0.012148 \\
+imdb        & director & vh    & 0.918177 & 0.001400 & 0.890278  & 0.004667 & 0.947915 & 0.003379 \\
+imdb        & musician & vh    & 0.921577 & 0.002711 & 0.918733  & 0.022289 & 0.925297 & 0.017423 \\
+imdb        & producer & vh    & 0.907517 & 0.004611 & 0.901155  & 0.004867 & 0.914052 & 0.009619 \\
+imdb        & writer   & vh    & 0.931065 & 0.002249 & 0.920422  & 0.007199 & 0.942038 & 0.005549 \\
+musicbrainz & musician & vh    & 0.956088 & 0.001293 & 0.946047  & 0.003334 & 0.966356 & 0.001537 \\
+musicbrainz & band     & vh    & 0.917456 & 0.002139 & 0.953082  & 0.007505 & 0.884490 & 0.006698 \\ \hline
+discogs     & musician & vs    & 0.938896 & 0.001494 & 0.909274  & 0.004537 & 0.970543 & 0.003097 \\
+discogs     & band     & vs    & 0.927576 & 0.001300 & 0.904116  & 0.002522 & 0.952312 & 0.004592 \\
+imdb        & actor    & vs    & 0.899699 & 0.001028 & 0.887665  & 0.005118 & 0.912139 & 0.006529 \\
+imdb        & director & vs    & 0.919262 & 0.001497 & 0.894902  & 0.008123 & 0.945108 & 0.006606 \\
+imdb        & musician & vs    & 0.926019 & 0.001244 & 0.939099  & 0.007632 & 0.913418 & 0.007684 \\
+imdb        & producer & vs    & 0.909610 & 0.003182 & 0.905090  & 0.005243 & 0.914192 & 0.002709 \\
+imdb        & writer   & vs    & 0.931617 & 0.002161 & 0.929887  & 0.004030 & 0.933369 & 0.002867 \\
+musicbrainz & musician & vs    & 0.954936 & 0.001831 & 0.955208  & 0.002438 & 0.954666 & 0.001676 \\
+musicbrainz & band     & vs    & 0.916297 & 0.002493 & 0.954029  & 0.002458 & 0.881462 & 0.005454 \\ \hline
 \end{longtable}
 
-It can be seen that some of the observations made for the results of the baseline models in the previous section still hold for these results as well. For instance, also for ensembles it seems that \textit{Musicbrainz/Musician} is the concrete entity that has the better \textit{F1 score}. This is to be expected since ensembles are just joining the results from their base classifiers. 
 
-\textit{Discogs/Musician} seems to be the entity with the second best \textit{F1}.
+Interestingly it can be observed that all classifiers have the same concrete entity for their top 5 F1 scores. In order from best to worst, these are: 
+\begin{itemize*}
+    \item Musicbrainz/Musician
+    \item Discogs/Musician
+    \item IMDb/Writer
+    \item Discogs/Band
+    \item IMDb/Musician
+\end{itemize*}. In all cases it seems that \textit{IMDb/Actor} is the concrete entity with the worst F1 score.
 
-For precision, all ensemble models also have \textit{Musicbrainz/Musician} as their best score. However, for recall, it seems that in all cases except for the \textit{gated classifier}, the highest score is for \textit{Discogs/Musician} (\textit{gated classifier} has \textit{Musicbrainz/Musician} as the top recall). 
+For precision, all entities except for \textit{hard voting} have \textit{Musicbrainz/Musician} as their top value. \textit{Hard voting} instead has \textit{Musicbrainz/Band}. As for the worst precision, this seems to be, in all cases except for \textit{stacked classifier}, to be for \textit{IMDb/Actor}. \textit{Stacked classifier} has \textit{IMDb/Producer} as its worst precision.
+
+All classifiers except for \textit{gate classifier}, have as their best average recall \textit{Discogs/Musician} followed by \textit{Musicbrainz/Musician}. \textit{Gate classifier} also has these two but in reversed positions. The worst recall seems to be assigned to \textit{Musicbrainz/Band} in all cases except for \textit{stacked classifier} which has \textit{IMDb/Actor} as its worst. 
+
+The table below has the average metrics that each classifier obtained for each catalog in general. These have been sorted by decreasing value of F1 score.
 
 
+\begin{longtable}{|l|l|l|l|l|l|l|l|}
+\hline
+Catalog     & Model & Avg.F1   & Avg.F1.STD & Avg.Prec & Avg.Prec.STD & Avg.Rec  & Avg.Rec.STD \\ \hline
+musicbrainz & sc    & 0.937717 & 0.002314   & 0.948661 & 0.007397     & 0.927434 & 0.008182    \\
+musicbrainz & gc    & 0.936882 & 0.002871   & 0.949793 & 0.009169     & 0.925171 & 0.012389    \\
+musicbrainz & vh    & 0.936772 & 0.001716   & 0.949564 & 0.005420     & 0.925423 & 0.004117    \\
+musicbrainz & vs    & 0.935617 & 0.002162   & 0.954619 & 0.002448     & 0.918064 & 0.003565    \\ \hline
+imdb        & vs    & 0.917241 & 0.001822   & 0.911329 & 0.006029     & 0.923645 & 0.005279    \\
+imdb        & gc    & 0.916532 & 0.002469   & 0.913999 & 0.006489     & 0.919484 & 0.006835    \\
+imdb        & vh    & 0.915104 & 0.002345   & 0.902533 & 0.009797     & 0.928480 & 0.009624    \\
+imdb        & sc    & 0.913781 & 0.004725   & 0.917226 & 0.010621     & 0.911462 & 0.017587    \\ \hline
+discogs     & sc    & 0.933304 & 0.001776   & 0.914405 & 0.004717     & 0.953101 & 0.006722    \\
+discogs     & vs    & 0.933236 & 0.001397   & 0.906695 & 0.003530     & 0.961428 & 0.003844    \\
+discogs     & vh    & 0.933226 & 0.001538   & 0.909535 & 0.002363     & 0.958201 & 0.002333    \\
+discogs     & gc    & 0.932046 & 0.002087   & 0.917658 & 0.003622     & 0.946937 & 0.005928    \\ \hline
+\end{longtable}
 
 
 \begin{table}[H]
 \centering
-\begin{tabular}{l|l|l|l|l|l|l}
-Model                    & Avg. F1 & Avg. F1.STD & Average Prec & Avg. Prec.STD & Avg. Recall & Avg. Recall.STD \\ \hline
-VC Soft & 0.924879   & 0.001803       & 0.919919     & 0.004678         & 0.930801       & 0.004579           \\
-gated\_classifier        & 0.924502   & 0.002473       & 0.922766     & 0.006448         & 0.926848       & 0.007868           \\
-VC Hard & 0.923946   & 0.002026       & 0.914540     & 0.007172         & 0.934405       & 0.006780           \\
-stacked\_classifier      & 0.923439   & 0.003534       & 0.923585     & 0.008592         & 0.924264       & 0.013082          
+\begin{tabular}{l|l|l|l}
+                                 & Best Avg.F1 & Best Avg.Prec & Best Avg.Rec \\ \hline
+\multicolumn{1}{l|}{Musicbrainz} & sc          & vs            & sc           \\ \hline
+\multicolumn{1}{l|}{IMDb}        & vs          & sc            & vh           \\ \hline
+\multicolumn{1}{l|}{Discogs}     & sc          & gc            & vs           \\ 
 \end{tabular}
-\caption{}
-\label{tab:metrics-summary-for-ensembles}
+\caption{Best performing ensemble models for each catalog according to the three main metrics.}
+\label{tab:best-ensemble-model-per-metric-average}
 \end{table}
 
 
-\begin{figure}[h]
+There is no clear distinction about which is the best ensemble model. Both \textit{soft voting} and \textit{stack} classifier seem to have quite good performance. Stack classifier performs better for catalogs which have more information (Discogs and Musicbrainz), while soft voting performs best for IMDb that has less. 
+
+Voting classifier appears to have the best precision for \textit{Musicbrainz}, however this is also the model which has the worst \textit{recall} for that catalog. On the other hand, \textit{stack classifier}, which is the best F1 and recall, is the one with the worst precision. 
+
+For IMDb the best F1 score is given to \textit{soft voting}, which interestingly it is not the best at precision nor at recall, those places are given to \textit{stack} and \textit{hard voting} classifiers respectively. However, \textit{stack classifier} is the one with the worst recall, and \textit{hard voting} is the one with the lowest precision. For this catalog it can also be seen that the \textit{stack} classifier, which performs well for \textit{Musicbrainz} and \textit{Discogs} is actually the one with the worst F1 score.
+
+The best F1 score for Discogs is given to the \textit{stack classifier}. Like in IMDb, this best F1 model is actually does not have the best precision nor recall. Best precision is given by the \textit{gated classifier}, which is also the model with the worst recall and F1 score. \textit{Soft voting} classifier is the one which gives the best recall, and it also has the worst precision.
+
+The table below shows a summary of the scores obtained by each model. These have been obtained by averaging all the model's scores. The rows are ordered by \textit{Avg. F1} in decreasing order.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{l|l|l|l|l|l|l}
+Model & Avg. F1  & Avg. F1.STD & Average Prec & Avg. Prec.STD & Avg. Recall & Avg. Recall.STD \\ \hline
+vs    & 0.924879 & 0.001803    & 0.919919     & 0.004678      & 0.930801    & 0.004579        \\
+gc    & 0.924502 & 0.002473    & 0.922766     & 0.006448      & 0.926848    & 0.007868        \\
+vh    & 0.923946 & 0.002026    & 0.914540     & 0.007172      & 0.934405    & 0.006780        \\
+sc    & 0.923439 & 0.003534    & 0.923585     & 0.008592      & 0.924264    & 0.013082          
+\end{tabular}
+\caption{Average metric score for each ensemble classifier.}
+\label{tab:metrics-summary-for-ensembles}
+\end{table}
+
+From the results above it can be seem that both \textit{stack based} models have the best average precision. These are \textit{gated classifier}, which has the best precision, and \textit{stack classifier}, which has the second best. On the other hand, \textit{voting based} classifiers have the best recall: \textit{hard voting}, which has the best recall, and \textit{soft voting} which has the second best.
+
+\textit{Soft voting} has the best precision when compared with \textit{hard voting}. Probably because soft voting considers an average of its base models predictions, so if a model is \textit{very} certain about a match then this amount will be taken into consideration for the final prediction. On the hand, \textit{hard} only considers how many base models predicted a positive or negative, and not how certain they were about this prediction. 
+
+When it comes to the F1 score, the best performing model seems to be \textit{soft voting}. While \textit{stack classifier} is the worst. 
+
+When it comes to precision for the \textit{voting} classifiers, \textit{soft voting} has the best among them
+
+From the results above it can be seen that the \textit{stack classfier} seems to be the one with the highest precision, however tends to have a low recall. 
+
+
+An important thing to note in the table above is that \textit{soft voting} is the classifier with the least standard deviation. This is important since it gives us more certainty that real world performance will be similar as that evaluated. ???explain why???
+
+It seems that \textit{stack classifier} almost always has the worst recall
+
+\begin{figure}[H]
   \centering \includegraphics[width=\textwidth]{ensemble_evluation_main_metrics_barplot} 
   \caption{Barplots of the evaluation metrics for ensemble models. Separated by concrete entity.}
   \label{fig:baseline-evaluation-barplots}
@@ -2505,6 +2559,7 @@ Ideas:
     
 See STDs. Should be higher for ensembles ? or lower? or same? 
 
+% a table which compares the top-3 models for each entity (entity vs [model, f1, f1std ...])
 
 % Compare with the results exposed before, without ensemble (only the base models)
 
