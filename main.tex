@@ -158,22 +158,27 @@
 \label{chap:introduction}
 
 % from template
-Sommario è un breve riassunto del lavoro svolto dove si descrive l'obiettivo,
-l'oggetto della tesi, le metodologie e le tecniche usate, i dati elaborati e la
-spiegazione delle conclusioni alle quali siete arrivati.
+% Sommario è un breve riassunto del lavoro svolto dove si descrive l'obiettivo,
+% l'oggetto della tesi, le metodologie e le tecniche usate, i dati elaborati e la
+% spiegazione delle conclusioni alle quali siete arrivati.
 
-Il sommario dell’elaborato consiste al massimo di 3 pagine e deve contenere le
-seguenti informazioni:
+% Il sommario dell’elaborato consiste al massimo di 3 pagine e deve contenere le
+% seguenti informazioni:
 
-\begin{itemize}
-\item contesto e motivazioni
-\item breve riassunto del problema affrontato
-\item tecniche utilizzate e/o sviluppate
-\item risultati raggiunti, sottolineando il contributo personale del laureando/a
+% \begin{itemize}
+% \item contesto e motivazioni
+% \item breve riassunto del problema affrontato
+% \item tecniche utilizzate e/o sviluppate
+% \item risultati raggiunti, sottolineando il contributo personale del laureando/a
   
-\end{itemize}
+% \end{itemize}
 % end from template
 
+% ---------------------------
+% draft
+% ---------------------------
+
+\todo[inline,color=green!25]{Work in progress}
 
 This project's goal is to aid in the development of the
 \texttt{soweego}\footurl{https://meta.wikimedia.org/wiki/Grants:Project/Hjfocs/soweego}
@@ -827,6 +832,8 @@ Even though the $F_1$ metric is commonly used for evaluating machine learning pr
 \section{Related Work}
 \label{sec:rl-related-work}
 
+\todo[inline,color=green!25]{Work in progress}
+
 Record Linkage was first defined in \cite{dunn46_recor_linkag}, where the author
 mentioned the importance of having a reliable method to aggregate all the
 information about a person. However, this paper didn't define any actual method
@@ -1162,6 +1169,12 @@ Development of \texttt{soweego} happens locally and new releases are uploaded to
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\chapter{Data}
+\label{chap:data}
+
+This chapter will be dedicated to showing and exploring the data that was used (next section), then mentioning which pre-processing steps the data undergoes and what it's final shape is (\autoref{sec:data-preprocessing}). Following that, the list of features extracted during the \textit{feature extraction} step of \texttt{soweego} will be discussed. Finally, a potential difference between the training and classification data is exposed in \autoref{sec:training-real-data-difference}.
+
+
 \section{Original Shape of the Data}
 \label{sec:orig-shape-of-data}
 
@@ -1442,7 +1455,7 @@ All entities have a name associated to them. \autoref{fig:musicbrainz-name-token
 As per gender distribution, there are much more \textit{males} than \textit{females}. There are 767,616 musicians for which the gender is specified. This distribution is shown in \autoref{fig:musicbrainz-gender-pie}. Notice that less than a quarter of entities are \textit{female}.
 
 \begin{figure}[]
-  \centering \includegraphics[width=\textwidth]{musicbrainz_gender_pieplot} 
+  \centering \includegraphics[width=.8\textwidth]{musicbrainz_gender_pieplot} 
   \caption{Percentage of entities separated by gender.}
   \label{fig:musicbrainz-gender-pie}
 \end{figure}
@@ -1535,18 +1548,20 @@ Musicbrainz & Musician & 118,107                  & 153,437                     
 \section{Preprocessing}
 \label{sec:data-preprocessing}
 
+\todo[inline,color=green!25]{Work in progress}
+
 The raw data needs to undergo a series of preprocessing steps in order for it to be used confidently.
 
 
 % In which way do we currently preprocess the data so that it is normalized?
 
-\subsubsection{Normalize Dates}
+\subsection{Normalize Dates}
 \label{sec:data-preprocessiong-date-normalization}
 
-\subsubsection{Tokenize Names}
+\subsection{Tokenize Names}
 \label{sec:data-preprocessiong-name-tokenization}
 
-\subsubsection{Tokenize URLs}
+\subsection{Tokenize URLs}
 \label{sec:data-preprocessiong-URL-tokenization}
 
 
@@ -1559,7 +1574,7 @@ This section will be centered around explaining said list of functions, and on w
 Note that not all features get extracted every time: they're only applied if possible. For example, if we have a feature function which needs to compare URLs, it will only be used if both entities have URLs to compare. \texttt{soweego} automatically checks that entities have the fields a feature function depends on before applying it.
 
 
-\subsubsection{Exact match on names}
+\subsection{Exact match on names}
 \label{sec:feature-exact-match-names}
 
 This feature is extracted by taking the \textit{name} fields of both entities and checking if they're the same. This field may have more than one value (e.g., in the case of name variations), so the feature compares all possible pairs of names, and optimistically yields \textit{1} if any of the comparisons is a match. Remember that the values of features may go from \textit{0} (not a match), to \textit{1} (perfect match). 
@@ -1575,13 +1590,12 @@ def exact_match_name(source_entity, target_entity):
     return 0
 \end{lstlisting}
 
-
-\subsubsection{Exact match on URLs}
+\subsection{Exact match on URLs}
 \label{sec:feature-exact-match-urls}
 
 Similarly to the feature defined above, both source and target entities may have a list of URLs associated with them. The returned feature will be \textit{1} if any pair of URLs is exactly the same, and 0 otherwise.
 
-\subsubsection{Shared tokens in URLs}
+\subsection{Shared tokens in URLs}
 \label{sec:feature-shared-tokens-plus-urls}
 
 This feature expects that both entities that are being compared have a list of URL tokens (which were extracted during the preprocessing step: \autoref{sec:data-preprocessiong-URL-tokenization}). Besides this, it also receives a set of stop words $\beta$, which are words that shouldn't be considered during the comparison process.
@@ -1601,8 +1615,7 @@ Using a set of stop words greatly diminishes the amount of times the function cl
 
 \todo[inline,backgroundcolor=blue!25]{if time: add graphics relating urls and stopwords}
 
-
-\subsubsection{Similar Birth Dates}
+\subsection{Similar Birth Dates}
 \label{sec:feature-similar-birth-dates}
  
  This function compares a pair of dates by comparing only the parts that are certainly correct. For example, remember that in \autoref{sec:shape-musicbrainz} it was said that for \textit{Musicbrainz} we separately get the value of the birth year, month, and day, and that some or all of these may not be specified. IMDb specifies only the year, and Discogs does not provide us with birth nor death dates at all. 
@@ -1646,14 +1659,12 @@ For IMDb dates this function just compares the years, and if they're the same th
  
 Note that if entities have more than one birth date then all the possible pairs are compared and the best result is returned.  
  
- 
-\subsubsection{Similar Death Dates}
+\subsection{Similar Death Dates}
 \label{sec:feature-similar-death-dates}
  
 This feature is exactly the same as the one shown above for birth dates, but is applied to death dates instead.
 
-
-\subsubsection{Levenshtein distance on name tokens}
+\subsection{Levenshtein distance on name tokens}
 \label{sec:feature-levenshtein-on-name-tokens}
 
 Levenshtein distance \cite{levenshtein1966binary} is a string comparison metric which measures how different two given strings are by considering how many insertions, deletions, and updates need to be made to make both strings equal. Below is the representation\footnote{Adapted from \url{https://en.wikipedia.org/wiki/Levenshtein_distance}} of the Levenshtein distance as a dynamic programming algorithm:
@@ -1689,9 +1700,7 @@ If the two strings being compared are completely different then every character 
 
 If the entities have more than one set of name tokens (i.e. they have multiple names associated with them, which have all been tokenized) then the function shown above is applied to all possible combinations and the best result is returned. Note that before comparison, each list of tokens (which corresponds to only one name) is joined into a single string.
 
-
-
-\subsubsection{Cosine similarity on name tokens}
+\subsection{Cosine similarity on name tokens}
 \label{sec:feature-kernel-similarity-name-tokens}
 
 Cosine similarity has long been used in the field of information retrieval \cite{singhal_modern_information_retrieval} since it allows to measure the distance between two \textit{documents} by checking which words they have in common. This behaviour is similar to what the current function should to, the difference is that instead of names we want to count the occurrence of \textit{bi-grams}. 
@@ -1741,9 +1750,7 @@ The vectors can be thought of as hyperplanes in an n-dimensional space (where $n
 
 If the entities are associated with more than one name, then this procedure is applied to all possible pairs and the best result is returned.
 
-
-
-\subsubsection{Weighted intersection of name tokens}
+\subsection{Weighted intersection of name tokens}
 \label{sec:feature-wighted-name-intersection}
 
 This function is similar to \autoref{sec:feature-shared-tokens-plus-urls}, in that the amount of shared tokens are the key part of the feature. This function supposes that both entities have the list of name tokens. It proceeds to transform these lists into a set of all tokens $\tau_e$ for each entity. The common tokens are defined as the set $\iota = \tau_{source} \cap \tau_{target}$, and the set of all tokens is defined as $\upsilon = \tau_{source} \cup \tau_{target}$. 
@@ -1764,13 +1771,12 @@ The 0.9 is just a weighting term to specify how much the penalization should cou
 
 %%% ------------------
 
-\subsubsection{Cosine similarity on description}
+\subsection{Cosine similarity on description}
 \label{sec:feature-cosine-similarity-description}
 
 Similarly to \autoref{sec:feature-kernel-similarity-name-tokens}, this function leverages the cosine similarity function. The difference is that the function does not count the number of bi-grams. Instead, what is done is that a vocabulary composed of all the words in the description coming from both entities is constructed. Then a vector is created for each entities that specifies if a certain word in the vocabulary is in that entity's description (same as with bi-grams but with words intead). The cosine similarity is then calculated on these two vectors.
 
-
-\subsubsection{Match on occupation QIDs}
+\subsection{Match on occupation QIDs}
 \label{sec:feature-occupations}
 
 This feature function is currently only used for IMDb entities since those are the only which have an \textit{occupation} field. Remember that \autoref{sec:shape-imdb} mentioned how IMDb provided information about the three most frequent professions each entity is associated with, and that these \textit{imdb-professions} can be mapped to the QIDs of professions in Wikidata. This function leverages this relation. 
@@ -1797,36 +1803,47 @@ Currently, the smallest set is usually IMDb. As seen in \autoref{fig:imdb-profes
 
 % GENRES - not describing it since it's not used for people nor bands
 
-
-\subsubsection{Feature Exploration}
+\section{Feature Exploration}
 \label{sec:feature-viz}
 
-To better understand the features exposed in the section above, and to learn what is their behaviour in a real-world scenario, this section will proceed to mention some basic statistical information about them. Questions of special interest are: which is the average value and standard deviation for a feature, which features are always zero, and knowledge of the features that are extracted for a specific catalog. It would also be interesting to see if the features extracted vary between the classification and training sets, or between the positive and negative samples in the training set. This section strives to answer all these questions.
+To better understand the features exposed in the section above, and to learn what is their behaviour in a real-world scenario, this section will proceed to mention some basic statistical information about them. Questions of special interest are:
+
+\begin{itemize}
+    \item Which is the average value and standard deviation for a feature?
+    \item Which features are always zero?
+    \item Which features are extracted for a specific catalog?
+    \item Is there an important variation among features extracted from training and classification data?
+    \begin{itemize}
+        \item What about the variation among features extracted for positive and negative examples in the training data?
+    \end{itemize}
+\end{itemize}
+
+This section strives to answer all these questions.
 
 \autoref{tab:features-viz-average-std-classification}, presents the features extracted for each concrete entity in the \textit{classification set}. The first number in each cell is the average value, and the number below it, in parenthesis, is the standard deviation. If a cell has no value then it means that the given concrete entity does not have the required fields to extract said features and so it was not used. An example of this is the \textit{born\_similar} which was not applied to entities of the \textit{Discogs} catalog since they do not have birth dates. Note that to make the tables fit nicely in the page, the names of the features have been shortened. Below is a mapping from the complete feature name to its shortened version:
 
 \begin{itemize}
-    \item born\_similar : brn.sim
-    \item description\_cosine : des.cos
-    \item died\_similar : die.sim
-    \item name\_exact : nm.exct
-    \item name\_tokens\_levenshtein : nmt.lev 
-    \item name\_tokens\_shared : nmt.shr
-    \item name\_tokens\_string\_kernel\_cosine : nmt.cos
-    \item occupations\_shared : occ.shr
-    \item url\_exact : url.exct
-    \item url\_tokens\_shared : url.shr 
+    \item Similar Birth Dates : brn.sim
+    \item Cosine similarity on description : des.cos
+    \item Similar Death Dates : die.sim
+    \item Exact match on names : nm.exct
+    \item Levenshtein distance on name tokens : nmt.lev 
+    \item Weighted intersection of name tokens : nmt.shr
+    \item Cosine similarity on name tokens : nmt.cos
+    \item Match on occupation QIDs : occ.shr
+    \item Exact match on URLs : url.exct
+    \item Shared tokens in URLs : url.shr 
 \end{itemize}
 
 By looking at \autoref{tab:features-viz-average-std-classification}, the first thing one can notice is that all catalogs have seven features, except for \textit{Musicbrainz} which has eight. It is also clear which features were extracted from which catalogs. 
 
 The mean for some features seem to be maintained similar across each concrete entity. For example the born similarity is \textit{0.005 $\pm$ 0.001} in 5 out of 7 concrete entities that have it. However, \textit{nm.exct} varies a bit more, with it going from \textit{0.04} for \textit{Discogs/Musician} to \textit{0.14} for \textit{Musicbrainz/Band}. 
 
-For some features it also seems that the mean values are lower than for others. An example of this is the feature \textit{die.sim} whose mean is $\leq 0.003$ for all concrete entities, while \textit{nmt.cos} is always above \textit{0.5}. 
+% For some features it also seems that the mean values are lower than for others. An example of this is the feature \textit{die.sim} whose mean is $\leq 0.003$ for all concrete entities, while \textit{nmt.cos} is always above \textit{0.5}. 
 
-Among these features, those associated with flexible name similarities (\textit{nmt.lev}, \textit{nmt.shr}, \textit{nmt.cos}) seem to be the ones with the higher average value. \textit{url.exct} has a lower average, in all cases, than \textit{url.shr}, and it's mean is quite low for almost all concrete entities. 
+% Among these features, those associated with flexible name similarities (\textit{nmt.lev}, \textit{nmt.shr}, \textit{nmt.cos}) seem to be the ones with the higher average value. \textit{url.exct} has a lower average, in all cases, than \textit{url.shr}, and it's mean is quite low for almost all concrete entities. 
 
-When it comes to \textit{standard deviation}, it seems that all name similarity measures and \textit{occ.shr} are those with the highest variation. 
+% When it comes to \textit{standard deviation}, it seems that all name similarity measures and \textit{occ.shr} are those with the highest variation. 
 
 
 \begin{table}[h]
@@ -1851,9 +1868,14 @@ When it comes to \textit{standard deviation}, it seems that all name similarity 
 \end{table}
 
 
-On the other hand, \autoref{tab:features-viz-average-std-training} shows the mean and standard deviation for features extracted from the training set. The first thing that can be noticed is that in almost all cases the \textit{mean} is higher for features in the training set than for the respective feature/concrete-entity in the classification set. Besides this, features in the training set seem to behave similarly than those in the classification set. For instance, the non-exact name measures are those with the higher mean. Another thing which can be noticed is that the standard deviation in the training data features is also higher in most cases. 
+On the other hand, \autoref{tab:features-viz-average-std-training} shows the mean and standard deviation for features extracted from the training set. The first thing that can be noticed is that in almost all cases the \textit{mean} is higher for features in the training set than for the respective feature/concrete-entity in the classification set. Another thing that should be pointed out is that the standard deviation in the training data features is also higher in most cases. 
 
-The above suggests that there is a substantial difference among training and classification data. To better understand this difference, \autoref{fig:average-features-classification-training} shows two heatmaps which have been generated by drawing the respective mean feature values. The heatmap shows in gray those feature/concrete-entities for which there is no value, and the rest is showed in some shade of red. It is easy to see that features do behave similarly across the different heatmaps. For instance, features which are darker (higher mean) in the classification set are also, generally, darker in the training set. However, many features seem to have a much lower mean in the classification set than in the training set. Examples which can readily be discerned from the graphic are: \textit{name\_exact}, \textit{born and died similar}, \textit{occupations\_shared}, \textit{url\_exact}, \textit{url\_tokens\_shared}, and \textit{description\_cosine}. Interestingly, it also seems that \textit{name\_tokens\_shared} has, in most cases, a higher mean than the respective entries in the classification set.
+
+The above suggests that there is a substantial difference among training and classification data. To better understand this difference, \autoref{fig:average-features-classification-training} shows two heatmaps which have been generated by drawing the respective mean feature values. The heatmap shows in gray those feature/concrete-entities for which there is no value, and the rest is showed in some shade of red. 
+
+It is easy to see that features do behave similarly across the different heatmaps. For instance, features which are darker (higher mean) in the classification set are also, generally, darker in the training set. However, many features seem to have a much lower mean in the classification set than in the training set. This might mean that either there are more negative examples in the classification data, or the quality of the classification data is not very good.
+
+Examples which can readily be discerned from the graphic are: \textit{nm,exct}, \textit{born and died similar}, \textit{occ.shr}, \textit{url.exct}, \textit{url.shr}, and \textit{des.cos}. Interestingly, it also seems that \textit{nmtshr} has, in most cases, a higher mean than the respective entries in the classification set.
 
 \begin{table}[h]
 \centering
@@ -1878,10 +1900,10 @@ The above suggests that there is a substantial difference among training and cla
 
 
 Now, the used features can be said to be effective if they acually separate the positive from negative examples. For this purpose, \autoref{tab:features-viz-average-std-positive} and \autoref{tab:features-viz-average-std-negative} present the mean and standard deviation values for positive and negative training examples respectively. It is easily seen that in most cases the mean values in the positive samples are much higher than those in the negative samples, meaning that the features are indeed significant to distinguish whether a sample is positive or not.
+ 
+\autoref{fig:average-features-positive-negative} shows two heatmaps similar to those described for the classification and training sets. It is easy to see that training samples have a higher mean value for almost all features/concrete-entities. An interesting thing to notice, however, is that \textit{nmt.lev} and \textit{nmt.cos} have quite high mean values compared to all the other values in the \textit{negative set}, and in some cases, for \textit{Discogs/Musician}, the mean value in the negative set is actually higher than the corresponding value in the positive set. 
 
-\autoref{fig:average-features-positive-negative} shows two heatmaps similar to those described for the classification and training sets. It is easy to see that training samples have a higher mean value for almost all features/concrete-entities. An interesting thing to notice, however, is that \textit{name token levenshtein} and \textit{name tokens string kernal cosine} have quite high mean values compared to all the other values in the \textit{negative set}, and in some cases, for \textit{Discogs/Musician}, the mean value in the negative set is actually higher than the corresponding value in the positive set. 
-
-Among all features it seems that the most significant ones for separating positive and negative samples are: \textit{name\_exact}, which is almost 1 in the positive set, and very low in the negative set, also \textit{born and died similar} are much higher for the positive set, and finally the url features are also much higher for positive samples. Finally, it should also be pointed out that the \textit{occupations\_shared} feature is similar in value between the two sets, but is a little higher in positive samples. An exception to this last is \textit{IMDb/Actor}, which seems to have the same mean value for this feature in both sets.
+Among all features it seems that the most significant ones for separating positive and negative samples are: \textit{nm.exct}, which is almost 1 in the positive set, and very low in the negative set, also \textit{born and died similar} are much higher for the positive set, and finally the url features are also much higher for positive samples. Finally, it should also be pointed out that the \textit{occ.shr} feature is similar in value between the two sets, but is a little higher in positive samples. An exception to this last is \textit{IMDb/Actor}, which seems to have the same mean value for this feature in both sets.
 
 
 \begin{table}[h]
@@ -2021,29 +2043,25 @@ If training and classification sets were of the same quality then this differenc
 
 
 
-
-% \^-- consider also make comparative distplots of each feature. There are many, 10 features to be exact, which could be separated into 2x5 subplots? .. Just compare all entities with the feature, no need to separate amongst catalogs and etc.
-
-% Also show if some are NaN in classification while not-nan in training (doubt it) 
-
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \chapter{Algorithms}
 \label{chap:algorithms}
 
+\todo[inline,color=green!25]{Chapter in progress}
+
 %  Stuart J. Russell, Peter Norvig (2010) Artificial Intelligence: A Modern Approach, Third Edition, Prentice Hall ISBN 9780136042594. 
 
-This chapter will cover the machine learning algorithms used in the project. The first section will talk about the \textit{baseline} classifiers, which are just normal classification algorithms. \autoref{sec:hyperpar-optimization} will talk about how and according to which procedures the hyperparameters for these baseline algorithms were chosen. Following that, \autoref{sec:ensemble-models} will talk about ensemble models, the motivation for using them, and which were employed in the project.
+This chapter will cover the machine learning algorithms used in the project. The first section will talk about the \textit{baseline} classifiers, a set of standalone classification algorithms. \autoref{sec:hyperpar-optimization} will talk about how and according to which procedures the hyperparameters for these baseline algorithms were chosen. Following that, \autoref{sec:ensemble-models} will talk about ensemble models, the motivation for using them, and which were employed in the project.
 
-As said in \autoref{sec:rl-workflow-linking}, the linking process is one of the main processes in the record linkage workflow. This linking can either be done using a rule based approach, or a machine learning algorithm can be used to learn when to mark a pair as a match based on the features extracted for that pair. As such, having a well tuned and well performing algorithm is essential for an effective record linkage.
+As said in \autoref{sec:rl-workflow-linking}, the linking process is one of the main processes in the record linkage workflow. This linking can either be done using a rule-based approach, or a machine learning algorithm can be used to learn when to mark a pair as a match based on the features extracted for that pair. As such, having a well tuned and well performing algorithm is essential for an effective record linkage.
 
 % need to include introduction to what ML algorithms are and how they are trained? Most importantly, if this is done then take time to explain *generalization*
 
 \section{Baseline Classifiers}
 \label{sec:baseline-classifiers}
 
-This section mentions the basic machine learning algorithms used in the project. There are the algorithms that are used as a \textit{baseline} to measure the performance of the ensemble algorithms presented in the next section. 
+This section mentions the basic machine learning algorithms used in the project. These are the algorithms used as a \textit{baseline} for comparison with the performance of the ensemble algorithms presented in the next section. 
 
 
 \todo[inline]{check if we can say which algorithms tend to have high variance and high bias. So that we can give a motivation for why which chose each for the ensemble part}
@@ -2107,9 +2125,9 @@ for this we're using the functionality already implemented in implemented by skl
 \section{Ensemble Models}
 \label{sec:ensemble-models}
 
-All of the baseline classifiers presented in the previous section are able to capture specific facets of the data. For example, some may perform better for certain distribution of features and some for others. But as they currently are, the opinions of one model may not be joined with that of another, and as such we're forced to decide on which is the best, and the one we want to use. This decision is quite difficult, and potentially impossible, since no model may perform better in all cases. 
+All of the baseline classifiers presented in the previous section are able to capture specific facets of the data. For example, some may perform better for certain distribution of features and some for others. In the first version of \textit{soweego}, the output of one model is not joined with that of another, and as such we're forced to pick the best as the one we want to use. This decision is quite difficult, and potentially impossible, since no model may perform better in all cases. 
 
-Luckily there is the possibility to use more than one model at once, and join the opinion of these \textit{base classifiers} in some way. This is called an \textit{ensemble classifier}. As shown in this section, there are multiple kinds of ensemble classifiers, with the difference being mainly on how they're constructed and how the predictions of the base classifiers are joined.
+Luckily there is the possibility to use more than one model at once, and join the predictions of these \textit{base classifiers} in some way. This is called an \textit{ensemble classifier}. As shown in this section, there are multiple kinds of ensemble classifiers, with the difference being mainly on how they're constructed and how the predictions of the base classifiers are joined.
 
 %Awesome ensembles page on GH has some nice links
 
@@ -2130,12 +2148,12 @@ Ensemble classifiers were originally introduced in CITE, and have since seen wid
 
 As said in the introduction to this section, different base models may capture different aspects of particular problem. This means that some models may work better than others in some situations. Using an ensemble allows us to mix all of the base model's predictions so that the final classification is as good as possible. 
 
-Another way this can be seen is that the base classifiers may have a high bias, or high variance, and joining them (e.g. averaging the results) reduces said bias/variance \cite{Breiman1996_bagging_predictors}. As a side note, it is desirable of a machine learning algorithm for it to have a low \textit{variance} and a low \textit{bias} \cite{Munro2011_bias_variance_decomp}. However, obtaining both of these is very difficult. A model with high variance \textit{variance} typically overfits the noise in the data, and a model with a high bias tends to underfit the data. 
+Another way this can be seen is that the base classifiers may have a high bias, or high variance, and joining them (e.g. averaging the results) reduces said bias/variance \cite{Breiman1996_bagging_predictors}. As a side note, it is desirable for a machine learning algorithm to have a low \textit{variance} and a low \textit{bias} \cite{Munro2011_bias_variance_decomp}. However, obtaining both of these is very difficult. A model with high variance \textit{variance} typically overfits the noise in the data, and a model with a high bias tends to underfit the data. 
 
 From the above also follows that a good ensemble is one where the base classifiers are as diverse as possible CITE. However, it has been shown CITE, that the performance of the ensemble starts increasing asymptotically after a number of base classifiers. 
 
 
-Even though the performance increases, and predictions from the various base classifiers can be joined, there is now the problem of training multiple algorithms. In some cases, especially when the datasets are very large, or/and the algorithms used are complex, the training can take quite some time.
+Even though the performance increases, and predictions from the various base classifiers can be joined, there is now the problem of training multiple algorithms. In some cases, especially when the datasets are very large, and/or the algorithms used are complex, the training can take quite some time.
 
 
 % --- 
@@ -2162,7 +2180,7 @@ Gated ensembles can be thought of as a mix between a stacked and a bagging ensem
 
 Recall that with bagging there are two options to mix the \textit{opinions} of the base classifiers: either their predictions get averaged and the highest of this is chosen as the final prediction, or a \textit{majority vote} is held and the class with more votes is the final chosen one. The approach taken with gated ensembles is very similar to the \textit{averaging} case presented above. However, before averaging, the predictions of the base classifiers are weighted, so the final operation is just a weighted average.
 
-However, finding this weights manually can be quite hard. That is why it is best to delegate this task to another machine learning algorithm. In principle any learning algorithm can be used to as this final meta layer (which is the same term also used for the final layer of stacked ensembles). 
+However, manually finding these weights can be quite hard. That is why it is best to delegate this task to another machine learning algorithm. In principle any learning algorithm can be used to as this final meta layer (which is the same term also used for the final layer of stacked ensembles). 
 
 % Note that both stacked and gated are instances of superlearner, which is a stacking algorithm
 
@@ -2194,7 +2212,7 @@ Besides presenting the results, \autoref{sec:sec:comparative-evaluation} will st
 
 When evaluating the performance of a given machine learning algorithm, it is desirable to know what the performance of said algorithm will be on the real world data\footnote{also known as \textit{classification} data, of classification set} the one for which the final values want to be known. However, it is impossible to do so, because this would require to have a labelled version of this real world data, and if that were the case then there would be no sense in trying to predict the labels. 
 
-The training data must come from a similar distribution from the classification data, if not the performance of the algorithm will be very poor when applied to the classification set. This assumption, that the training and classification datasets are \textbf{i.i.d.}\footnote{Independent and identically distributed.} \cite{clauset2011brief}, allows us to take a piece of the training set and set it aside to act as an \textit{approximation} of the classification set. This piece we set aside is called the \textit{validation set}. 
+Ideally, the training data should come from a distribution similar to the classification data, if not the performance of the algorithm will not be satisfactory when applied to the classification set. This assumption, that the training and classification datasets are \textbf{i.i.d.}\footnote{Independent and identically distributed.} \cite{clauset2011brief}, allows us to take a piece of the training set and set it aside to act as an \textit{approximation} of the classification set. This piece we set aside is called the \textit{validation set}. 
 
 The way this can be used is that we separate the whole training data $D$ into a \textit{validation set} $V$ and a \textit{training set} $T$ such that:
 
@@ -2205,15 +2223,15 @@ The way this can be used is that we separate the whole training data $D$ into a 
 
 The learning algorithm is then trained only on $T$, and finally an estimate of the error the algorithm will get when predicting the real classification data can be obtained by measuring the error obtained when predicting $V$. 
 
-It is important that for this to work, the conditions mentioned above are respected. Especially $V \cap T = \varnothing$, since if any element $V_i \in T$ then the algorithm will have seen the actual label of said element during training, and this affects the supposition that the classification set is unknown to the algorithm at prediction time. The algorithm may have learned the label for said item, and as such will affect the final error measure on the validation set by making it look better than it actually is.
+It is important that the conditions mentioned above are respected for this to work. Especially $V \cap T = \varnothing$, since if any element $V_i \in T$ then the algorithm will have seen the actual label of said element during training, and this affects the supposition that the classification set is unknown to the algorithm at prediction time. The algorithm may have learned the label for said item, and as such will affect the final error measure on the validation set by making it look better than it actually is.
 
-Another consideration to keep in mind is that the actual validation set should not be used to tune the hyperaparameters of the algorithm, since this will only make the algorithm perform better in the validation data, but not necessarily better in the classification data. Once again, this may cause the performance of the algorithm to seem better than it actually is. To tune hyperparameters what can be done is separating the training data into a further third set, called the \textit{test set} $S$, which is also subject to $S \cap T \cap V = \varnothing$. With this, now the training can be done on $T$, hyperparameters can be tuned to minimize the error on $V$, and finally the estimate of the classification set error can be obtained by evaluating the algorithm on $S$.
+Another consideration to keep in mind is that the actual validation set should not be used to tune the hyperparameters of the algorithm, since this will only make the algorithm perform better in the validation data, but not necessarily better in the classification data. Once again, this may cause the performance of the algorithm to seem better than it actually is. To tune hyperparameters what can be done is separating the training data into a further third set, called the \textit{test set} $S$, which is also subject to $S \cap T \cap V = \varnothing$. With this, now the training can be done on $T$, hyperparameters can be tuned to minimize the error on $V$, and finally the estimate of the classification set error can be obtained by evaluating the algorithm on $S$.
 
 In some cases, however, this is not desirable since it means the training data will be split three ways, and a big part of it will not be actually seen by the model at all. An example case may be when there is only a small training set, or the algorithm being used needs a lot of data to be trained properly (e.g. when using a neural network).
 
 Another possible problem may be that the error metrics obtained may be dependent on the specific separation of the dataset that was made to create $T$, $V$, and $S$. For example, the algorithm may appear to have a great performance on $S$, but if the training set were to be shuffled and split again then the performance would be much worse.
 
-A better approach, which permits the use of most of the training data, and also provide an approximation of a \textit{split independent} error value is to use k-fold cross validation \cite{Kohavi:1995_study_of_cross_validation,Cawley:2010_crossval_model_selection}. In this process, we repeatedly ($k$ times) split the training set $D$ into $T$ and $V$ as mentioned above, train on the current split $T$, measure the error on $V$ and then average all the error measures to get a final error. Using a $k > 1$ reduces variability in the final error metric since these get averaged over many possible ways of splitting the training data.
+A better approach, which permits the use of most of the training data, and also provide an approximation of a \textit{split-independent} error value is to use k-fold cross validation \cite{Kohavi:1995_study_of_cross_validation,Cawley:2010_crossval_model_selection}. In this process, we repeatedly ($k$ times) split the training set $D$ into $T$ and $V$ as mentioned above, train on the current split $T$, measure the error on $V$ and then average all the error measures to get a final error. Using a $k > 1$ reduces variability in the final error metric since these get averaged over many possible ways of splitting the training data.
 
 The algorithm for $k$-fold cross validation is as follows:
 
@@ -2319,7 +2337,7 @@ The columns name \textit{*.Mean} are the mean value of the relative metric obtai
 
 It's interesting to note that the best \textit{F1.Mean} for all models seems to have been obtained on the entity \textit{Musicbrainz/Musician}, and the second best for \textit{Discogs/Musician}. For most of the models, the third best \textit{F1.Mean} is obtained on \textit{IMDb/Writer} (only Naive Bayes has \textit{Discogs/Band} as the third best, although the values are very similar with \textit{Writer}).
 
-When it comes to \textit{precision} things are less \textit{unanimous}. Most models still have \textit{Musicbrainz/Musician} as their best precision, except for \textit{lsvm}, and \textit{slp}, who oboth have \textit{Musicbrainz/Band}, although for this the second best is also \textit{Musicbrainz/Musician}. The place of second best precision among the first set of classifiers is \textit{Musicbrainz/Band}, except for \textit{mlp}, who has \textit{IMDb/Musician} in the second place. 
+When it comes to \textit{precision} things are less \textit{unanimous}. Most models still have \textit{Musicbrainz/Musician} as their best precision, except for \textit{lsvm}, and \textit{slp}, who both have \textit{Musicbrainz/Band}, although for this the second best is also \textit{Musicbrainz/Musician}. The place of second best precision among the first set of classifiers is \textit{Musicbrainz/Band}, except for \textit{mlp}, who has \textit{IMDb/Musician} in the second place. 
 
 For \textit{Recall}, all models except for \textit{lsvm} and \textit{Naive Bayes} have \textit{Musicbrainz/Musician} as their top concrete entity. \textit{lsvm} and \textit{naive bayes} have \textit{Discogs/Musician} and \textit{IMDb/Director} respectively. All models except \textit{lsvm} and \textit{Naive Bayes} have \textit{Discogs/Musician} as their second best. \textit{lsvm} and \textit{naive bayes} have \textit{Musicbrainz/Musician} and \textit{IMDb/Writer} respectively.
 
@@ -2364,7 +2382,7 @@ discogs     & nb    & 0.927004 & 0.001386   & 0.897476 & 0.001894     & 0.958554
 \label{tab:best-model-per-metric-average}
 \end{table}
 
-It seems that overrall \textit{mlp} is the best performing baseline model. It is interesting to note that although \textit{naive bayes} appears to have the highest \textit{precision} for \textit{Musicbrainz} is is also the model that has the lowest \textit{recall} for that same catalog. The same happens for IMDb, \textit{naive bayes} has the best \textit{recall} but the lowest precision. A slight exception is Discogs, where \textit{lsvm} has the best \textit{recall}, and is the second worse in \textit{precision}.
+It seems that overrall \textit{mlp} is the best performing baseline model. It is interesting to note that although \textit{naive bayes} appears to have the highest \textit{precision} for \textit{Musicbrainz} is is also the model that has the lowest \textit{recall} for that same catalog. The same happens for IMDb, \textit{naive bayes} has the best \textit{recall} but the lowest precision. A slight exception is Discogs, where \textit{lsvm} has the best \textit{recall}, and is the second worst in \textit{precision}.
 
 
 
@@ -2468,8 +2486,19 @@ For precision, all entities except for \textit{hard voting} have \textit{Musicbr
 
 All classifiers except for \textit{gate classifier}, have as their best average recall \textit{Discogs/Musician} followed by \textit{Musicbrainz/Musician}. \textit{Gate classifier} also has these two but in reversed positions. The worst recall seems to be assigned to \textit{Musicbrainz/Band} in all cases except for \textit{stacked classifier} which has \textit{IMDb/Actor} as its worst. 
 
-The table below has the average metrics that each classifier obtained for each catalog in general. These have been sorted by decreasing value of F1 score.
+\autoref{fig:ensmble-evaluation-barplots} shows a graphical representation of the table above.
 
+\begin{figure}[H]
+  \centering \includegraphics[width=\textwidth]{ensemble_evluation_main_metrics_barplot} 
+  \caption{Barplots of the evaluation metrics for ensemble models. Separated by concrete entity.}
+  \label{fig:ensmble-evaluation-barplots}
+\end{figure}
+
+In the figure above it can be better appreciated which classifiers perform best for which metrics. It is also clear which concrete entities are easier for the models to predict. As for the baseline models, it still appears that \textit{IMDb/Actor} is the hardest one to classify. Stack classifier seems to yield an acceptable precision for this concrete entity, however its recall is quite low. As with the baseline models, it can also be noted that \textit{Musicbrainz/Band} has a high precision and a low recall.  
+
+The F1 scores are all similar when talking about the same concrete entity. The ones that show some more variation are \textit{IMDb/Actor} and \textit{IMDb/Producer}. 
+
+The table below has the average metrics that each classifier obtained for each catalog in general. These have been sorted by decreasing value of F1 score.
 
 \begin{longtable}{|l|l|l|l|l|l|l|l|}
 \hline
@@ -2525,57 +2554,79 @@ sc    & 0.923439 & 0.003534    & 0.923585     & 0.008592      & 0.924264    & 0.
 \label{tab:metrics-summary-for-ensembles}
 \end{table}
 
-From the results above it can be seem that both \textit{stack based} models have the best average precision. These are \textit{gated classifier}, which has the best precision, and \textit{stack classifier}, which has the second best. On the other hand, \textit{voting based} classifiers have the best recall: \textit{hard voting}, which has the best recall, and \textit{soft voting} which has the second best.
+From the results above it can be seen that both \textit{stack based} models have the best average precision. These are: \textit{gated classifier}, which has the best precision, and \textit{stack classifier}, which has the second best. On the other hand, \textit{voting based} classifiers have the best recall: \textit{hard voting}, which has the best recall, and \textit{soft voting} which has the second best.
 
-\textit{Soft voting} has the best precision when compared with \textit{hard voting}. Probably because soft voting considers an average of its base models predictions, so if a model is \textit{very} certain about a match then this amount will be taken into consideration for the final prediction. On the hand, \textit{hard} only considers how many base models predicted a positive or negative, and not how certain they were about this prediction. 
+\textit{Soft voting} has the best precision when compared with \textit{hard voting}. Probably because soft voting considers an average of its base models predictions, so if a model is \textit{very} certain about a match then this amount will be taken into consideration for the final prediction. On the hand, \textit{hard voting} only considers how many base models predicted a positive or negative, and not how certain they were about this prediction. 
 
-When it comes to the F1 score, the best performing model seems to be \textit{soft voting}. While \textit{stack classifier} is the worst. 
+An important thing to note in the table above is that \textit{soft voting} is also the classifier with the least standard deviation in all its metrics measurements. This means that the metrics obtained during the 5-fold cross validation did not change much across different folds, meaning that the final performance of the model is not that dependent upon the distribution of the data it was trained with. This is important since it gives more certainty that real world performance will be similar as that evaluated\footnote{If the classification data distribution is similar to that of the training set.}. 
 
-When it comes to precision for the \textit{voting} classifiers, \textit{soft voting} has the best among them
-
-From the results above it can be seen that the \textit{stack classfier} seems to be the one with the highest precision, however tends to have a low recall. 
-
-
-An important thing to note in the table above is that \textit{soft voting} is the classifier with the least standard deviation. This is important since it gives us more certainty that real world performance will be similar as that evaluated. ???explain why???
-
-It seems that \textit{stack classifier} almost always has the worst recall
-
-\begin{figure}[H]
-  \centering \includegraphics[width=\textwidth]{ensemble_evluation_main_metrics_barplot} 
-  \caption{Barplots of the evaluation metrics for ensemble models. Separated by concrete entity.}
-  \label{fig:baseline-evaluation-barplots}
-\end{figure}
 
 
 
 \section{Comparative Evaluation}
 \label{sec:comparative-evaluation}
 
-compare the results obtained with the baseline models and those obtained using ensembles
+\todo[inline,color=green!25]{Work in progress}
 
-Ideas:
-    - Compare model summaries, maybe best vs best? 
-    - multi kde plot for comparing prec.vs.recall (maybe also best vs best)
-    
-See STDs. Should be higher for ensembles ? or lower? or same? 
+The results showed in the previous two sections for baseline and ensemble models seem quite good. However, it still needs to be decided which technique has the overrall best performance, and, if possible, also define a classifier which it can be said is the best among the pool of available classifiers. This section strives to answer these questions. 
 
-% a table which compares the top-3 models for each entity (entity vs [model, f1, f1std ...])
+The table below shows the best three models for each metric, each cell (which contains the model and their respective score for that metric) has been sorted in descending order. 
 
-% Compare with the results exposed before, without ensemble (only the base models)
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|ll|ll|ll|}
+\hline
+Catalog                      & Entity                    & Model & F1.Mean  & Model & Prec.Mean & Model                & Recall.Mean \\ \hline
+\multirow{6}{*}{discogs}     & \multirow{3}{*}{band}     & mlp   & 0.928931 & mlp   & 0.915249  & lsvm                 & 0.956090    \\
+                             &                           & sc    & 0.927771 & gc    & 0.912845  & nb                   & 0.955542    \\
+                             &                           & vs    & 0.927576 & sc    & 0.911809  & vs                   & 0.952312    \\ \cline{2-8} 
+                             & \multirow{3}{*}{musician} & mlp   & 0.940715 & gc    & 0.922472  & lsvm                 & 0.970741    \\
+                             &                           & vh    & 0.939658 & mlp   & 0.921507  & vs                   & 0.970543    \\
+                             &                           & vs    & 0.938896 & slp   & 0.917755  & vh                   & 0.966938    \\ \hline
+\multirow{15}{*}{imdb}       & \multirow{3}{*}{actor}    & vs    & 0.899699 & sc    & 0.907933  & nb                   & 0.963789    \\
+                             &                           & rf    & 0.899161 & gc    & 0.895105  & rf                   & 0.919592    \\
+                             &                           & gc    & 0.897257 & vs    & 0.887665  & mlp                  & 0.913832    \\ \cline{2-8} 
+                             & \multirow{3}{*}{director} & mlp   & 0.919340 & sc    & 0.901563  & nb                   & 0.967075    \\
+                             &                           & vs    & 0.919262 & gc    & 0.900678  & vh                   & 0.947915    \\
+                             &                           & gc    & 0.918505 & mlp   & 0.899994  & lsvm                 & 0.947397    \\ \cline{2-8} 
+                             & \multirow{3}{*}{musician} & vs    & 0.926019 & sc    & 0.947724  & nb                   & 0.948158    \\
+                             &                           & mlp   & 0.925888 & gc    & 0.943199  & lr & 0.927680    \\
+                             &                           & sc    & 0.924930 & mlp   & 0.942860  & lsvm                 & 0.926534    \\ \cline{2-8} 
+                             & \multirow{3}{*}{producer} & gc    & 0.910555 & vs    & 0.905090  & nb                   & 0.962525    \\
+                             &                           & vs    & 0.909610 & slp   & 0.903146  & mlp                  & 0.925119    \\
+                             &                           & mlp   & 0.909398 & gc    & 0.902453  & gc                   & 0.918955    \\ \cline{2-8} 
+                             & \multirow{3}{*}{writer}   & gc    & 0.931719 & vs    & 0.929887  & nb                   & 0.965145    \\
+                             &                           & vs    & 0.931617 & sc    & 0.929588  & vh                   & 0.942038    \\
+                             &                           & vh    & 0.931065 & gc    & 0.928561  & lsvm                 & 0.938421    \\ \hline
+\multirow{6}{*}{musicbrainz} & \multirow{3}{*}{band}     & mlp   & 0.921134 & lsvm  & 0.961199  & mlp                  & 0.915818    \\
+                             &                           & sc    & 0.919791 & vs    & 0.954029  & rf                   & 0.900192    \\
+                             &                           & rf    & 0.918844 & vh    & 0.953082  & lr                   & 0.899217    \\ \cline{2-8} 
+                             & \multirow{3}{*}{musician} & mlp   & 0.957375 & sc    & 0.955374  & mlp                  & 0.971004    \\
+                             &                           & vh    & 0.956088 & vs    & 0.955208  & vh                   & 0.966356    \\
+                             &                           & sc    & 0.955643 & nb    & 0.953561  & lsvm                 & 0.966225    \\ \hline
+\end{tabular}
+\caption{Best three models and their scores for each respective metric. These results are shown for each concrete entity.}
+\label{tab:comparison-bl-ens-top-3}
+\end{table}
 
-% **** Possibly analyze the output of the base classifiers a bit about their
-% distribution, if there are outliers or not
+It can be noticed that in almost all cases, the list of \textit{top 3} models for each metric, and concrete entity, includes both classifiers coming from the set of baseline classifiers and others which are ensembles. The exceptions for this are \textit{Precision} for \textit{IMDb/Actor}, where the list of top-3 is composed only of ensemble models. The \textit{Recall} for the same model is instead composed only of baseline models. The list for \textit{Recall}, for \textit{IMDb/Musician} is also composed of only baseline classifiers.
 
-% ***** How it varies across ensemble methods Then graph them together were each
-% hue is a different ensemble method, and the values are the average error rate
-% for all catalogs/entities.
+---
+Graphic showing how many times each classifier appeared first, how many times second, and how many times third
+---
+comparative barplot plot of the scores for the top3 baseline and top3 ensemble
+---
+graphic of barplots with metrics for these top5
+---
+compare STDs. See if ensemles have higher or lower. What did we expect?
+--- 
 
-% ***** How it varies for all catalogs Same as above, but choose best ensemble
-% method and see how it performs across all catalogs/entities
 
 
 \chapter{Conclusion}
 \label{chap:conclusion}
+
+\todo[inline,color=green!25]{Work in progress}
 
 \section{Future Work}
 \label{sec:future-work}
