@@ -2568,8 +2568,6 @@ An important thing to note in the table above is that \textit{soft voting} is al
 \section{Comparative Evaluation}
 \label{sec:comparative-evaluation}
 
-\todo[inline,color=green!25]{Work in progress}
-
 The results showed in the previous two sections for baseline and ensemble models seem quite good. However, it still needs to be decided which technique has the overrall best performance, and, if possible, also define a classifier which can be said is the best among the pool of available classifiers. This section strives to answer these questions. 
 
 The table below shows the best three models for each metric, each cell (which contains the model and their respective score for that metric) has been sorted in descending order. 
@@ -2672,13 +2670,30 @@ Now the question arises of whether these averages actually tell the behaviour of
   \label{fig:comparison-barplot-all-metrics}
 \end{figure}
 
+In the figure above it can be clearly appreciated the the F1 scores are almost always similar, except for the \textit{Musicbrainz} entities, where \textit{mlp} clearly performs better. For \textit{IMDb/Actor}, which has been shown to be problematic for all models to classify in the previous two sections, \textit{mlp} does not perform very well, instead the best scores are obtained for \textit{vs} and \textit{gc}.
 
+For the precision values, ensemble models seem to be more consistent, especially \textit{stack classifier}. The precision of \textit{mlp} is high for some concrete entities (e.g. \textit{Discogs/Band}), but it is actually lower than for the other models for most other entities (e.g. both \textit{Musicbrainz} entities). This result was, however, already expected from what was shown in \autoref{tab:comparison-bl-ens-top-3}.
+
+For recall, all models seems to perform quite similarly. The exceptions are for entities of the \textit{Musicbrainz} catalog, where \textit{mlp} has a much higher recall than the ensemble models, which may also explain why it has a higher F1 for this same entities even if its precision is not that good.
+
+It is interesting that the performance of \textit{mlp} is better for recall and F1, considering that the ensembles actually have a \textit{mlp} as one of their base model. Some reasons for this may be that there are some classifiers among the base models which are producing more noise than actually useful prediction. 
+
+For example, one of the least performing baseline models, specifically those with low recall, like \textit{slp} may be driving the ensemble to make some predictions which cause it to miss-classify some \textit{positive} examples, and as such decreasing the overrall recall. A more careful selection of the base models may help to solve these issues by only including models which are helpful for the ensemble.
 
 
 \chapter{Conclusion}
 \label{chap:conclusion}
 
 \todo[inline,color=green!25]{Work in progress}
+
+ensembles have better precision but tend to have a lower recall. Because of this their F1 suffers, and as such they do not manage to get the top score for this metric. However, if the situation we're currently in values precision above recall, ensemble models are the best choice.
+
+As seen in the results comparison section, the \textit{multi-layer perceptron} performs well in most cases, and the aggregated complexity of training an ensemble of models may not be worth it even if they do provide a higher precision. Obviously, the decision of whether this is worth or not must be taken on a per problem basis. Besides this, 4 out of the 5 models with best F1 score, presented in the last section, are ensemble models, showing that they're still better than most baseline models.
+
+Even though the performance of the ensembles in terms of \textit{F1} and \textit{recall}, was not the best, they did show a very good precision. Meaning that the mixing of opinions from its base classifiers actually supplies valuable information to the prediction process, and makes it more sensitive to \textit{negative} samples. Some their application may make more sense if the problem currently being worked on does not tolerate \textit{false positives}.
+
+Another thing that should be kept in mind is that the results presented for the ensemble models are for ensemble who use as their base classifiers all models available in the baseline. This might not actually be optimal, and as said in the previous section, there may be some models which are driving the ensembles to make miss-predictions. A more careful construction of the base model set may improve the final performance of the ensembles. 
+
 
 \section{Future Work}
 \label{sec:future-work}
@@ -2692,6 +2707,9 @@ data we know that \textit{actors} are part of \textit{movies}, and that
 \textit{musicians} are part of \textit{bands}. The similarity among
 \textit{actors}/\textit{musicians} may be dependent upon the similarity of the
 movies in which they appear, or the bands in which they have performed.
+
+% --
+better selection of base models may reduce noise in ensembles and improve final performance. 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 \endgroup
