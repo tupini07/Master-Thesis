@@ -2386,18 +2386,18 @@ It seems that overrall \textit{mlp} is the best performing baseline model. It is
 
 
 
-Finally, the table below contains a summary of the metrics obtained by each classifier, these were obtained by averaging the metrics obtained for each concrete entity.  
+Finally, the table below contains a summary of the metrics obtained by each classifier, these were obtained by averaging the metrics obtained for each concrete entity. The best value for each metric is denoted in \textbf{bold}.
 
 \begin{table}[H]
 \centering
 \begin{tabular}{l|l|l|l|l|l|l}
 Model & Avg.F1   & Avg.F1.STD & Avg.Prec & Avg.Prec.STD & Avg.Recall & Avg.Recall.STD \\ \hline
-mlp   & 0.925556 & 0.001667   & 0.916643 & 0.003465     & 0.934975   & 0.003420       \\
+mlp   & \textbf{0.925556} & 0.001667   & \textbf{0.916643} & 0.003465     & 0.934975   & 0.003420       \\
 rf    & 0.922377 & 0.001877   & 0.914570 & 0.003453     & 0.930726   & 0.002655       \\
 lr    & 0.921507 & 0.001621   & 0.912116 & 0.002734     & 0.931414   & 0.002349       \\
 slp   & 0.921208 & 0.001514   & 0.914556 & 0.002894     & 0.928427   & 0.002555       \\
 lsvm  & 0.921080 & 0.001693   & 0.909367 & 0.003293     & 0.934240   & 0.002548       \\
-nb    & 0.915145 & 0.003473   & 0.886305 & 0.009108     & 0.949023   & 0.005462          
+nb    & 0.915145 & 0.003473   & 0.886305 & 0.009108     & \textbf{0.949023}   & 0.005462          
 \end{tabular}
 \caption{Average metrics obtained for the baseline classifiers.}
 \label{tab:metrics-summary-baseline}
@@ -2494,9 +2494,11 @@ All classifiers except for \textit{gate classifier}, have as their best average 
   \label{fig:ensmble-evaluation-barplots}
 \end{figure}
 
-In the figure above it can be better appreciated which classifiers perform best for which metrics. It is also clear which concrete entities are easier for the models to predict. As for the baseline models, it still appears that \textit{IMDb/Actor} is the hardest one to classify. Stack classifier seems to yield an acceptable precision for this concrete entity, however its recall is quite low. As with the baseline models, it can also be noted that \textit{Musicbrainz/Band} has a high precision and a low recall.  
+In the figure above it can be better appreciated which classifiers performs best for which metrics. It is also clear which concrete entities are easier for the models to predict. As for the baseline models, it still appears that \textit{IMDb/Actor} is the hardest one to classify. Stack classifier seems to yield an acceptable precision for this concrete entity, however its recall is quite low. As with the baseline models, it can also be noted that \textit{Musicbrainz/Band} has a high precision and a low recall.  
 
 The F1 scores are all similar when talking about the same concrete entity. The ones that show some more variation are \textit{IMDb/Actor} and \textit{IMDb/Producer}. 
+
+As for recall, it can be clearly seen that in almost all cases the best models are one of the \textit{voting} classifiers. The only exception is for \textit{IMDb/Producer}, where \textit{Gated classifier} gives the best recall.
 
 The table below has the average metrics that each classifier obtained for each catalog in general. These have been sorted by decreasing value of F1 score.
 
@@ -2533,22 +2535,22 @@ discogs     & gc    & 0.932046 & 0.002087   & 0.917658 & 0.003622     & 0.946937
 
 There is no clear distinction about which is the best ensemble model. Both \textit{soft voting} and \textit{stack} classifier seem to have quite good performance. Stack classifier performs better for catalogs which have more information (Discogs and Musicbrainz), while soft voting performs best for IMDb that has less. 
 
-Voting classifier appears to have the best precision for \textit{Musicbrainz}, however this is also the model which has the worst \textit{recall} for that catalog. On the other hand, \textit{stack classifier}, which is the best F1 and recall, is the one with the worst precision. 
+Voting classifier appears to have the best precision for \textit{Musicbrainz}, however this is also the model which has the worst \textit{recall} for that catalog. On the other hand, \textit{stack classifier}, which is the best F1 and recall on this catalog, is also the one with the worst precision. 
 
 For IMDb the best F1 score is given to \textit{soft voting}, which interestingly it is not the best at precision nor at recall, those places are given to \textit{stack} and \textit{hard voting} classifiers respectively. However, \textit{stack classifier} is the one with the worst recall, and \textit{hard voting} is the one with the lowest precision. For this catalog it can also be seen that the \textit{stack} classifier, which performs well for \textit{Musicbrainz} and \textit{Discogs} is actually the one with the worst F1 score.
 
-The best F1 score for Discogs is given to the \textit{stack classifier}. Like in IMDb, this best F1 model is actually does not have the best precision nor recall. Best precision is given by the \textit{gated classifier}, which is also the model with the worst recall and F1 score. \textit{Soft voting} classifier is the one which gives the best recall, and it also has the worst precision.
+The best F1 score for Discogs is given to the \textit{stack classifier}. Like in IMDb, this best F1 model actually does not have the best precision nor recall. Best precision is given by the \textit{gated classifier}, which is also the model with the worst recall and F1 score. \textit{Soft voting} classifier is the one which gives the best recall, and it also has the worst precision.
 
-The table below shows a summary of the scores obtained by each model. These have been obtained by averaging all the model's scores. The rows are ordered by \textit{Avg. F1} in decreasing order.
+The table below shows a summary of the scores obtained by each model. These have been obtained by averaging all the model's scores. The rows are ordered by \textit{Avg. F1} in decreasing order. The best value for each metric is denoted in \textbf{bold}.
 
 \begin{table}[H]
 \centering
 \begin{tabular}{l|l|l|l|l|l|l}
 Model & Avg. F1  & Avg. F1.STD & Average Prec & Avg. Prec.STD & Avg. Recall & Avg. Recall.STD \\ \hline
-vs    & 0.924879 & 0.001803    & 0.919919     & 0.004678      & 0.930801    & 0.004579        \\
+vs    & \textbf{0.924879} & 0.001803    & 0.919919     & 0.004678      & \textbf{0.930801}    & 0.004579        \\
 gc    & 0.924502 & 0.002473    & 0.922766     & 0.006448      & 0.926848    & 0.007868        \\
 vh    & 0.923946 & 0.002026    & 0.914540     & 0.007172      & 0.934405    & 0.006780        \\
-sc    & 0.923439 & 0.003534    & 0.923585     & 0.008592      & 0.924264    & 0.013082          
+sc    & 0.923439 & 0.003534    & \textbf{0.923585}     & 0.008592      & 0.924264    & 0.013082          
 \end{tabular}
 \caption{Average metric score for each ensemble classifier.}
 \label{tab:metrics-summary-for-ensembles}
@@ -2556,7 +2558,7 @@ sc    & 0.923439 & 0.003534    & 0.923585     & 0.008592      & 0.924264    & 0.
 
 From the results above it can be seen that both \textit{stack based} models have the best average precision. These are: \textit{gated classifier}, which has the best precision, and \textit{stack classifier}, which has the second best. On the other hand, \textit{voting based} classifiers have the best recall: \textit{hard voting}, which has the best recall, and \textit{soft voting} which has the second best.
 
-\textit{Soft voting} has the best precision when compared with \textit{hard voting}. Probably because soft voting considers an average of its base models predictions, so if a model is \textit{very} certain about a match then this amount will be taken into consideration for the final prediction. On the hand, \textit{hard voting} only considers how many base models predicted a positive or negative, and not how certain they were about this prediction. 
+\textit{Soft voting} also has the best precision when compared with \textit{hard voting}. Probably because soft voting considers an average of its base models predictions, so if a model is \textit{very} certain about a match then this amount will be taken into consideration for the final prediction. On the other hand, \textit{hard voting} only considers how many base models predicted a positive or negative, and not how certain they were about this prediction. 
 
 An important thing to note in the table above is that \textit{soft voting} is also the classifier with the least standard deviation in all its metrics measurements. This means that the metrics obtained during the 5-fold cross validation did not change much across different folds, meaning that the final performance of the model is not that dependent upon the distribution of the data it was trained with. This is important since it gives more certainty that real world performance will be similar as that evaluated\footnote{If the classification data distribution is similar to that of the training set.}. 
 
@@ -2568,7 +2570,7 @@ An important thing to note in the table above is that \textit{soft voting} is al
 
 \todo[inline,color=green!25]{Work in progress}
 
-The results showed in the previous two sections for baseline and ensemble models seem quite good. However, it still needs to be decided which technique has the overrall best performance, and, if possible, also define a classifier which it can be said is the best among the pool of available classifiers. This section strives to answer these questions. 
+The results showed in the previous two sections for baseline and ensemble models seem quite good. However, it still needs to be decided which technique has the overrall best performance, and, if possible, also define a classifier which can be said is the best among the pool of available classifiers. This section strives to answer these questions. 
 
 The table below shows the best three models for each metric, each cell (which contains the model and their respective score for that metric) has been sorted in descending order. 
 
@@ -2577,49 +2579,99 @@ The table below shows the best three models for each metric, each cell (which co
 \begin{tabular}{|l|l|ll|ll|ll|}
 \hline
 Catalog                      & Entity                    & Model & F1.Mean  & Model & Prec.Mean & Model                & Recall.Mean \\ \hline
-\multirow{6}{*}{discogs}     & \multirow{3}{*}{band}     & mlp   & 0.928931 & mlp   & 0.915249  & lsvm                 & 0.956090    \\
-                             &                           & sc    & 0.927771 & gc    & 0.912845  & nb                   & 0.955542    \\
-                             &                           & vs    & 0.927576 & sc    & 0.911809  & vs                   & 0.952312    \\ \cline{2-8} 
-                             & \multirow{3}{*}{musician} & mlp   & 0.940715 & gc    & 0.922472  & lsvm                 & 0.970741    \\
-                             &                           & vh    & 0.939658 & mlp   & 0.921507  & vs                   & 0.970543    \\
-                             &                           & vs    & 0.938896 & slp   & 0.917755  & vh                   & 0.966938    \\ \hline
-\multirow{15}{*}{imdb}       & \multirow{3}{*}{actor}    & vs    & 0.899699 & sc    & 0.907933  & nb                   & 0.963789    \\
-                             &                           & rf    & 0.899161 & gc    & 0.895105  & rf                   & 0.919592    \\
-                             &                           & gc    & 0.897257 & vs    & 0.887665  & mlp                  & 0.913832    \\ \cline{2-8} 
-                             & \multirow{3}{*}{director} & mlp   & 0.919340 & sc    & 0.901563  & nb                   & 0.967075    \\
-                             &                           & vs    & 0.919262 & gc    & 0.900678  & vh                   & 0.947915    \\
-                             &                           & gc    & 0.918505 & mlp   & 0.899994  & lsvm                 & 0.947397    \\ \cline{2-8} 
-                             & \multirow{3}{*}{musician} & vs    & 0.926019 & sc    & 0.947724  & nb                   & 0.948158    \\
-                             &                           & mlp   & 0.925888 & gc    & 0.943199  & lr & 0.927680    \\
-                             &                           & sc    & 0.924930 & mlp   & 0.942860  & lsvm                 & 0.926534    \\ \cline{2-8} 
-                             & \multirow{3}{*}{producer} & gc    & 0.910555 & vs    & 0.905090  & nb                   & 0.962525    \\
-                             &                           & vs    & 0.909610 & slp   & 0.903146  & mlp                  & 0.925119    \\
-                             &                           & mlp   & 0.909398 & gc    & 0.902453  & gc                   & 0.918955    \\ \cline{2-8} 
-                             & \multirow{3}{*}{writer}   & gc    & 0.931719 & vs    & 0.929887  & nb                   & 0.965145    \\
-                             &                           & vs    & 0.931617 & sc    & 0.929588  & vh                   & 0.942038    \\
-                             &                           & vh    & 0.931065 & gc    & 0.928561  & lsvm                 & 0.938421    \\ \hline
-\multirow{6}{*}{musicbrainz} & \multirow{3}{*}{band}     & mlp   & 0.921134 & lsvm  & 0.961199  & mlp                  & 0.915818    \\
-                             &                           & sc    & 0.919791 & vs    & 0.954029  & rf                   & 0.900192    \\
-                             &                           & rf    & 0.918844 & vh    & 0.953082  & lr                   & 0.899217    \\ \cline{2-8} 
-                             & \multirow{3}{*}{musician} & mlp   & 0.957375 & sc    & 0.955374  & mlp                  & 0.971004    \\
-                             &                           & vh    & 0.956088 & vs    & 0.955208  & vh                   & 0.966356    \\
-                             &                           & sc    & 0.955643 & nb    & 0.953561  & lsvm                 & 0.966225    \\ \hline
+\multirow{6}{*}{di$sc^*$ogs}     & \multirow{3}{*}{band}     & $mlp^+$  & 0.928931 & $mlp^+$   & 0.915249  & $lsvm^+$                 & 0.956090    \\
+                             &                           & $sc^*$    & 0.927771 & $gc^*$    & 0.912845  & $nb^+$                   & 0.955542    \\
+                             &                           & $vs^*$    & 0.927576 & $sc^*$    & 0.911809  & $vs^*$                   & 0.952312    \\ \cline{2-8} 
+                             & \multirow{3}{*}{musician} & $mlp^+$   & 0.940715 & $gc^*$    & 0.922472  & $lsvm^+$                 & 0.970741    \\
+                             &                           & $vh^*$    & 0.939658 & $mlp^+$   & 0.921507  & $vs^*$                   & 0.970543    \\
+                             &                           & $vs^*$    & 0.938896 & $slp^+$   & 0.917755  & $vh^*$                   & 0.966938    \\ \hline
+\multirow{15}{*}{imdb}       & \multirow{3}{*}{actor}    & $vs^*$    & 0.899699 & $sc^*$    & 0.907933  & $nb^+$                   & 0.963789    \\
+                             &                           & $rf^+$    & 0.899161 & $gc^*$    & 0.895105  & $rf^+$                   & 0.919592    \\
+                             &                           & $gc^*$    & 0.897257 & $vs^*$    & 0.887665  & $mlp^+$                  & 0.913832    \\ \cline{2-8} 
+                             & \multirow{3}{*}{director} & $mlp^+$   & 0.919340 & $sc^*$    & 0.901563  & $nb^+$                   & 0.967075    \\
+                             &                           & $vs^*$    & 0.919262 & $gc^*$    & 0.900678  & $vh^*$                   & 0.947915    \\
+                             &                           & $gc^*$    & 0.918505 & $mlp^+$   & 0.899994  & $lsvm^+$                 & 0.947397    \\ \cline{2-8} 
+                             & \multirow{3}{*}{musician} & $vs^*$    & 0.926019 & $sc^*$    & 0.947724  & $nb^+$                   & 0.948158    \\
+                             &                           & $mlp^+$   & 0.925888 & $gc^*$    & 0.943199  & $lr^+$ & 0.927680    \\
+                             &                           & $sc^*$    & 0.924930 & $mlp^+$   & 0.942860  & $lsvm^+$                 & 0.926534    \\ \cline{2-8} 
+                             & \multirow{3}{*}{producer} & $gc^*$    & 0.910555 & $vs^*$    & 0.905090  & $nb^+$                   & 0.962525    \\
+                             &                           & $vs^*$    & 0.909610 & $slp^+$   & 0.903146  & $mlp^+$                  & 0.925119    \\
+                             &                           & $mlp^+$   & 0.909398 & $gc^*$    & 0.902453  & $gc^*$                   & 0.918955    \\ \cline{2-8} 
+                             & \multirow{3}{*}{writer}   & $gc^*$    & 0.931719 & $vs^*$    & 0.929887  & $nb^+$                   & 0.965145    \\
+                             &                           & $vs^*$    & 0.931617 & $sc^*$    & 0.929588  & $vh^*$                   & 0.942038    \\
+                             &                           & $vh^*$    & 0.931065 & $gc^*$    & 0.928561  & $lsvm^+$                 & 0.938421    \\ \hline
+\multirow{6}{*}{musicbrainz} & \multirow{3}{*}{band}     & $mlp^+$   & 0.921134 & $lsvm^+$  & 0.961199  & $mlp^+$                  & 0.915818    \\
+                             &                           & $sc^*$    & 0.919791 & $vs^*$    & 0.954029  & $rf^+$                   & 0.900192    \\
+                             &                           & $rf^+$    & 0.918844 & $vh^*$    & 0.953082  & $lr^+$                   & 0.899217    \\ \cline{2-8} 
+                             & \multirow{3}{*}{musician} & $mlp^+$   & 0.957375 & $sc^*$    & 0.955374  & $mlp^+$                  & 0.971004    \\
+                             &                           & $vh^*$    & 0.956088 & $vs^*$    & 0.955208  & $vh^*$                   & 0.966356    \\
+                             &                           & $sc^*$    & 0.955643 & $nb^+$    & 0.953561  & $lsvm^+$                 & 0.966225    \\ \hline
 \end{tabular}
-\caption{Best three models and their scores for each respective metric. These results are shown for each concrete entity.}
+\caption{Best three models and their scores for each respective metric. These results are shown for each concrete entity. To better differentiate the provenance of the each classifier, their names have been super-scripted with a $^+$ if they are models from the baseline, while those symbolizing ensemble models were super-scripted with $^*$}
 \label{tab:comparison-bl-ens-top-3}
 \end{table}
 
-It can be noticed that in almost all cases, the list of \textit{top 3} models for each metric, and concrete entity, includes both classifiers coming from the set of baseline classifiers and others which are ensembles. The exceptions for this are \textit{Precision} for \textit{IMDb/Actor}, where the list of top-3 is composed only of ensemble models. The \textit{Recall} for the same model is instead composed only of baseline models. The list for \textit{Recall}, for \textit{IMDb/Musician} is also composed of only baseline classifiers.
 
----
-Graphic showing how many times each classifier appeared first, how many times second, and how many times third
----
-comparative barplot plot of the scores for the top3 baseline and top3 ensemble
----
-graphic of barplots with metrics for these top5
----
-compare STDs. See if ensemles have higher or lower. What did we expect?
---- 
+It can be noticed that in almost all cases, the list of \textit{top 3} models for each metrics includes both classifiers coming from the set of baseline classifiers as well as ensemble classifiers. The exceptions for this are \textit{Precision} for \textit{IMDb/Actor}, where the list of top-3 is composed only of ensemble models. The \textit{Recall} for the same model, and for \textit{Musicbrainz/Band} is instead composed only of baseline models. The list for \textit{Recall}, for \textit{IMDb/Musician} is also composed of only baseline classifiers. All classifiers in the lists for \textit{F1 score} and \textit{precision} of \textit{IMDb/Writer} are exclusively from the set of ensemble classifiers.
+
+The pie plots below show the number of times each model appeared in the first, second, or third positions. 
+
+\begin{figure}[H]
+  \centering \includegraphics[width=\textwidth]{comparison_f1_top_spaces_pies} 
+  \caption{Pie plots show the occurrences of each model in each position of the \textit{top 3}, for the F1 metric.}
+  \label{fig:comparison-pie-occurrences-f1}
+\end{figure}
+
+\begin{figure}[H]
+  \centering \includegraphics[width=\textwidth]{comparison_prec_top_spaces_pies} 
+  \caption{Pie plots show the occurrences of each model in each position of the \textit{top 3}, for the \textit{Precision} metric.}
+  \label{fig:comparison-pie-occurrences-precision}
+\end{figure}
+
+\begin{figure}[H]
+  \centering \includegraphics[width=\textwidth]{comparison_recall_top_spaces_pies} 
+  \caption{Pie plots show the occurrences of each model in each position of the \textit{top 3}, for the \textit{Recall} metric.}
+  \label{fig:comparison-pie-occurrences-recall}
+\end{figure}
+
+It can be seen in \autoref{fig:comparison-pie-occurrences-f1} that \textit{mlp} appears as the model with the highest score more than half the time. Followed by \textit{soft voting} and \textit{gate classifier}, which both appear in two of the cases. Soft voting is also the model which appears more time in as the second best F1. Both \textit{mlp} and \textit{vs} appear among the top-3 for F1 in 7 out of the nine cases.
+
+\autoref{fig:comparison-pie-occurrences-precision} shows the occurrences for the precision metric. Here it can be see that ensemble based classifiers appear a total of 7 times out of 9 as the top-1 model: \textit{stack classifier} appears 4 times, \textit{soft voting} appears 2, and \textit{gated classifier} appears once. The baseline models which appear as top-1 once each are \textit{mlp} and \textit{lsvm}. Something similar happens for the model which appears in the second place: 7 times out of 9 there is an ensemble model (4 times \textit{gc}, 2 times \textit{vs}, and once \textit{sc}), while the remaining two spots are taken by \textit{mlp} and \textit{slp}. 
+
+For the recall case, in \autoref{fig:comparison-pie-occurrences-recall}, in can be seen that there are no cases where an ensemble classifier appears as the one with the best score. It seems that the the best recall is given to \textit{nb}, which appears as top-1 5 out of 9 times, and \textit{lsvm} and \textit{mlp} which appear twice each. It can be seen that in the second best recall spot there are ensemble models. 4 our of the 9 cases for this second spot are taken by ensemble classifiers (3 times \textit{vh}, and once \textit{vs}). 
+
+Note that even though \textit{naive bayes} appears in the first and second places for recall, it does not appear as one of the top 3 for any of the other metrics, except for the one time it appears in the third position for precision. It is also interesting to notice that \textit{stack classifier}, which is the one which most commonly appears as top precision, does not appear even once among the top 3 recalls.
+
+From the above it can be seen that ensemble models tend to have a higher precision than baseline models. However, they also have a lower recall. A pattern also seems to be emerging in regards to which models appear as the best. For instance, it can be said that both \textit{mlp} and \textit{vs} have good performance in most of the cases. Also, it seems that ensemble models perform better, more commonly, than baseline classifiers. The exception is \textit{mlp}, which appears to perform best in some cases.
+
+The table below shows the average metrics obtained for the top 5 models, ordered in descending order by F1 score. 
+
+\begin{table}[H]
+\centering
+\begin{tabular}{l|l|l|l|l|l|l}
+Model & Avg.F1       & Avg.F1.STD & Avg.Prec     & Avg.Prec.STD & Avg.Recall   & Avg.Recall.STD \\ \hline
+mlp   & 0.925556 (1) & 0.001667   & 0.916643 (4) & 0.003465     & 0.934975 (1) & 0.003420       \\
+vs    & 0.924879 (2) & 0.001803   & 0.919919 (3) & 0.004678     & 0.930801 (3) & 0.004579       \\
+gc    & 0.924502 (3) & 0.002473   & 0.922766 (2) & 0.006448     & 0.926848 (4) & 0.007868       \\
+vh    & 0.923946 (4) & 0.002026   & 0.914540 (5) & 0.007172     & 0.934405 (2) & 0.006780       \\
+sc    & 0.923439 (5) & 0.003534   & 0.923585 (1) & 0.008592     & 0.924264 (5) & 0.013082      
+\end{tabular}
+\caption{Average metrics for top-5 models ordered by F1 score. The parenthesis to the right of the average scores show the respective position to respect to the other values of that same score. }
+\label{tab:comparison-average-all-models}
+\end{table}
+
+In the table above it can be clearly seen that \textit{mlp} is the best performing classifier when it comes to \textit{average F1}, and is also the model with the best \textit{average recall}. However, \textit{mlp} is also the model with the second worst precision (\textit{vh} is the model with the worst precision). 
+ 
+Another interesting thing to notice is that in this table, \textit{mlp} is the only baseline model in the top-5. Notice also the standard deviations, \textit{ensembles} seem to have higher values for all metrics than \textit{mlp}. 
+
+Now the question arises of whether these averages actually tell the behaviour of the algorithm, or whether some of the algorithms had a very good performance for one of the catalog entities. This behaviour can be better seen in the next figure.
+
+\begin{figure}[H]
+  \centering \includegraphics[width=\textwidth]{comparison_barplots_all_metrics} 
+  \caption{Barplot showing the metrics obtained by all top-5 classifiers.}
+  \label{fig:comparison-barplot-all-metrics}
+\end{figure}
+
 
 
 
