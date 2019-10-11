@@ -1155,7 +1155,7 @@ The mentioned property is used to link an item with an IMDb ID (similar properti
 All the development of \texttt{soweego} was made with the Python \cite{python-tutorial} programming language. To run the internal database  MariaDB\footurl{https://mariadb.com/} was used.(which is the same as that used by Wikidata, so there is minimum friction when moving the application from development to production). 
 The details of communicating with the database were abstracted away with the use of \texttt{SQLAlchemy} ORM \cite{sqlalchemy}, which provides an object like interface.
 
-To simplify the implementation of the record linkage workflow we also use the \texttt{Python Record Linkage Toolkit} \cite{recordlinkage-library} framework, which implements many useful functionalities for this goal. Mainly it eases the feature extraction and linking procedure. We also use the library \texttt{Pandas} \cite{mckinney-proc-scipy-2010} to make it easier to handle the data.
+To simplify the implementation of the record linkage workflow we also use the \texttt{Python Record Linkage Toolkit} \cite{recordlinkage-library} framework, which implements many useful functionalities for this goal. Mainly it eases the feature extraction and linking procedure. We also use the library \texttt{Pandas} \cite{mckinney2010_pandas} to make it easier to handle the data.
 
 Some of the machine learning models provided were leveraged by \texttt{Scikit-Learn} \cite{scikit-learn} to be used in the linker, as well as their \textit{grid search} functionality to find the optimal hyperparameters.
 
@@ -1548,23 +1548,165 @@ Musicbrainz & Musician & 118,107                  & 153,437                     
 \section{Preprocessing}
 \label{sec:data-preprocessing}
 
-\todo[inline,color=green!25]{Work in progress}
+This section will show which steps the raw data undergoes before it can be used in the \textit{feature extraction} steps. There are actually two different preprocessing steps, one for data coming from Wikidata, and another for data coming from external catalogs. There are also some steps which are applied to data coming from both sources. That is why this section will be separated into three subsections, one explaining each set of steps. During the importing process, the raw dump of the external catalogs also gets briefly preprocessed, these modifications will me mentioned in the last subsection.
 
-The raw data needs to undergo a series of preprocessing steps in order for it to be used confidently.
+It is important to note that the preprocessing for \textit{Wikidata} or \textit{External} data happen before the \textit{Shared} preprocessing. 
+
+All of this preprocessing steps, except for those in made in the \textit{importer}, are done when the data is loaded from the database.
+
+In the cases of \textit{Shared}, \textit{Wikidata}, and \textit{External} preprocessing, it is done for chunks of data at a time, currently 1000. The \textit{Importer} preprocessing, on the other hand, is done for each entity separately. 
 
 
-% In which way do we currently preprocess the data so that it is normalized?
+\subsection{Shared Preprocessing}
+\label{sec:data-preprocessing-shared}
 
-\subsection{Normalize Dates}
+\subsubsection{Normalize dates}
 \label{sec:data-preprocessiong-date-normalization}
 
-\subsection{Tokenize Names}
-\label{sec:data-preprocessiong-name-tokenization}
+The dates are by default saved together with their precision. The precision is a number which signals which is the most specific part of the date that it can confidently be said is correct. Especially for data coming from Wikidata, this precision can be anything from knowing the exact second something happened, to knowing in which range of one billion years it happened\footurl{https://www.wikidata.org/wiki/Special:ListDatatypes}.
 
-\subsection{Tokenize URLs}
-\label{sec:data-preprocessiong-URL-tokenization}
+For the current application, it is important that for all dates it is known at least the year. For instance, the worst precision, which is is any number $\leq 9$, will be converted to a precision of 9, which indicates that at most the year can be trusted. A precision of ten indicates that both the the month and year are known. A precision of 11 or more indicates that the year, month, and day are known. And so on until a precision of 14, which indicates that everything up to the second is known. 
+
+This date normalization what it does is convert the dates to \textit{Pandas} \cite{mckinney2010_pandas} \textit{Period} objects, which can contain the precision of the date internally. 
+
+This procedure is performed for both birth and death dates 
+
+\subsubsection{Normalize names}
+\label{sec:data-preprocessiong-name-normalization}
+
+This step normalizes all possible \textit{name fields}, which are: 
+
+\begin{itemize}
+    \item name
+    \item alias
+    \item birth name
+    \item family name
+    \item given name
+    \item pseudonym
+    \item real name
+\end{itemize}
+
+Any of these fields can contain a list of possible names for an entity. The way in which they're actually normalized is by performing the following steps on each possible name:
+
+\begin{enumerate}
+    \item Remove any white space padding which the name may have on the left or right.
+    
+    \item Normalize all characters to the \textit{ascii} alphabet. This means removing the \textit{accent} from characters, and converting characters in other alphabets (e.g. Cyrillic) to \textit{ascii} characters.
+
+    \item Make the name lowercase.
+\end{enumerate}
+
+\subsubsection{Normalize occupations}
+\label{sec:data-preprocessiong-occupations-normalization}
+
+This step simply takes the list of all occupations an entity has and converts them to a set (i.e. removes the duplicates). It also removes \textit{empty occupations}. If the occupations are not already a list then they get converted to one before the list is converted to a set.
 
 
+\subsection{Wikidata Preprocessing}
+\label{sec:data-preprocessing-wikidata}
+
+\subsubsection{Drop columns with empty values}
+\label{sec:data-preprocessiong-wik-drop-empty}
+
+As the name of this step implies, what is done is that all columns in the entity which are composed of only \textit{null} values are removed. 
+
+\subsubsection{Ensure one target ID per QID}
+\label{sec:data-preprocessiong-name-one-tid}
+
+This step is exclusively applied to Wikidata entities that come from a training dump. It ensures that all QIDs in the positive samples of the training data are only associated with one TID. This is done by checking all QIDs which are associate with more than one TID, all associations besides the first one are dropped. 
+
+\subsubsection{Tokenize names}
+\label{sec:data-preprocessiong-wik-name-tokenization}
+
+This step is applied to all \textit{name} fields, which were defined earlier in the shared \hyperref[sec:data-preprocessiong-name-normalization]{\textit{Normalize names}} step. In fact, this step performs the same normalization on the names as the previously mentioned step. But in addition to that it also tokenizes the resulting normalized names. 
+
+This is done by splitting the resulting normalized names on the white space that separates each part of the name, and then removing from this list of \textit{name parts} all those which are considered \textit{stopwords} according to a previously defined list. Finally this filtered list is converted to a set so that it only contains unique \textit{tokens}. 
+
+If an entity has more than one name in a given name field then the tokens coming from all names are added to the set mentioned above. 
+
+\subsubsection{Tokenize URLs}
+\label{sec:data-preprocessiong-wik-URL-tokenization}
+
+Each URL is first separated into the following five components:
+
+$$
+\text{<scheme>://<netloc>/<path>?<query>\#<fragment>}
+$$
+
+Then the \textit{netloc} is further splitted into tokens, where each token is each word in the string, these are called \textit{domain tokens}. From these \textit{domain tokens}, common top level domains (\textit{com}, \textit{org}, \textit{net}, \textit{info}, \textit{fm}), as well as domain prefixes (\textit{www}, \textit{m}, \textit{mobile}) are removed. 
+
+Following this, the \textit{path} is splitted into its respective chunks, by splitting on the slash (/) character. The words in these chunks are extracted, and these are then added via \textit{union} to the set of tokens coming from the domain. 
+
+Finally, the \textit{query} is split into its constituent words and these are also added via \textit{union} as part of the tokens from the \textit{domain} and \textit{path}. 
+
+
+% Not describing this since it is not used by "people/bands"
+% \subsubsection{Tokenize genres}
+% \label{sec:data-preprocessiong-URL-tokenization}
+
+
+\subsection{External Data Preprocessing}
+\label{sec:data-preprocessing-external}
+
+\subsubsection{Drop columns with empty values}
+\label{sec:data-preprocessiong-ext-drop-empty}
+% note, there is a section with the same name for wikidata
+
+This step is the same as what is done for Wikidata. Columns which are entirely composed of \textit{null} values are dropped.
+
+\subsubsection{Pair dates with precision}
+\label{sec:data-preprocessiong-ext-date-precision}
+
+The step is executed once for birth dates and another for death dated. It simply takes the value of the date, and the precision for said date, and joins them in a tuple. The reason for this is that then this tuple can be given to the shared \hyperref[sec:data-preprocessiong-date-normalization]{\textit{Normalize dates}} step, which will extract the appropriate Pandas Period objects.
+
+After joining the precision and dates, the precision column is eventually dropped from the data set. 
+
+\subsubsection{Aggregate data on target ID}
+\label{sec:data-preprocessiong-ext-aggregate-tid}
+
+If the data currently being processed contains more than one row for some TID then the values of these rows are joined together by performing a \textit{set union} on the values of each field. For example, say that the table below is the input data:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{l|l|l}
+TID  & Name               & Zip Code    \\ \hline
+\textbf{6567} & {[}Gary, George{]} & {[}93124{]} \\
+\textbf{6567} & {[}George, Paul{]} & None       \\
+3251 & {[}John{]} &    None    
+
+\end{tabular}
+\end{table}
+
+There are two entries with the TID \textit{6567}. If they are then aggregated using \textit{set union} as mentioned above, the output will look like the following table:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{l|l|l}
+TID  & Name                     & Zip Code    \\ \hline
+\textbf{6567} & {[}Gary, George, Paul{]} & {[}93124{]} \\
+3251 & {[}John{]} &    None    
+\end{tabular}
+\end{table}
+
+Note that now the information of both rows with TID \textit{6567} have been joined into the same row.
+
+
+\subsection{Preprocessing During Import}
+\label{sec:data-preprocessing-import}
+
+The following steps are applied on the raw catalog dump data while it is being imported into \soweego's internal database. Said preprocessing steps are:
+
+\begin{enumerate}
+    \item \texttt{Tokenize names} -- this is done in the same way as is done for Wikidata, explained in \autoref{sec:data-preprocessiong-wik-name-tokenization}.
+    
+    \item \texttt{Tokenize URLs} -- also the same as done for Wikidata, explained in \autoref{sec:data-preprocessiong-wik-URL-tokenization}.
+    
+    \item \texttt{Tokenize description} -- this step essentially the same as the \textit{Tokenize names} one. The difference is that here the tokenization is done on the \textit{description} field instead of the \textit{name}.
+\end{enumerate}
+
+
+
+%%%%%%%%%%%%%%%%
 
 \section{Features}
 \label{sec:used-features}
@@ -2050,34 +2192,41 @@ If training and classification sets were of the same quality then this differenc
 
 \todo[inline,color=green!25]{Chapter in progress}
 
-%  Stuart J. Russell, Peter Norvig (2010) Artificial Intelligence: A Modern Approach, Third Edition, Prentice Hall ISBN 9780136042594. 
+This chapter will cover the machine learning algorithms used in the project. The first section will talk about the \textit{baseline} classifiers, a set of standalone classification algorithms. \autoref{sec:hyperpar-optimization} will talk about how and according to which procedures the hyperparameters for these baseline algorithms were chosen. Following that, \autoref{sec:ensemble-models} will talk about ensemble models, the motivation for using them, and which techinques for creating them were employed in the project.
 
-This chapter will cover the machine learning algorithms used in the project. The first section will talk about the \textit{baseline} classifiers, a set of standalone classification algorithms. \autoref{sec:hyperpar-optimization} will talk about how and according to which procedures the hyperparameters for these baseline algorithms were chosen. Following that, \autoref{sec:ensemble-models} will talk about ensemble models, the motivation for using them, and which were employed in the project.
+As said in \autoref{sec:rl-workflow-linking}, the linking process is one of the main processes in the record linkage workflow. This linking can either be done using a rule-based approach, or a machine learning algorithm can be used to learn when to classify a pair as a match based on the features extracted for that pair. As such, having a well tuned and well performing algorithm is essential for an effective record linkage.
 
-As said in \autoref{sec:rl-workflow-linking}, the linking process is one of the main processes in the record linkage workflow. This linking can either be done using a rule-based approach, or a machine learning algorithm can be used to learn when to mark a pair as a match based on the features extracted for that pair. As such, having a well tuned and well performing algorithm is essential for an effective record linkage.
+A machine learning algorithm \cite{Russell:2009:AIM:1671238} is an algorithm capable of learning something when given some data. There are many kinds, but those that are of interest for this project are \textit{supervised algorithms}, which are able to draw some inferences about data they've never seen (classification data) when first shown some data similar to that inferences want to be drawn about (training data). 
 
-% need to include introduction to what ML algorithms are and how they are trained? Most importantly, if this is done then take time to explain *generalization*
+This capacity of the algorithm of correctly predicting never before seen samples of data is called \textit{generalization}, and it hints at the fact that the algorithm is learning some underlying structure, or patter, in the data it trains on.
+
+For the current project, these algorithms will be shown pairs of entities that are the same, and pairs that are not, and the goal is for the algorithm to discern, for a never seen before pair, whether it is a match or not.
+
 
 \section{Baseline Classifiers}
 \label{sec:baseline-classifiers}
 
-This section mentions the basic machine learning algorithms used in the project. These are the algorithms used as a \textit{baseline} for comparison with the performance of the ensemble algorithms presented in the next section. 
+All of the baseline algorithms (except for \textit{mlp} and \textit{slp}, which come from the same family) used are based on a different underlying approach of understanding data and learning something from it. As such, all of these capture the information seen in the training data in different ways. 
 
+The above means that there is a fundamental difference among most of these baseline algorithms, and choosing a \textit{best} one is a very difficult task, since it really depends on the application it is needed for. 
 
-\todo[inline]{check if we can say which algorithms tend to have high variance and high bias. So that we can give a motivation for why which chose each for the ensemble part}
+This section strives to explain each baseline algorithm so that the differences among them may be understood. In \autoref{chap:results} the results of these baseline algorithms will be compared against that obtained by the ensemble models (explained in the next section), to see if there is any improvement when employing the idea of considering more than one algorithm to get a prediction. 
 
 
 \subsection{Linear SVM}
 \label{sec:clf-lsvm}
 
-Implemented in record linkage library \cite{recordlinkage-library}
+In its simplest sense, SVM \cite{Vapnik1995_svm, Cristianini2000_svm}, and by extension LSVM, are models that learn to segment data into two categories (a binary classifier). The model supposes that the data is sees is spread on a space of $n$ dimensions. When training, the SVM model will learn a hyper-plane (which is just an $n$-dimensional line) that separates the points in each category by a \textit{gap} which should be wide as possible. When classifying new samples, the model will just suppose these new samples are point in the space, and then just checks on which side of the hyperplane the new points are, and assign the respective label accordingly. 
 
-Check if this and SVM are acually going to be used at the end. If both remain then in the ensemble part will need to mention why they're not used as part of the ensemble.
+SVM algorithm can also modify the input data that they get in such a way that the space representation they learn is different from the one the input data actually represents. This is usually done to map the input data to a higher dimensional space, making it \textit{"easier"} to separate by a gap. This is called the \textit{kernel trick} \cite{Cristianini2000_svm}. However, this technique won't be used in the current work since what will be used is an SVM which separates said space \textit{linearly}.
 
-\subsection{SVM}
-\label{sec:clf-svm}
 
-also implemented in record linkage library \cite{recordlinkage-library} 
+
+
+
+
+
+The implementation of LSVM is the one provided by the \texttt{Python Record Linkage Toolkit} \cite{recordlinkage-library}, which in turn uses the one provided by Scikit-Learn \cite{scikit-learn}. 
 
 
 \subsection{Naive Bayes}
@@ -2088,7 +2237,9 @@ also implemented in  \cite{recordlinkage-library}
 \subsection{Logistic Regression}
 \label{sec:clf-lr}
 
-implemented by sklear \cite{scikit-learn}
+% implemented by sklear \cite{scikit-learn} % <- unsure if using sklear on RL
+Implemented in record linkage library \cite{recordlinkage-library}
+
 
 \subsection{Random Forest}
 \label{sec:clf-rgc}
@@ -2686,13 +2837,16 @@ For example, one of the least performing baseline models, specifically those wit
 
 \todo[inline,color=green!25]{Work in progress}
 
-ensembles have better precision but tend to have a lower recall. Because of this their F1 suffers, and as such they do not manage to get the top score for this metric. However, if the situation we're currently in values precision above recall, ensemble models are the best choice.
+Ensembles have better precision but tend to have a lower recall. Because of this their F1 suffers, and as such they do not manage to get the top score for this metric. However, if the situation we're currently in values precision above recall, ensemble models are the best choice.
 
 As seen in the results comparison section, the \textit{multi-layer perceptron} performs well in most cases, and the aggregated complexity of training an ensemble of models may not be worth it even if they do provide a higher precision. Obviously, the decision of whether this is worth or not must be taken on a per problem basis. Besides this, 4 out of the 5 models with best F1 score, presented in the last section, are ensemble models, showing that they're still better than most baseline models.
 
 Even though the performance of the ensembles in terms of \textit{F1} and \textit{recall}, was not the best, they did show a very good precision. Meaning that the mixing of opinions from its base classifiers actually supplies valuable information to the prediction process, and makes it more sensitive to \textit{negative} samples. Some their application may make more sense if the problem currently being worked on does not tolerate \textit{false positives}.
 
 Another thing that should be kept in mind is that the results presented for the ensemble models are for ensemble who use as their base classifiers all models available in the baseline. This might not actually be optimal, and as said in the previous section, there may be some models which are driving the ensembles to make miss-predictions. A more careful construction of the base model set may improve the final performance of the ensembles. 
+
+% - maybe write something about what was expected and if this was attained or not. And why not or yes
+% - 
 
 
 \section{Future Work}
@@ -2708,8 +2862,14 @@ data we know that \textit{actors} are part of \textit{movies}, and that
 \textit{actors}/\textit{musicians} may be dependent upon the similarity of the
 movies in which they appear, or the bands in which they have performed.
 
-% --
+% ---
 better selection of base models may reduce noise in ensembles and improve final performance. 
+% ---
+It would be interesting to see how the performance would vary if new catalogs were to be added.
+% ---
+There are also other assembling approaches that weren't explored to maintain the scope of the thesis manageable (ie, boosting, bayesian record linkage.)
+% ---
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 \endgroup
