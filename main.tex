@@ -17,6 +17,7 @@
 
 \usepackage{todonotes}
 \usepackage{cite} \graphicspath{ {graphics/} }
+\usepackage{csquotes}
 
 \usepackage{amsmath}
 \usepackage{algorithm,algorithmic}
@@ -2192,7 +2193,7 @@ If training and classification sets were of the same quality then this differenc
 
 \todo[inline,color=green!25]{Chapter in progress}
 
-This chapter will cover the machine learning algorithms used in the project. The first section will talk about the \textit{baseline} classifiers, a set of standalone classification algorithms. \autoref{sec:hyperpar-optimization} will talk about how and according to which procedures the hyperparameters for these baseline algorithms were chosen. Following that, \autoref{sec:ensemble-models} will talk about ensemble models, the motivation for using them, and which techinques for creating them were employed in the project.
+This chapter will cover the machine learning algorithms used in the project. The first section will talk about the \textit{baseline} classifiers, a set of standalone classification algorithms. Each algorithm has \textit{hyperparameters}, which are parameters that regulate the functionality of different parts of each algorithm. These are unique to each, and the choice of the best hyperparameter is usually different for diverse problems. \autoref{sec:hyperpar-optimization} will talk about how and according to which procedures the hyperparameters for these baseline algorithms were chosen. Following that, \autoref{sec:ensemble-models} will talk about ensemble models, the motivation for using them, and which techinques for creating them were employed in the project.
 
 As said in \autoref{sec:rl-workflow-linking}, the linking process is one of the main processes in the record linkage workflow. This linking can either be done using a rule-based approach, or a machine learning algorithm can be used to learn when to classify a pair as a match based on the features extracted for that pair. As such, having a well tuned and well performing algorithm is essential for an effective record linkage.
 
@@ -2216,23 +2217,72 @@ This section strives to explain each baseline algorithm so that the differences 
 \subsection{Linear SVM}
 \label{sec:clf-lsvm}
 
-In its simplest sense, SVM \cite{Vapnik1995_svm, Cristianini2000_svm}, and by extension LSVM, are models that learn to segment data into two categories (a binary classifier). The model supposes that the data is sees is spread on a space of $n$ dimensions. When training, the SVM model will learn a hyper-plane (which is just an $n$-dimensional line) that separates the points in each category by a \textit{gap} which should be wide as possible. When classifying new samples, the model will just suppose these new samples are point in the space, and then just checks on which side of the hyperplane the new points are, and assign the respective label accordingly. 
+In its simplest sense, SVM \cite{Vapnik1995_svm, Cristianini2000_svm}, and by extension LSVM, are models that learn to segment data into two categories (a binary classifier). The model supposes that the data is sees is spread on a space of $n$ dimensions. When training, the SVM model will learn a hyperplane (which is just an $n-1$-dimensional line) that separates the points in each category by a \textit{gap} which should be wide as possible. The implementation of LSVM used in this project is the one provided by the LIBLINEAR \cite{Fan:2008_liblinear} library, which is accessed using the functionality provided by Scikit-Learn \cite{scikit-learn}. 
 
-SVM algorithm can also modify the input data that they get in such a way that the space representation they learn is different from the one the input data actually represents. This is usually done to map the input data to a higher dimensional space, making it \textit{"easier"} to separate by a gap. This is called the \textit{kernel trick} \cite{Cristianini2000_svm}. However, this technique won't be used in the current work since what will be used is an SVM which separates said space \textit{linearly}.
+Suppose that an SVM gets as training input a series of points in the following format: $(\vec{x}_1, y_1), ..., (\vec{x}_n, y_n)$. Where $\vec{x}_i$ is an  $n$-dimensional vector representing the point, and $y_i$ is the value saying to which class this vector belongs to: either -1 or 1. As said above, the goal is to find a hyperplane which is as far as possible from the nearest points in each group (see \autoref{fig:svm-hyperplan-and-gap}). A hyperplane can be thought of as a series of $\vec{x}$ for which the following is true:
 
+\begin{equation*}
+    \vec{w} \cdot \vec{x} - b = 0
+\end{equation*}
 
+When classifying new samples, the model will suppose these new samples are points in a space, and then just checks on which side of the hyperplane the new points are, and assign the respective label accordingly. 
 
+SVM algorithm can also modify the input data that they get in such a way that the space representation they learn is different from the one the input data actually represents. This is usually done to map the input data to a higher dimensional space, making it \textit{"easier"} to separate by a gap. This is called the \textit{kernel trick} \cite{Cristianini2000_svm, Boser:1992_kernel_trick}. However, this technique won't be used in the current work since what will be used is an SVM which separates said space \textit{linearly}. The main reason why non-linear SVMs were not used is because the training time for the current implementation offerred by Scikit-Learn is \textquote[][]{... scales at least quadratically with the number of samples and may be impractical beyond tens of thousands of samples}\footurl{https://scikit-learn.org/stable/modules/generated/sklearn.svm.SVC.html\#sklearn.svm.SVC}.
 
+\begin{figure}[H]
+  \centering \includegraphics[width=.5\textwidth]{svm_gap_image} 
+  \caption{Representation of the hyperplane found by an SVM with the gap that separates the categories. The colored points represent points in the \textit{input space}, each color is a different category. The bold points are the \textit{support vectors} found in this specific instance, which is just another name for points on the margin.}
+  \label{fig:svm-hyperplan-and-gap}
+\end{figure}
 
+If $\vec{w}$ is the vector defining the hyperplane, then the constraints which define on which side of the margin the data points should be is defined as:
 
+\begin{equation*}
+    \begin{cases}
+            w^T x_i \geq 1, & \text{if } y_i = 1 \\
+            w^T x_i \leq -1, & \text{if } y_i = -1
+    \end{cases} 
+\end{equation*}
 
-The implementation of LSVM is the one provided by the \texttt{Python Record Linkage Toolkit} \cite{recordlinkage-library}, which in turn uses the one provided by Scikit-Learn \cite{scikit-learn}. 
+The size of this margin can then be calculated by measuring the distance among the hyperplanes that pass through the points defined at the limits of this constraints (the hyperplanes that go through the support vectors): when they are $w^T x_i = 1$ and $w^T x_i  = -1$ respectively. This distance is given by:
+
+\begin{equation*}
+    \frac{2}{\|w\|}
+\end{equation*}
+
+And as such, minimizing $\|w\|$, subject to the constraints presented above, will increase the margin while keeping all points correctly classified. 
+
+This is what is called a \textbf{hard margin}, meaning that points must \textit{strictly} be on one side of the margin or the other, and is only useful if the data is linearly separable. The implementation in LIBLINEAR \cite{Fan:2008_liblinear} uses a \textbf{soft margin}, which allows the points to be inside the margin, but adds a penalty which is proportional from the distance to the correct margin. This can be defined by the following optimization problem:
+
+\begin{align*}
+    \min_{\|w\|} \frac{1}{2} w^T w + C \sum_{i=1}^n \zeta(w, x_i, y_i) \\ 
+    \zeta(w, x_i, y_i) = \max(0, 1-y_i w^T x_i)^2
+\end{align*}
+
+Where $w$ is the vector defining the hyperplane, $x_i$ and $y_i$ are the input features and label for element $i$. $C > 0$ is a penalty parameter and $\zeta(w, x_i, y_i)$ is the \textit{penalty function}, which is 0 whenever the $w^T x_i$ gives the correct label. This $w^T x_i$ is $\geq 1$ if $y_i = 1$, and is $\leq -1$ if $y_i = -1$. 
+
+The $C$ parameter regulates how important is it that points are on the correct side of the margin, a higher $C$ will increase the penalty, while a lower $C$ will decrease it. This is a \textit{hyperparameter}, whose choice must be made on a \textit{per problem} basis. 
+
+Note that in many SVM representations there is also a \textit{bias} term $B$ which is part of the equations. In this case, however, the authors of the LIBLINEAR implementation decided to append $B$ to the end of $\vec{w}$ and $\vec{x}$.
+
+The method used to solve this optimization problem is a \textit{coordinate descent method}, presented in \cite{Hsieh:2008_lsvm_coordinated_descent}. Which approximates the optimal $w$ by a at most $\epsilon$, which is also called the \textit{tolerance margin}. The approximation is done in $O(log(1/\epsilon))$ iterations. This $\epsilon$ is another hyperparameter that must be tuned for \textit{lsvm}.
+
+Once this optimum $w$ is found, then it can be easily used for classification. New points are classified as follows:
+
+\begin{equation*}
+    y_p = \begin{cases}
+            1, & \text{if } w^Tx > 0 \\
+            -1, & \text{otherwise}
+          \end{cases} 
+\end{equation*}
 
 
 \subsection{Naive Bayes}
 \label{sec:clf-nb}
 
 also implemented in  \cite{recordlinkage-library}
+
+
 
 \subsection{Logistic Regression}
 \label{sec:clf-lr}
