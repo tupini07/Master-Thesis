@@ -2353,8 +2353,28 @@ The assumption that the features are independent among themselves means that the
 \subsection{Logistic Regression}
 \label{sec:clf-lr}
 
-% implemented by sklear \cite{scikit-learn} % <- unsure if using sklear or RL
-Implemented in record linkage library \cite{recordlinkage-library}
+Even though it has \textit{regression} in its name, this model is actually a classifier, and is specifically used to make binary predictions. The probability predicted by this classifier is modelled using a logistic function. This function is defined as:
+
+\begin{equation*}
+    f(x) = \frac{L}{1 + e^{-k(x-x_0)}}
+\end{equation*}
+
+Where $L$ is the maximum value this function, which for the current application will be 1 since it is a probability. $x_0$ is the $x$ value at which the function has a value of $L/2$. And $k$ is the steepness of the curve. The function will approaches its limits asymptotically: $L$ as $x$ approaches $+ \infty$, and 0 when it approaches $- \infty$. The following figure shows the curve given by this function with $L=1$, $x_0=0$, and $k=1$.
+
+\begin{figure}[H]
+  \centering \includegraphics[width=.5\textwidth]{logistic_function} 
+\end{figure}
+
+The way the logistic regression classifier works is similar to a linear SVM, explained in \autoref{sec:clf-lsvm}. In fact, the implementation of \textit{logistic regression} used is also provided by LIBLINEAR \cite{Fan:2008_liblinear}. As \textit{lsvm}, this model also proceeds to solve an optimization problem with the data available during training, the formulation is quite similar and the only thing that changes is the \textit{loss function}:
+
+\begin{align*}
+    \min_{\|w\|} \frac{1}{2} w^T w + C \sum_{i=1}^n \zeta(w, x_i, y_i) \\ 
+    \zeta(w, x_i, y_i) = \log(1+ e^{-y_i w^Tx_i})
+\end{align*}
+
+This optimization problem is solved with the \textit{coordinate descent method}, presented in \cite{Hsieh:2008_lsvm_coordinated_descent}, and also used for \textit{lsvm}. Remember that LIBLINEAR appends the bias parameter $B$ to the end of $\vec{w}$ and $\vec{x}$, so this does not appear explicitly in the equation to be optimized.
+
+
 
 
 \subsection{Random Forest}
