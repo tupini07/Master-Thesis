@@ -2367,6 +2367,10 @@ implemented by sklear \cite{scikit-learn}
 
 implemented by keras \cite{chollet2015keras}
 
+Show study that shows SLP being used for record linkage. 
+% Should be in papers folder
+
+
 \subsection{Multi-Layer Perceptron}
 \label{sec:clf-mlp}
 
@@ -2377,16 +2381,6 @@ implemented by keras \cite{chollet2015keras}
 
 Not sure if we're going to leave this... might be unnecessary
 
-\section{Baseline Hyperparameter Optimization}
-\label{sec:hyperpar-optimization}
-
-grid search, with 5-cross validation. Maybe show hyperparameter candidates for
-completeness
-
-this was done only on one catalog/entity (discogs/musician) and the
-hyperparameters are not optimal for all
-
-for this we're using the functionality already implemented in implemented by sklear \cite{scikit-learn}
 
 
 \section{Ensemble Models}
@@ -2467,6 +2461,8 @@ However, manually finding these weights can be quite hard. That is why it is bes
 
 This chapter presents the results obtained when evaluating the different models, both baseline and ensembles. The evaluation results for both the baseline and ensemble classifiers presented in this section have been obtained by performing a 5-fold cross validation procedure on the training data (on overview of which is given in the next section). The data used to generate this results was the Wikidata training dumps and the external catalog dumps mentioned in \autoref{sec:orig-shape-of-data}.
 
+Before training and evaluating the baseline models, a grid search was performed to find the best hyperparameters for each of these. This is explained in \autoref{sec:hyperpar-optimization}.
+
 The metrics measured during evaluation are: \textit{F1 score}, \textit{Precision}, and \textit{Recall}. These have been previously explained in \autoref{sec:rl-workflow-evaluation}. 
 
 Note that this section includes only the results obtained during evaluation. In the appendix, specifically in \autoref{sec:apx-classification-results} a brief analysis of the distribution of predictions obtained when predicting on the classification set can be found.
@@ -2477,22 +2473,22 @@ Besides presenting the results, \autoref{sec:sec:comparative-evaluation} will st
 \section{Cross Validation}
 \label{sec:cross-validation}
 
-When evaluating the performance of a given machine learning algorithm, it is desirable to know what the performance of said algorithm will be on the real world data\footnote{also known as \textit{classification} data, of classification set} the one for which the final values want to be known. However, it is impossible to do so, because this would require to have a labelled version of this real world data, and if that were the case then there would be no sense in trying to predict the labels. 
+When evaluating the performance of a given machine learning algorithm, it is desirable to know what the performance of said algorithm will be on the real world data\footnote{also known as \textit{classification} data, or classification set} the one for which the final values want to be known. However, it is impossible to do so, because this would require to have a labelled version of this real world data. 
 
-Ideally, the training data should come from a distribution similar to the classification data, if not the performance of the algorithm will not be satisfactory when applied to the classification set. This assumption, that the training and classification datasets are \textbf{i.i.d.}\footnote{Independent and identically distributed.} \cite{clauset2011brief}, allows us to take a piece of the training set and set it aside to act as an \textit{approximation} of the classification set. This piece we set aside is called the \textit{validation set}. 
+Ideally, the training data should come from a distribution similar to the classification data, if not the performance of the algorithm will not be satisfactory when applied to the classification set. This assumption, that the training and classification datasets are \textbf{i.i.d.}\footnote{Independent and identically distributed.} \cite{clauset2011brief}, allows us to take a piece of the training set and set it aside to act as an \textit{approximation} of the classification set. This piece we set aside is called the \textit{test set}. 
 
-The way this can be used is that we separate the whole training data $D$ into a \textit{validation set} $V$ and a \textit{training set} $T$ such that:
+The way this can be used is that we separate the whole training data $D$ into a \textit{test set} $S$ and a \textit{training set} $T$ such that:
 
 \begin{align*}
-    V &\cup T = D \\ 
-    V &\cap T = \varnothing
+    S &\cup T = D \\ 
+    S &\cap T = \varnothing
 \end{align*}
 
 The learning algorithm is then trained only on $T$, and finally an estimate of the error the algorithm will get when predicting the real classification data can be obtained by measuring the error obtained when predicting $V$. 
 
-It is important that the conditions mentioned above are respected for this to work. Especially $V \cap T = \varnothing$, since if any element $V_i \in T$ then the algorithm will have seen the actual label of said element during training, and this affects the supposition that the classification set is unknown to the algorithm at prediction time. The algorithm may have learned the label for said item, and as such will affect the final error measure on the validation set by making it look better than it actually is.
+It is important that the conditions mentioned above are respected for this to work. Especially $S \cap T = \varnothing$, since if any element $S_i \in T$ then the algorithm will have seen the actual label of said element during training, and this may influence the estimate performance calculated on the test set since the classification set is unknown to the algorithm at prediction time. The algorithm may have learned the label for said item, and as such will affect the final error measure on the validation set by making it look better than it actually is.
 
-Another consideration to keep in mind is that the actual validation set should not be used to tune the hyperparameters of the algorithm, since this will only make the algorithm perform better in the validation data, but not necessarily better in the classification data. Once again, this may cause the performance of the algorithm to seem better than it actually is. To tune hyperparameters what can be done is separating the training data into a further third set, called the \textit{test set} $S$, which is also subject to $S \cap T \cap V = \varnothing$. With this, now the training can be done on $T$, hyperparameters can be tuned to minimize the error on $V$, and finally the estimate of the classification set error can be obtained by evaluating the algorithm on $S$.
+Another consideration to keep in mind is that the actual validation set should not be used to tune the hyperparameters of the algorithm, since this will only make the algorithm perform better in the validation data, but not necessarily better in the classification data. Once again, this may cause the performance of the algorithm to seem better than it actually is. To tune hyperparameters what can be done is separating the training data into a further third set, called the \textit{validation set} $V$, which is also subject to $V \cap T \cap S = \varnothing$. With this, now the training can be done on $T$, hyperparameters can be tuned to minimize the error on $V$, and finally the estimate of the classification set error can be obtained by evaluating the algorithm on $S$.
 
 In some cases, however, this is not desirable since it means the training data will be split three ways, and a big part of it will not be actually seen by the model at all. An example case may be when there is only a small training set, or the algorithm being used needs a lot of data to be trained properly (e.g. when using a neural network).
 
@@ -2508,9 +2504,10 @@ for i in 0..(*$k$*):
     (*$T, V$*) (*$\leftarrow$*) splitTrainingData((*$D$*))
     
     (*$V_{features}, V_{labels}$*) (*$\leftarrow$*) getFeaturesAndLabels((*$V$*))
-    
+    (*$T_{features}, T_{labels}$*) (*$\leftarrow$*) getFeaturesAndLabels((*$T$*))
+
     model = initializeClassifier()
-    model.fit((*$T$*)) # train the classifier
+    model.fit((*$T_{features}, T_{labels}$*)) # train the classifier
     
     predictions = model.predict((*$V_{features}$*))
     
@@ -2521,6 +2518,112 @@ finalError = average(errors)
 \end{lstlisting}
 
 Note that in this example \textit{error} was mentioned as the metric that is being extracted. However, any metric which depends on $V$ can be extracted in such a way. For this work, the metrics obtained during the cross validation procedure are \textit{F1-Score}, \textit{Precision}, and \textit{Recall}.
+
+
+\section{Baseline Hyperparameter Optimization}
+\label{sec:hyperpar-optimization}
+
+As seen in \autoref{chap:algorithms}, all classifiers have hyperparameters which can be tuned to change the behaviour of each algorithm. Setting the correct value for these hyperparameters is essential to get a good performance from them. 
+
+Finding the best hyperparameter for a model usually involves a lot of manual tinkering, trying different combinations until the best set of hyperparameters is found. This procedure can actually be automated by using the \textit{Grid Search} \cite{claesen2015hyperparameter} functionality provided by Scikit-Learn \cite{scikit-learn}. In grid search, a set of possible values for each hyperparameter is provided, and the algorithm will go through each possible combination of these and tries them on the classifier. 
+
+The classifier is evaluated using each combination of hyperparameters, and finally the combination which provided the best evaluation performance is returned. This is a lengthy process but since the evaluations are independent of each other they can be done in parallel \cite{Bergstra:2012_random_gs}.
+
+For the current project, the evaluation of the hyperparameters was done by performing a 5-fold cross validation with the classifier initialized using the specified parameters. After the 5-fold cross validation is complete, the average performance of these is returned. The \textit{grid search} eventually returns the combination of hyperparameters which gave the best \textit{average} performance while executing the \textit{cross validation}.
+
+Since the grid search procedure, plus the 5-fold cross validation, is quite a lengthy procedure, it was chosen to perform this optimization by only evaluating the performance of the models on \textit{Discogs/Musician}. The procedure searches for the combination of hyperparameters which makes the classifier give the best \textit{F1} score.
+
+The following tables show the hyperparameters tried for each for each baseline algorithm. In bold are the hyperparameter which were chosen as the best by the grid search procedure. 
+
+\subsubsection{Naive Bayes}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{l|l}
+alpha           & binarize     \\ \hline
+1               & 0.9          \\
+0.1             & 0.8          \\
+0.01            & 0.7          \\
+0.001           & 0.6          \\
+\textbf{0.0001} & 0.5          \\
+                & 0.4          \\
+                & 0.3          \\
+                & \textbf{0.2} \\
+                & 0.1     
+\end{tabular}
+\end{table}
+
+
+\subsubsection{Logistic Regression}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{l|l|l|l|l}
+C            & class\_weight & max\_iter    & solver             & tol            \\ \hline
+100          & balanced      & 200          & sag                & 1e-05          \\
+10           & \textbf{None} & \textbf{100} & saga               & 0.0001         \\
+\textbf{1.0} &               &              & lbfgs              & \textbf{0.001} \\
+0.1          &               &              & \textbf{liblinear} &                \\
+0.01         &               &              &                    & 
+\end{tabular}
+\end{table}
+
+
+\subsubsection{Linear SVM}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{l|l|l|l}
+C            & dual          & max\_iter     & tol            \\ \hline
+100          & False         & 2000          & 1e-05          \\
+10           & \textbf{True} & \textbf{1000} & 0.0001         \\
+\textbf{1.0} &               &               & \textbf{0.001} \\
+0.1          &               &               &                \\
+0.01         &               &               & 
+\end{tabular}
+\end{table}
+
+
+\subsubsection{Random Forest}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{l|l|l|l}
+bootstrap     & criterion        & max\_features & n\_estimators \\ \hline
+False         & \textbf{entropy} & \textbf{None} & \textbf{500}  \\
+\textbf{True} & gini             & log2          & 350           \\
+              &                  & sqrt          & 200           \\
+              &                  &               & 100          
+\end{tabular}
+\end{table}
+
+
+\subsubsection{Single Layer Perceptron}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{l|l|l|l}
+activation       & batch\_size  & epochs        & optimizer      \\ \hline
+\textbf{sigmoid} & 2048         & 3000          & \textbf{Nadam} \\
+                 & 1024         & 2000          & Adadelta       \\
+                 & 512          & \textbf{1000} & RMSprop        \\
+                 & \textbf{256} & 100           & adam     
+\end{tabular}
+\end{table}
+
+
+\subsubsection{Multi-Layer Perceptron}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{l|l|l|l|l|l}
+batch\_size  & epochs        & hidden\_activation & hidden\_layer\_dims    & optimizer         & output\_activation \\ \hline
+\textbf{512} & 2000          & \textbf{selu}      & {[}128, 32, 32{]}      & Nadam             & \textbf{sigmoid}   \\
+             & \textbf{1000} & tanh               & {[}256, 128, 32{]}     & \textbf{Adadelta} &                    \\
+             &               & relu               & \textbf{{[}128, 32{]}} & adam              & 
+\end{tabular}
+\end{table}
+
 
 
 \section{Baseline Evaluation}
