@@ -2325,26 +2325,35 @@ Finally, the original formulation of the probability of a class given the input 
 
 The denominator $P(x_1, x_2, ...,x_n)$ is constant given the input, and as such it just scales the probability of the predicted class but holds no actual information about what the class is. To find the class it is only necessary to see which, among the possible classes, has the higher probability. This means that the denominator can be safely ignored.
 
-\begin{equation*}
+\begin{equation}
     \hat{y} = \underset{y}{\mathrm{argmax}}\ P(y) \prod_{i=1}^n P(x_i | y)
-\end{equation*} 
+    \label{eq:naive-bayes}
+\end{equation} 
 
 The first term $P(y)$ is simply the frequency of each class: what percentage of the time this class is present in the training data. And the second parameter is defined as follows:
 
 \begin{equation*}
-    % i == p_ki
     P(x_i | y) = P(i|y)x_i + (1 - P(i|y))(1-x_i)
 \end{equation*}
 
-Where $P(i|y)$ is the probability of having the feature $i$ appear in the class $y$: the percentage of times $i$ has been present in class $y$ in the training data. In the equation above, the first term, $P(i|y)x_i$, is zero when $x_i = 0$, while the second term is zero when $x_i = 1$. The first term indicates the probability of $i$ appearing in class $y$, while the second term is the complement: the probability of not having feature $i$ in class $y$. 
+In the equation above, the first term, $P(i|y)x_i$, is zero when $x_i = 0$, while the second term is zero when $x_i = 1$. The first term indicates the probability of $i$ appearing in class $y$, while the second term is the complement: the probability of not having feature $i$ in class $y$. 
+
+$P(i|y)$ is the smoothed probability of having the feature $i$ appear in the class $y$. This is calculated as follows 
+
+\begin{equation*}
+    P(i|y) = \frac{N_{yi} + \alpha}{N_y + \alpha 2}
+\end{equation*}
+
+Where $N_{yi} = \sum_{x \in T} x_i$ is the count of all the times feature $i$ appears in class $y$ in the training set $T$. And $N_y = \sum_{i=1}^n N_{yi}$ is the total number of features for $y$ in the training set. $\alpha$ is a hyperparameter of the model and must be set accordingly. However, it is common to set its value $>0$ to account for the problem of getting a feature not seen before. If $\alpha = 0$ and $N_{yi} = 0$ ($i$ has never been seen for $y$ in the training set), then when evaluating \autoref{eq:naive-bayes} the value for $y$ would be 0.
 
 The assumption that the features are independent among themselves means that the probabilities mentioned above can be separately calculated for each feature. This makes naive bayes is efficient even when the input has a high number of dimensions \cite{zhang2004_bayes_optimality}.
+
 
 
 \subsection{Logistic Regression}
 \label{sec:clf-lr}
 
-% implemented by sklear \cite{scikit-learn} % <- unsure if using sklear on RL
+% implemented by sklear \cite{scikit-learn} % <- unsure if using sklear or RL
 Implemented in record linkage library \cite{recordlinkage-library}
 
 
