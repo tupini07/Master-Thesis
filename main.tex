@@ -2265,9 +2265,9 @@ The $C$ parameter regulates how important is it that points are on the correct s
 
 Note that in many SVM representations there is also a \textit{bias} term $B$ which is part of the equations. In this case, however, the authors of the LIBLINEAR implementation decided to append $B$ to the end of $\vec{w}$ and $\vec{x}$.
 
-The method used to solve this optimization problem is a \textit{coordinate descent method}, presented in \cite{Hsieh:2008_lsvm_coordinated_descent}. Which approximates the optimal $w$ by a at most $\epsilon$, which is also called the \textit{tolerance margin}. The approximation is done in $O(log(1/\epsilon))$ iterations. This $\epsilon$ is another hyperparameter that must be tuned for \textit{lsvm}.
+The method used to solve this optimization problem is a \textit{coordinate descent method}, presented in \cite{Hsieh:2008_lsvm_coordinated_descent}. Which approximates the optimal $\vec{w}$ by a at most $\epsilon$, which is also called the \textit{tolerance margin}. The approximation is done in $O(log(1/\epsilon))$ iterations. This $\epsilon$ is another hyperparameter that must be tuned for \textit{lsvm}.
 
-Once this optimum $w$ is found, then it can be easily used for classification. New points are classified as follows:
+Once this optimum $\vec{w}$ is found, then it can be easily used for classification. New points are classified as follows:
 
 \begin{equation*}
     y_p = \begin{cases}
@@ -2280,8 +2280,65 @@ Once this optimum $w$ is found, then it can be easily used for classification. N
 \subsection{Naive Bayes}
 \label{sec:clf-nb}
 
-also implemented in  \cite{recordlinkage-library}
+The implementation used for this classifier is that of \textit{Bernoulli Naive Bayes} \cite{McCallum98acomparison_bayes, Metsis06spamfiltering_bayes} classifier provided by the Scikit-Learn library \cite{scikit-learn}. It expects the features in the input vector $\vec{x}$ to be composed of only \textit{binary values} (\textit{1 or 0}). If the value of a feature is not binary (e.g. 0.6) then it is converted to binary by checking if the value is above a certain threshold \textit{binarize}, if it is then it is converted to 1, and 0 otherwise. This threshold is one of the hyperparameters of this classifier. 
 
+For this model, it is supposed that all features in a feature vector are statistically independent \cite{McCallum98acomparison_bayes} given the class said feature vector represents. 
+
+Suppose that the input to the model is a feature vector $\vec{x}$ where $x_i$ represents the presence of a specific feature $i$ in the vector (either 0 or 1). Suppose also that $y$ stands for one of the possible classes $\vec{x}$ can be assigned to. The probability of getting a class $y$ given the feature vector $\vec{x}$ received as input is:
+
+\begin{equation*}
+    P(y | \vec{x} ) = P(y | x_1, x_2, ..., x_n)
+\end{equation*}
+
+Using Bayes theorem this can be expressed as:
+
+\begin{equation*}
+    P(y | \vec{x}) = \frac{P(y)P(\vec{x} | y)}{P(\vec{x})}
+\end{equation*}
+
+Where $P(y)$ is the probability of a given class, and is termed the \textit{prior}. $P(\vec{x} | y)$ is the probability of seeing the specific feature vector considering that vector is of class $y$, this term is named the \textit{likelihood}. Finally, $P(\vec{x})$, which is named the \textit{evidence}, shows how likely is it, in general, to see the given feature vector. 
+
+Since the interest is in finding out which is the actual $y$. Only the \textit{prior} and \textit{likelihood} are necessary for this. The \textit{evidence} can be thought of as a \textit{scaling} constant. By using the \textit{chain rule}, the numerator in the equation above can be presented as the joint probability $P(y)P(\vec{x} | y) = P(x_1, x_2, ..., x_n, y)$. And again by using the chain rule, this can be expressed as:
+
+\begin{equation*}
+    P(x_1, x_2, ..., x_n, y) = P(x_1 | x_2, x_3, ..., x_n, y) P(x_2,x_3,...,x_n, y)
+\end{equation*}
+
+This process can be continued until the joint probability is expanded to:
+
+\begin{equation*}
+    P(x_i | x_{i+1}, x_{i+2}, ..., x_n, y) ... P(x_{n-1}| x_n, y) P(x_n | y) P(y)
+\end{equation*}
+
+As said before, the assumption is that all these $x_i$ are independent among themselves given the class $y$ (this is the \textit{naive} assumption in \textit{Naive Bayes}). Because of this, the chain of probabilities above can be shortened to:
+
+\begin{align*}
+    P(y)P(\vec{x} | y) & \approx P(x_i | y) P(x_{i+1} | y) ... P(x_n | y) P(y) \\
+                           &= P(y) \prod_{i=1}^n P(x_i | y)
+\end{align*}
+
+Finally, the original formulation of the probability of a class given the input feature vector can be expressed as
+
+\begin{equation*}
+    P(y) | \vec{x}) = \frac{P(y)  \prod_{i=1}^n P(x_i | y)}{P(x_1, x_2, ...,x_n)}
+\end{equation*}
+
+The denominator $P(x_1, x_2, ...,x_n)$ is constant given the input, and as such it just scales the probability of the predicted class but holds no actual information about what the class is. To find the class it is only necessary to see which, among the possible classes, has the higher probability. This means that the denominator can be safely ignored.
+
+\begin{equation*}
+    \hat{y} = \underset{y}{\mathrm{argmax}}\ P(y) \prod_{i=1}^n P(x_i | y)
+\end{equation*} 
+
+The first term $P(y)$ is simply the frequency of each class: what percentage of the time this class is present in the training data. And the second parameter is defined as follows:
+
+\begin{equation*}
+    % i == p_ki
+    P(x_i | y) = P(i|y)x_i + (1 - P(i|y))(1-x_i)
+\end{equation*}
+
+Where $P(i|y)$ is the probability of having the feature $i$ appear in the class $y$: the percentage of times $i$ has been present in class $y$ in the training data. In the equation above, the first term, $P(i|y)x_i$, is zero when $x_i = 0$, while the second term is zero when $x_i = 1$. The first term indicates the probability of $i$ appearing in class $y$, while the second term is the complement: the probability of not having feature $i$ in class $y$. 
+
+The assumption that the features are independent among themselves means that the probabilities mentioned above can be separately calculated for each feature. This makes naive bayes is efficient even when the input has a high number of dimensions \cite{zhang2004_bayes_optimality}.
 
 
 \subsection{Logistic Regression}
