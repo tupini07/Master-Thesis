@@ -2434,24 +2434,74 @@ In more general terms, the above can be seen as a way in which to measure the to
     IG(S,A) = H(S) - H(S | A)
 \end{equation*}
 
-The attribute on which each node splits is then selected as:
+The attribute on which each node splits, for a given dataset, is then selected as:
 
 \begin{equation*}
     \underset{A}{\mathrm{argmax}}\ IG(S, A)
 \end{equation*}
 
 
+
 \subsection{Single Layer Perceptron}
 \label{sec:clf-slp}
 
-implemented by keras \cite{chollet2015keras}
+The Single Layer Perceptron (SLP) \cite{Goodfellow-et-al-2016} is an algorithm which can learn a linear function by observing some data. Single layer perceptions have also been used with success in record linkage problems in \cite{Wilson2011_slp_in_rl}. The implementation of SLP used is provided by the Keras library \cite{chollet2015keras}.
 
-Show study that shows SLP being used for record linkage. 
-% Should be in papers folder
+For a series on inputs ($\vec{x}, y$), where $\vec{x}$ are vectors of features and $y$ are the classes, an SLP can be thought of a model which learns the following parameters $\vec{w}$ and $b$:
+
+\begin{equation*}
+    y_i \approx \lambda(\vec{w} \cdot \vec{x} + b)
+\end{equation*}
+
+Where $\cdot$ is the \textit{dot product} between the input vector and the \textit{weights vector}. $\lambda$ is called the \textit{activation function} and is usually a nonlinear transformation on the weighted sum coming from the inputs. 
+
+The activation function used for this project is the \textit{sigmoid} function, which is very similar to the logistic function defined in \autoref{sec:clf-lr}, and is defined as $\sigma(x) = \frac{1}{1 + e ^ {-x}}$. Using a sigmoid as the activation function allows to interpret the output as the probability of belonging to a class.
+
+The following figure shows an example of a SLP with $\|x\| = \|w\| = 4$.
+
+\begin{figure}[H]
+  \centering \includegraphics[width=.5\textwidth]{slp_example} 
+  \caption{Example of an SLP with 4 inputs.}
+  \label{fig:slp-example}
+\end{figure}
+
+Below is the algorithm that can be used to learn the parameters $\vec{w}$ and $b$ from samples ($x_i$, $y_i$) in a training set $T$. Note that $y_i'$ is the prediction the perceptron gives for $x_i$. $\delta$ is the learning rate, and is a scalar which regulates how fast the weights are updated. \textit{Epochs} is the amount of times the training set will be processed.
+
+
+\begin{lstlisting}
+w, b = initializeWAndB() # initialized to small random values 
+
+for e in 0..(*\textit{epochs}*):
+    
+    for (*$x_i, y_i$*) in (*$T$*):
+        # get prediction
+        (*$y_i'$*) = (*$\lambda(\vec{w} \cdot \vec{x} + b)$*)
+        (*$dy = y_i - y_i'$*)
+        
+        # tune the weights based on the error
+        (*$w_j = w_j + \delta * dy * x_{i,j}$*)
+        
+        # update the bias
+        (*$b = b + \delta * dy$*)
+
+\end{lstlisting}
+
+
+SLPs are quite flexible, however it has been shown that they only work well for linearly separable data. In \cite{minsky2017_paupert_xor} it was shown that SLPs cannot learn the XOR function.   
+
+
 
 
 \subsection{Multi-Layer Perceptron}
 \label{sec:clf-mlp}
+
+
+can be used to approximate any function $f*$ which maps an input $x$ to a space $y$
+
+Given enough training samples ($\vec{x_i}$, $y_i$), where $\vec{x_i}$ is a feature vector received as input and $y_i$ is the label for said feature vector, a SLP can learn the parameters $\theta$ for a function $f$ such that $y_i \approx f(\vec{x_i}; \theta)$. This parameter $\theta$ is optimized so that the value of the function is as close as possible to the target $y_i$. 
+
+In its most basic form, $\theta$ can be thought of as a \textit{weighting value}, with $\theta_j$ being the parameter applied to the element $x_j$ of the input vector. The figure below gives an example.
+
 
 implemented by keras \cite{chollet2015keras}
 
