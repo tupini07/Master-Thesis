@@ -2530,56 +2530,53 @@ In the current project the used structure of MLP has 4 layers: an input layer, a
 \section{Ensemble Models}
 \label{sec:ensemble-models}
 
-All of the baseline classifiers presented in the previous section are able to capture specific facets of the data. For example, some may perform better for certain distribution of features and some for others. In the first version of \textit{soweego}, the output of one model is not joined with that of another, and as such we're forced to pick the best as the one we want to use. This decision is quite difficult, and potentially impossible, since no model may perform better in all cases. 
+All of the baseline classifiers presented in the previous section are able to capture specific facets of the data. For example, some may perform better for certain distribution of features and some for others. When using only models from the set of \textit{baseline models} presented above, one by definition needs to choose one of the algorithms and ignores the predictions of the others. Besides this, the task of deciding which parameter is the \textit{best} can be quite difficult, since no model may perform better in all cases. 
 
-Luckily there is the possibility to use more than one model at once, and join the predictions of these \textit{base classifiers} in some way. This is called an \textit{ensemble classifier}. As shown in this section, there are multiple kinds of ensemble classifiers, with the difference being mainly on how they're constructed and how the predictions of the base classifiers are joined.
+Luckily there is the possibility to use more than one model at once, and join the predictions of these \textit{base classifiers} in some way. This is called an \textit{ensemble classifier} \cite{zhou2012ensemble}. There are multiple kinds of ensemble classifiers \cite{opitz1999popular,dietterich2000ensemble}, with the difference being mainly on how they're constructed and how the predictions of the base classifiers are joined. However, in this work only \textit{bagging} and \textit{stacked} ensembles will be explored.
 
-%Awesome ensembles page on GH has some nice links
+\autoref{sec:motivation-ensemble} will explain the motivation for using an ensemble of models. Following that, \autoref{sec:voting-ensembles} and \autoref{sec:stacked-ensembles} will explain the voting and stacked ensembles used in the project.
 
-% Should mention boosting even if're we're not using it?
-
-\todo[inline]{ Important! \\
- gate classifier \\ 
- stack classifier \\
- vch \\
- vcs \\ 
- And their structure
-}
 
 \subsection{Motivation} 
 \label{sec:motivation-ensemble}
 
-Ensemble classifiers were originally introduced in CITE, and have since seen widespread usage in many areas CITE(OVERVIEW ENSEMBLE MODELS). It is quite common to see ensemble models win machine learning competitions on Kaggle CITE. 
+As said in the introduction to this section, different base models may capture different aspects of particular problem. This means that some models may work better than others in some situations. Using an ensemble allows us to mix all of the base model's predictions so that the final classification is as good as possible. It has been shown that joining the predictions of multiple classifiers trained to solve the same problem usually improves the result \cite{opitz1999popular,Hansen1990,Schapire1990}.
 
-As said in the introduction to this section, different base models may capture different aspects of particular problem. This means that some models may work better than others in some situations. Using an ensemble allows us to mix all of the base model's predictions so that the final classification is as good as possible. 
+Another way this can be seen is that the base classifiers may have a high bias, or high variance, and joining them (e.g. averaging the results) reduces said bias/variance \cite{Breiman1996_bagging_predictors}. As a side note, it is desirable for a machine learning algorithm to have a both low \textit{variance} and a low \textit{bias} \cite{Munro2011_bias_variance_decomp}. However, obtaining both of these is very difficult. A model with high variance \textit{variance} typically overfits the noise in the data, and a model with a high bias tends to underfit the data. 
 
-Another way this can be seen is that the base classifiers may have a high bias, or high variance, and joining them (e.g. averaging the results) reduces said bias/variance \cite{Breiman1996_bagging_predictors}. As a side note, it is desirable for a machine learning algorithm to have a low \textit{variance} and a low \textit{bias} \cite{Munro2011_bias_variance_decomp}. However, obtaining both of these is very difficult. A model with high variance \textit{variance} typically overfits the noise in the data, and a model with a high bias tends to underfit the data. 
+From the above also follows that a good ensemble is one where the base classifiers are as diverse as possible \cite{zhou2012ensemble}. 
 
-From the above also follows that a good ensemble is one where the base classifiers are as diverse as possible CITE. However, it has been shown CITE, that the performance of the ensemble starts increasing asymptotically after a number of base classifiers. 
+Ensemble models are commonly seen in the top places of machine learning competitions \cite{Bell:2007_netflix_competition}. They have also been successfully employed in diverse areas \cite{zhou2012ensemble} like computer vision, computer security, intrusion detection, in medical applications, among others.
 
+\subsection{Voting Based Ensembles}
+\label{sec:voting-ensembles}
 
-Even though the performance increases, and predictions from the various base classifiers can be joined, there is now the problem of training multiple algorithms. In some cases, especially when the datasets are very large, and/or the algorithms used are complex, the training can take quite some time.
-
-
-% --- 
-
-Principles of ensembles reduce variance, join predictive stuff, etc (although
-this is probably talked about in the previous section)
-
-- Aggregation - Bootstrapping
-     
-\subsection{Bagging}
-\label{sec:ens-bagging}
+Voting based ensembles are a kind of \textit{bagging} ensembles \cite{zhou2012ensemble}. The name of bagging is short for \textit{bootstrapping} and \textit{aggregating}.
 
 % interesting notions https://towardsdatascience.com/ensemble-methods-bagging-boosting-and-stacking-c9214a10a205
-The name of bagging is short for \textit{bootstrapping} and \textit{aggregating}
+
 
 \cite{Breiman1996_bagging_predictors}
 
 % this is implemented by the sklearn library
 
-\subsection{Gated}
-\label{sec:ens-gated}
+\subsubsection{Hard Voting Classifier}
+\subsubsection{Soft Voting Classifier}
+
+
+\subsection{Stack Based Ensembles}
+\label{sec:stacked-ensembles}
+
+\subsubsection{Stacked Classifier}
+
+% http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.56.1533
+% http://statistics.berkeley.edu/sites/default/files/tech-reports/367.pdf
+% Doc diss on super learnear https://www.stat.berkeley.edu/~ledell/papers/ledell-phd-thesis.pdf
+
+% this is implemented by the mlens library
+
+
+\subsubsection{Gated Classifier}
 
 Gated ensembles can be thought of as a mix between a stacked and a bagging ensembles. As in the bagging ensemble, the \textit{gated} ones also have a single pool of classifier whose predictions are joined to together. However, unlike with bagging, the gated ensemble uses a meta layer to weight this predictions (as does the stacked ensemble).
 
@@ -2591,14 +2588,7 @@ However, manually finding these weights can be quite hard. That is why it is bes
 
 % this is implemented by the mlens library
 
-\subsection{Stacking}
-\label{sec:ens-stacking}
 
-% http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.56.1533
-% http://statistics.berkeley.edu/sites/default/files/tech-reports/367.pdf
-% Doc diss on super learnear https://www.stat.berkeley.edu/~ledell/papers/ledell-phd-thesis.pdf
-
-% this is implemented by the mlens library
 
 \chapter{Results}
 \label{chap:results}
