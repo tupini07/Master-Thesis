@@ -253,12 +253,12 @@ flexible and allows for a quick and rich construction of knowledge.
 \chapter{State of the art}
 \label{chap:state-of-the-art}
 
-This chapter will mainly cover \textit{Record Linkage}, namely a standard method to link a pair of databases. The next section will give a brief introduction to the record linkage workflow and mention some of the most common terms used in this document. \autoref{sec:rl-as-a-workflow} will show how record linkage can be thought of as a pipeline, and every step will be explained in depth. Finally, \autoref{sec:rl-related-work} will mention related work.
+This chapter will mainly cover \textit{Record Linkage}, a standard method used to link a pair of databases. The next section will give a brief introduction to the record linkage workflow, and mention some of the most common terms used in this document. \autoref{sec:rl-as-a-workflow} will show how record linkage can be thought of as a pipeline, and every step will be explained in depth. Finally, \autoref{sec:rl-related-work} will mention related work.
 
 \section{Introduction to Record Linkage}
 \label{sec:rl-intro}
 
-\textit{Record linkage} is commonly used when there is a need for data integration. This is achieved by finding pairs of records which represent the same underlying \textit{entity}, and by joining them according to previously defined set of criteria. It is possible to apply the technique both for connecting a pair of databases (which we call \textit{catalogs} in our use case) and for removing duplicates from one single catalog.
+\textit{Record linkage} is commonly used when there is a need for data integration. This is achieved by finding pairs of records which represent the same underlying \textit{entity}, and by joining them according to a previously defined set of criteria. It is possible to apply the technique both for, connecting a pair of databases (which we call \textit{catalogs} in this use case) and for removing duplicates from one single catalog.
 
   
 
@@ -2353,34 +2353,93 @@ The assumption that the features are independent among themselves means that the
 \subsection{Logistic Regression}
 \label{sec:clf-lr}
 
-Even though it has \textit{regression} in its name, this model is actually a classifier, and is specifically used to make binary predictions. The probability predicted by this classifier is modelled using a logistic function. This function is defined as:
-
+Even though it has \textit{regression} in its name, this model is actually a classifier, and is specifically used to make binary predictions. To clarify the meaning of \textit{regression}, it is a machine learning task in which the predicted output is continuous (i.e. a numerical value) instead of a class label. The probability predicted by this classifier is modelled using a logistic function. This function is defined as:
+% the goal...
 \begin{equation*}
     f(x) = \frac{L}{1 + e^{-k(x-x_0)}}
 \end{equation*}
 
-Where $L$ is the maximum value this function, which for the current application will be 1 since it is a probability. $x_0$ is the $x$ value at which the function has a value of $L/2$. And $k$ is the steepness of the curve. The function will approaches its limits asymptotically: $L$ as $x$ approaches $+ \infty$, and 0 when it approaches $- \infty$. The following figure shows the curve given by this function with $L=1$, $x_0=0$, and $k=1$.
+Where $L$ is the maximum value this for function, which for the current application will be 1 since it is a probability. $x_0$ is the value on the $x$-axis at which the function has a value of $L/2$. And $k$ is the steepness of the curve. The function will approaches its limits asymptotically: $L$ as $x$ approaches $+ \infty$, and 0 when it approaches $- \infty$. The following figure shows the curves given by this function with $L=1$, $x_0=0$, and different values for $k$.
 
 \begin{figure}[H]
   \centering \includegraphics[width=.5\textwidth]{logistic_function} 
 \end{figure}
 
-The way the logistic regression classifier works is similar to a linear SVM, explained in \autoref{sec:clf-lsvm}. In fact, the implementation of \textit{logistic regression} used is also provided by LIBLINEAR \cite{Fan:2008_liblinear}. As \textit{lsvm}, this model also proceeds to solve an optimization problem with the data available during training, the formulation is quite similar and the only thing that changes is the \textit{loss function}:
+The implementation of logistic regression used for this project works in a similar way as linear SVM, explained in \autoref{sec:clf-lsvm}. In fact, this implementation is also provided by LIBLINEAR \cite{Fan:2008_liblinear}. As \textit{lsvm}, this model proceeds to solve an optimization problem with the data available during training, the formulation is quite similar and the only thing that changes is the \textit{loss function}:
 
 \begin{align*}
     \min_{\|w\|} \frac{1}{2} w^T w + C \sum_{i=1}^n \zeta(w, x_i, y_i) \\ 
-    \zeta(w, x_i, y_i) = \log(1+ e^{-y_i w^Tx_i})
+    \zeta(w, x_i, y_i) = \log(1+ e^{-y_i w^T x_i})
 \end{align*}
 
-This optimization problem is solved with the \textit{coordinate descent method}, presented in \cite{Hsieh:2008_lsvm_coordinated_descent}, and also used for \textit{lsvm}. Remember that LIBLINEAR appends the bias parameter $B$ to the end of $\vec{w}$ and $\vec{x}$, so this does not appear explicitly in the equation to be optimized.
+This optimization problem is solved with the \textit{coordinate descent method}, presented in \cite{Hsieh:2008_lsvm_coordinated_descent} (which is the same method used to solve the optimization for \textit{lsvm}). Remember that LIBLINEAR appends the bias parameter $B$ to the end of $\vec{w}$ and $\vec{x}$, so this does not appear explicitly in the equation to be optimized. $y_i$ is the class label and should be either -1 or 1. Finally, as for \textit{lsvm}, $C$ is a penalty constant.
 
+The goal is to find the parameters, in this case $\vec{w}$, which best describes best the logistic function that represents the actual probability of an event given the an input vector.  
+
+After training the probability \cite{Fan:2008_liblinear} of a class $y$ given the input vector $\vec{x}$ can be obtained by evaluating the logistic function with the parameters found during optimization.
+
+\begin{equation}
+    P(y | \vec{x}) = \frac{1}{1+ e^{-y w^T x}}
+\end{equation}on
 
 
 
 \subsection{Random Forest}
 \label{sec:clf-rgc}
 
-implemented by sklear \cite{scikit-learn}
+An \textit{ensemble forest} \cite{breiman2001random_forest} is a collection of \textit{decision trees} classifiers. This is actually an ensemble, specifically a \textit{bagging ensemble}, which will be explained in further detain in \autoref{sec:ensemble-models}. The \textit{decision tree} classifier will be explained shortly.
+
+The idea behind \textit{random forest} is to have a collection of \textit{decision trees} which have been trained on different subsets of the data. The idea is to take simple, and potentially unstable models, and join their predictions so that the final predictor has less variace \cite{breiman1996_perturbing}.
+
+When creating a random forest, a collection of $k$ decision trees is created. If the training data $T$ is composed of $n$ samples then each decision tree is trained on $n$ samples. However, instead of giving all trees the same set of samples, what is done is that a new training set $T_i'$ is obtained for each tree. This $T_i'$ is constructed by random sampling, with replacement, until the amount of samples in $T_i'$ is the same as in $T$. \textit{With replacement} means that sampling the same entry from $T$ multiple times is allows. 
+
+Each \textit{decision tree} is trained individually, on their own training set $T_i'$. And when it comes the time to predict the label for a feature vector $x$, the prediction of all decision trees will be asked for, and these will be averaged to get the final prediction \cite{scikit-learn}.
+
+The implementation of \textit{random forest}, and of \textit{decision trees}, comes from the Scikit-Learn \cite{scikit-learn} library.
+
+
+\subsubsection{Decision Tree}
+
+A \textit{decision tree}, as the name implies, is just a series of simple \textit{decisions rules} which are implied from the data during training. These rules are of form: \textit{if something then do this, otherwise do this other thing}. Most commonly than not, decision trees have multiple levels, meaning that these decisions rules are nested. 
+
+\begin{figure}[H]
+  \centering \includegraphics[width=.5\textwidth]{decision_tree} 
+  \caption{Example of a decision tree which classify fruits according to their shape, solor, and weight.}
+  \label{fig:decision-tree-example}
+\end{figure}
+
+It can be seen that at each step in the decision tree in \autoref{fig:decision-tree-example} a test on a different \textit{value} is made, and each branch specifies what to do depending on the outcome of said test. The \textit{leaves} (i.e. the bottom nodes) of the tree specify the outcome of the evaluation. The top node of the tree is called the \textit{root}, and specifies the starting point for the evaluation. 
+
+The first node created for a new decision tree is the \textit{root node}. The way in which the algorithm decides which attribute to test at each node is by finding the test which will make the greatest reduction on the entropy of the subsets, or in other words, the greatest increase in \textit{information gain}. Both of these concepts are explained further in depth below. 
+
+In example \autoref{fig:decision-tree-example} the first test made is on the shape of the fruit, if multiple points are evaluated on this decision tree at the same time then it can thought of as if they splitted at this node: all \textit{spherical} fruits go to the left branch, while all those that are not spherical take the right branch. These two divisions are what are referred two when saying that the entropy is measured on the resulting subsets. 
+
+\textit{Entropy} is no other than the degree of disorder in a set. A completely homogeneous set has an entropy of 0, while the largest value is obtained when the different classes in the set have the same amount of representatives. For the current project, the amount of classes being used is 2 (match and non-match). When using only two classes, the maximum value for the entropy is 1. The total entropy of a set $S$ is measured with the following formula:
+
+\begin{equation*}
+    H(S) = \sum_{i=1}^C - p_i \log_2 p_i
+\end{equation*}
+
+Where $C$ are all the classes in the set, and $p_i$ is the percentage of times that class $i$ appears in the set. To calculate the entropy of the subsets, after splitting the data on a node, the sum of the entropy of all subsets needs to be calculated. Continuing with the fruits example, say the set coming from the node which did the splitting is $T$, and there are $z \in T$ which are \textit{spherical}, and $k \in T$ which are not. The entropy after splitting on whether the fruit is spherical or not is calculated as: 
+
+\begin{equation*}
+    H(S | Spherical) = \frac{|z|}{|T|}H(z) + \frac{|k|}{|T|}H(k)
+\end{equation*}
+
+Where $|\cdot|$ denotes the amount of elements in the set. It can be seen that the above is the entropy of each subset weighted by the percentage of elements in that subset with respect to the number of elements in the parent set (which is $T$ in this case). 
+
+In more general terms, the above can be seen as a way in which to measure the total entropy of a set after it has been splitted on an attribute $A$. Finally, the information gain is just the change in entropy obtained when splitting the original set on said $A$.
+
+\begin{equation*}
+    IG(S,A) = H(S) - H(S | A)
+\end{equation*}
+
+The attribute on which each node splits is then selected as:
+
+\begin{equation*}
+    \underset{A}{\mathrm{argmax}}\ IG(S, A)
+\end{equation*}
+
 
 \subsection{Single Layer Perceptron}
 \label{sec:clf-slp}
@@ -2554,6 +2613,8 @@ For the current project, the evaluation of the hyperparameters was done by perfo
 Since the grid search procedure, plus the 5-fold cross validation, is quite a lengthy procedure, it was chosen to perform this optimization by only evaluating the performance of the models on \textit{Discogs/Musician}. The procedure searches for the combination of hyperparameters which makes the classifier give the best \textit{F1} score.
 
 The following tables show the hyperparameters tried for each for each baseline algorithm. In bold are the hyperparameter which were chosen as the best by the grid search procedure. 
+
+\todo[inline,color=blue!25]{explain those parameters that weren't mentioned in the model description.}
 
 \subsubsection{Naive Bayes}
 
