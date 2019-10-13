@@ -2445,7 +2445,7 @@ The attribute on which each node splits, for a given dataset, is then selected a
 \subsection{Single Layer Perceptron}
 \label{sec:clf-slp}
 
-The Single Layer Perceptron (SLP) \cite{Goodfellow-et-al-2016} is an algorithm which can learn a linear function by observing some data. Single layer perceptions have also been used with success in record linkage problems in \cite{Wilson2011_slp_in_rl}. The implementation of SLP used is provided by the Keras library \cite{chollet2015keras}.
+The Single Layer Perceptron (SLP) \cite{Goodfellow-et-al-2016} is an algorithm which can learn a linear function by observing some data. Single layer perceptrons have also been used with success in record linkage problems in \cite{Wilson2011_slp_in_rl}. The implementation of SLP used is provided by the Keras library \cite{chollet2015keras}.
 
 For a series on inputs ($\vec{x}, y$), where $\vec{x}$ are vectors of features and $y$ are the classes, an SLP can be thought of a model which learns the following parameters $\vec{w}$ and $b$:
 
@@ -2453,7 +2453,7 @@ For a series on inputs ($\vec{x}, y$), where $\vec{x}$ are vectors of features a
     y_i \approx \lambda(\vec{w} \cdot \vec{x} + b)
 \end{equation*}
 
-Where $\cdot$ is the \textit{dot product} between the input vector and the \textit{weights vector}. $\lambda$ is called the \textit{activation function} and is usually a nonlinear transformation on the weighted sum coming from the inputs. 
+Where $\vec{w}$ is the vector of weights, which is the same shape as the input vector $\vec{x}$. $\cdot$ is the \textit{dot product} between the input vector and the \textit{weights vector}. $\lambda$ is called the \textit{activation function} and is usually a nonlinear transformation on the weighted sum coming from the inputs. 
 
 The activation function used for this project is the \textit{sigmoid} function, which is very similar to the logistic function defined in \autoref{sec:clf-lr}, and is defined as $\sigma(x) = \frac{1}{1 + e ^ {-x}}$. Using a sigmoid as the activation function allows to interpret the output as the probability of belonging to a class.
 
@@ -2461,11 +2461,11 @@ The following figure shows an example of a SLP with $\|x\| = \|w\| = 4$.
 
 \begin{figure}[H]
   \centering \includegraphics[width=.5\textwidth]{slp_example} 
-  \caption{Example of an SLP with 4 inputs.}
+  \caption{Example of a SLP with 4 inputs.}
   \label{fig:slp-example}
 \end{figure}
 
-Below is the algorithm that can be used to learn the parameters $\vec{w}$ and $b$ from samples ($x_i$, $y_i$) in a training set $T$. Note that $y_i'$ is the prediction the perceptron gives for $x_i$. $\delta$ is the learning rate, and is a scalar which regulates how fast the weights are updated. \textit{Epochs} is the amount of times the training set will be processed.
+For completeness, provided below is the algorithm that can be used to learn the parameters $\vec{w}$ and $b$ from samples ($x_i$, $y_i$) in a training set $T$. Note that $y_i'$ is the prediction the perceptron gives for $x_i$. $\delta$ is the learning rate, and is a scalar which regulates how fast the weights are updated. \textit{Epochs} is the amount of times the training set will be processed. For this project, instead of using the basic algorithm mentioned below, the optimization algorithm \textit{Nadam} \cite{dozat2016incorporating_nadam} is used.
 
 
 \begin{lstlisting}
@@ -2486,7 +2486,6 @@ for e in 0..(*\textit{epochs}*):
 
 \end{lstlisting}
 
-
 SLPs are quite flexible, however it has been shown that they only work well for linearly separable data. In \cite{minsky2017_paupert_xor} it was shown that SLPs cannot learn the XOR function.   
 
 
@@ -2496,20 +2495,36 @@ SLPs are quite flexible, however it has been shown that they only work well for 
 \label{sec:clf-mlp}
 
 
-can be used to approximate any function $f*$ which maps an input $x$ to a space $y$
-
-Given enough training samples ($\vec{x_i}$, $y_i$), where $\vec{x_i}$ is a feature vector received as input and $y_i$ is the label for said feature vector, a SLP can learn the parameters $\theta$ for a function $f$ such that $y_i \approx f(\vec{x_i}; \theta)$. This parameter $\theta$ is optimized so that the value of the function is as close as possible to the target $y_i$. 
-
-In its most basic form, $\theta$ can be thought of as a \textit{weighting value}, with $\theta_j$ being the parameter applied to the element $x_j$ of the input vector. The figure below gives an example.
+Multi-layer perceptron (MLP \cite{Goodfellow-et-al-2016} is the natural extension of the SLP presented in the last section. As the name implies, with MLP there are multiple perceptrons stacked one after the other. Specifically, an MLP consists of at least three layers: an input layer, one or more hidden layers, and one output layer. Besides having more nodes (which gives MLP more representational power), the main difference between SLP and MLP is that the latter can handle also data which is non-linearly separable.
 
 
-implemented by keras \cite{chollet2015keras}
+\begin{figure}[H]
+  \centering \includegraphics[width=.5\textwidth]{mlp-example} 
+  \caption{Example of a MLP with 4 input notes, one hidden layer of size 6, and one output node. Note that to save space the \textit{biases} are not shown in the figure, but each node has one, and it works in the same way as for SLP.}
+  \label{fig:mlp-example}
+\end{figure}
 
-\subsubsection{Universal approximation principle}
-\label{sec:universal-apprx-principle}
+The example above shows the structure of a MLP. As with SLP, each edge contains a weight the inputs are multiplied by. The inputs and their endpoint nodes in the hidden layer can be thought of as just multiple SLPs (each node in the hidden layer represents one SLP). The output of this SLPs are then used by the following layer as input to that layer's set of perceptrons (also called neurons). Each neuron has its own activation function: for the current work the \textit{sigmoid} function is used as the activation of the output nodes, all other nodes in the hidden layers use \textit{SELU}  \cite{klambauer2017selfnormalizing} which is just a function ensures that negative values grow \textit{slower} than positive values. 
 
-Not sure if we're going to leave this... might be unnecessary
 
+% might be out of scope explaining what SELu is
+% \textit{SELU} stands for \textit{scaled exponential linear unit}. It is a function which accepts one parameter and is defined as follows:
+
+Given enough training samples ($\vec{x_i}$, $y_i$), where $\vec{x_i}$ is a feature vector received as input and $y_i$ is the label for said feature vector, a MLP can learn the parameters $\theta$ for a function $f$ such that $y_i \approx f(\vec{x_i}; \theta)$. This parameter $\theta$ is optimized so that the value of the function is as close as possible to the target $y_i$. It has been shown \cite{csaji2001approximation} that, in theory, a MLP with as few as one hidden layer \cite{Hornik1991_approximation}, is able to represent any real function $f*$.
+
+If the weights of a node can be thought of as a vector $\vec{w}$ then the weights of a whole layer can be thought of as a matrix $W$, and the biases for each layer can be represented as a vector $\vec{b}$. With this in mind, the evaluation of the MLP can be done by simply start evaluating from the input and continue until the output. For example, the network presented in the figure above would be evaluated is as follows.
+
+\begin{equation*}
+    Output = \lambda_{o}(\vec{b}_{h \to o} + W_{h \to o}^T \cdot \lambda_{h}(\vec{b}_{i \to h} W_{i \to h}^T \cdot \vec{x})) 
+\end{equation*}
+
+Where $\vec{x}$ is the input vector. $W_{i \to h}$ and $\vec{b}_{i \to h}$ are the matrix of weights and the bias (respectively) that connect the input layer with the hidden layer. $\lambda_{h}$ is the activation function performed for the hidden layer. $W_{h \to o}$ and  $\vec{b}_{h \to o}$ are the matrix and bias of weights which connect the hidden layer with the output layer. Finally $\lambda_{o}$ is the activation function performed at the output layer.
+
+The above is what is called the \textit{forward pass} when evaluating a MLP. If the parameters $\theta$ still need to be trained then also a backward pass needs to be performed, this ensures that the parameters are updated to learn a specific function.
+
+$\theta$ is nothing more than the collection of weights and biases that the network uses when evaluating a certain input. They are automatically tuned by means of an algorithm called backpropagation \cite{Rumelhart1986}, whose main contribution is that it allows to attribute the classification error to weights which are not directly connected with the output node. This is done by finding the error attributed to each node of the last layer of hidden networks. Then these errors are \textit{propagated back} though each subsequent layer until they reach the input layer. Once the errors for each node are known, the nodes can update their weights by means of \textit{gradient descent}, with just means the weights will be \textit{increased} or \textit{decreased} by a small amount in the direction which decreases the error.
+
+In the current project the used structure of MLP has 4 layers: an input layer, a first hidden layer of 128 neurons, a second hidden layer of 32 neurons, and finally the output layer, with just one output node. Instead of performing the process mentioned above to find the optimal $\theta$ manually, the optimizer \textit{Adadelta} \cite{zeiler2012adadelta} is used. The implementation of MLP used in this project is provided by the Keras library \cite{chollet2015keras}.
 
 
 \section{Ensemble Models}
