@@ -1,0 +1,16 @@
+digraph decisionTree{
+
+"Is it raining outside?" -> "Are my friends free?" [label="Yes"];
+"Is it raining outside?" -> "Do I have a good book?" [label="No"];
+
+"Are my friends free?" -> "Go play with them" [label="Yes"];
+"Are my friends free?" -> "Stay home and play videogames" [label="No"];
+
+"Do I have a good book?" -> "Read the book" [label="Yes"];
+"Do I have a good book?" -> "Watch TV" [label="No"];
+
+
+    
+}
+
+
