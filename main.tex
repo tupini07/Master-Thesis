@@ -2551,23 +2551,25 @@ Ensemble models are commonly seen in the top places of machine learning competit
 \subsection{Voting Based Ensembles}
 \label{sec:voting-ensembles}
 
-Voting based ensembles are a kind of \textit{bagging} ensembles \cite{zhou2012ensemble}. The name of bagging is short for \textit{bootstrapping} and \textit{aggregating}.
+Voting based ensembles are a kind of \textit{bagging} ensembles \cite{zhou2012ensemble,Breiman1996_bagging_predictors}. The name of bagging is short for \textit{bootstrapping} and \textit{aggregating}.
 
 % interesting notions https://towardsdatascience.com/ensemble-methods-bagging-boosting-and-stacking-c9214a10a205
 
 
-\cite{Breiman1996_bagging_predictors}
 
 % this is implemented by the sklearn library
 
 \subsubsection{Hard Voting Classifier}
-\subsubsection{Soft Voting Classifier}
+\label{sec:hard-voting-classifier}
 
+\subsubsection{Soft Voting Classifier}
+\label{sec:soft-voting-classifier}
 
 \subsection{Stack Based Ensembles}
 \label{sec:stacked-ensembles}
 
 \subsubsection{Stacked Classifier}
+\label{sec:stack-classifier}
 
 % http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.56.1533
 % http://statistics.berkeley.edu/sites/default/files/tech-reports/367.pdf
@@ -2577,6 +2579,7 @@ Voting based ensembles are a kind of \textit{bagging} ensembles \cite{zhou2012en
 
 
 \subsubsection{Gated Classifier}
+\label{sec:gated-classifier}
 
 Gated ensembles can be thought of as a mix between a stacked and a bagging ensembles. As in the bagging ensemble, the \textit{gated} ones also have a single pool of classifier whose predictions are joined to together. However, unlike with bagging, the gated ensemble uses a meta layer to weight this predictions (as does the stacked ensemble).
 
@@ -3292,11 +3295,16 @@ of target) .
 \section{Mapping IMDb Professions to Wikidata}
 \label{sec:imdb-profs-to-wikidata}
 
+\todo[inline,color=red!25]{Possibly this will be removed}
+
 almost everything said in https://github.com/Wikidata/soweego/issues/165
 
 
 \section{Distribution of features}
 \label{sec:apx-feature-distribution}
+
+\todo[inline,color=red!25]{Possibly this will be removed, features are already explained in their own section, and distplots do not add much information}
+
 
 This section contains the plots which characterize the distributions of feature values extracted for different concrete entities. 
 
@@ -3372,64 +3380,11 @@ Comparing the positive and negative training distributions one can notice that f
       \label{fig:distribution-of-training-positive-features-2}
 \end{figure}
 
-
-
-\subsubsection{Ensembles Evaluation Results}
-\label{sec:apx-ensemble-eval-results}
-
-This section presents the evaluation results obtained for each concreate entity separately. The names of the classifiers have been shortened to make the table fit properly in the page. The abbreviations are as follows:
-
-\begin{itemize}
-    \item Gated Classifier: gc
-    \item Stacked Classifier: sc
-    \item Hard Voting Classifier: vh
-    \item Soft Voting Classifier: vs
-\end{itemize}
-
-\begin{longtable}{|l|l|l|l|l|l|l|l|l|}
-\hline
-Catalog     & Entity   & Model                    & F1.Mean  & F1.STD   & Prec.Mean & Prec.STD & Rec.Mean & Rec.STD \\ \hline
-discogs     & musician & gc        & 0.936638 & 0.002652 & 0.922472  & 0.004920 & 0.951308    & 0.006874   \\
-discogs     & band     & gc        & 0.927455 & 0.001522 & 0.912845  & 0.002324 & 0.942566    & 0.004981   \\
-imdb        & director & gc        & 0.918505 & 0.001411 & 0.900678  & 0.002997 & 0.937067    & 0.003067   \\
-imdb        & musician & gc        & 0.924625 & 0.002018 & 0.943199  & 0.010644 & 0.906929    & 0.007107   \\
-imdb        & producer & gc        & 0.910555 & 0.003934 & 0.902453  & 0.007668 & 0.918955    & 0.010547   \\
-imdb        & writer   & gc        & 0.931719 & 0.002789 & 0.928561  & 0.007822 & 0.934984    & 0.005804   \\
-imdb        & actor    & gc        & 0.897257 & 0.002191 & 0.895105  & 0.003315 & 0.899486    & 0.007650   \\
-musicbrainz & band     & gc        & 0.918238 & 0.003816 & 0.948221  & 0.012288 & 0.890520    & 0.016863   \\
-musicbrainz & musician & gc        & 0.955526 & 0.001926 & 0.951364  & 0.006050 & 0.959821    & 0.007915   \\ \hline
-discogs     & band     & sc      & 0.927771 & 0.001080 & 0.911809  & 0.006866 & 0.944456    & 0.009776   \\
-discogs     & musician & sc      & 0.938836 & 0.002473 & 0.917001  & 0.002568 & 0.961746    & 0.003667   \\
-imdb        & musician & sc      & 0.924930 & 0.001915 & 0.947724  & 0.003561 & 0.903238    & 0.004935   \\
-imdb        & actor    & sc      & 0.890012 & 0.007978 & 0.907933  & 0.016179 & 0.873941    & 0.029767   \\
-imdb        & producer & sc      & 0.904998 & 0.008882 & 0.899323  & 0.020682 & 0.912508    & 0.035943   \\
-imdb        & writer   & sc      & 0.931043 & 0.003075 & 0.929588  & 0.007946 & 0.932652    & 0.009692   \\
-imdb        & director & sc      & 0.917923 & 0.001777 & 0.901563  & 0.004736 & 0.934969    & 0.007596   \\
-musicbrainz & musician & sc      & 0.955643 & 0.001373 & 0.955374  & 0.003750 & 0.955933    & 0.003327   \\
-musicbrainz & band     & sc      & 0.919791 & 0.003254 & 0.941948  & 0.011043 & 0.898935    & 0.013037   \\ \hline
-discogs     & band     & vh & 0.926795 & 0.001145 & 0.905189  & 0.001827 & 0.949465    & 0.002661   \\
-discogs     & musician & vh & 0.939658 & 0.001932 & 0.913881  & 0.002899 & 0.966938    & 0.002004   \\
-imdb        & director & vh & 0.918177 & 0.001400 & 0.890278  & 0.004667 & 0.947915    & 0.003379   \\
-imdb        & producer & vh & 0.907517 & 0.004611 & 0.901155  & 0.004867 & 0.914052    & 0.009619   \\
-imdb        & actor    & vh & 0.897184 & 0.000752 & 0.882077  & 0.009962 & 0.913098    & 0.012148   \\
-imdb        & writer   & vh & 0.931065 & 0.002249 & 0.920422  & 0.007199 & 0.942038    & 0.005549   \\
-imdb        & musician & vh & 0.921577 & 0.002711 & 0.918733  & 0.022289 & 0.925297    & 0.017423   \\
-musicbrainz & musician & vh & 0.956088 & 0.001293 & 0.946047  & 0.003334 & 0.966356    & 0.001537   \\
-musicbrainz & band     & vh & 0.917456 & 0.002139 & 0.953082  & 0.007505 & 0.884490    & 0.006698   \\ \hline
-discogs     & band     & vs & 0.927576 & 0.001300 & 0.904116  & 0.002522 & 0.952312    & 0.004592   \\
-discogs     & musician & vs & 0.938896 & 0.001494 & 0.909274  & 0.004537 & 0.970543    & 0.003097   \\
-imdb        & actor    & vs & 0.899699 & 0.001028 & 0.887665  & 0.005118 & 0.912139    & 0.006529   \\
-imdb        & director & vs & 0.919262 & 0.001497 & 0.894902  & 0.008123 & 0.945108    & 0.006606   \\
-imdb        & producer & vs & 0.909610 & 0.003182 & 0.905090  & 0.005243 & 0.914192    & 0.002709   \\
-imdb        & musician & vs & 0.926019 & 0.001244 & 0.939099  & 0.007632 & 0.913418    & 0.007684   \\
-imdb        & writer   & vs & 0.931617 & 0.002161 & 0.929887  & 0.004030 & 0.933369    & 0.002867   \\
-musicbrainz & musician & vs & 0.954936 & 0.001831 & 0.955208  & 0.002438 & 0.954666    & 0.001676   \\
-musicbrainz & band     & vs & 0.916297 & 0.002493 & 0.954029  & 0.002458 & 0.881462    & 0.005454   \\ \hline
-\end{longtable}
-
-
 \section{Analysis of classification distributions}
 \label{sec:apx-classification-results}
+
+\todo[inline,color=red!25]{Possibly this will be removed. Discussion on classification distribution does not add much if we don't know the labels}
+
 
 When a classifier predicts if a pair is a match or not it will yield a prediction which may be between 0 and 1. This predictions can be plotted with a distribution plot to see how different classifiers behave for the same concrete entity.
 
@@ -3605,10 +3560,6 @@ musicbrainz & musician & vs & 652175 & 0.024370 & 0.115483 & 0.000000 & 0.001089
   \caption{Distribution of predictions for classifier whose output is in a binary space.}
   \label{fig:apx-ensemble-classification-barplot}
 \end{figure}
-
-
-
-
 
 
 \end{document}
