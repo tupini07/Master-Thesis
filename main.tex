@@ -158,38 +158,37 @@
 \chapter{Introduction}
 \label{chap:introduction}
 
-% from template
-% Sommario è un breve riassunto del lavoro svolto dove si descrive l'obiettivo,
-% l'oggetto della tesi, le metodologie e le tecniche usate, i dati elaborati e la
-% spiegazione delle conclusioni alle quali siete arrivati.
+In this era of \textit{big data}, there are scores of datasets of every kind, for all sorts of human endeavours. Now a days, most companies strive to create some sort of dataset of its customers and enlarge it as the years go by, allowing them to better understand their clientele and provide the best service possible. In many domains, however, there is no need to start a dataset from scratch, since much of the information is readily available in public knowledge bases. \textit{Wikidata} is one such knowledge base, and it is the workhorse that powers the \textit{Wikipedia} free encyclopedia, and all of Wikimedia's projects.
 
-% Il sommario dell’elaborato consiste al massimo di 3 pagine e deve contenere le
-% seguenti informazioni:
+From the perspective of Wikidata, having these external datasets consume its knowledge is normal. On the other hand, there might be an external dataset which grows to contain some information that might become useful to Wikidata, since it will allow the enrichment of its own knowledge base. This information is usually manually added by volunteers, but may sometimes be too much, some information might be overlooked. One of Wikidata's concerns is maintaining the highest quality of data, however, some of the data suffers from lack of references which are invaluable to verify the accuracy of the information contained on their datasets.
 
-% \begin{itemize}
-% \item contesto e motivazioni
-% \item breve riassunto del problema affrontato
-% \item tecniche utilizzate e/o sviluppate
-% \item risultati raggiunti, sottolineando il contributo personale del laureando/a
-  
-% \end{itemize}
-% end from template
+The root of the problem may come from the fact that references are only added for a subset of the data, like some of the most visited or sought after articles. The project \soweego, aims to automate this task by automatically adding external references to Wikidata information. 
 
-% ---------------------------
-% draft
-% ---------------------------
+\soweego is an open source project of the Wikimedia foundation, which uses techniques of record linkage together with machine learning classifiers to find the external references for Wikidata entities. \soweego does this by finding potential matches of Wikidata entities in external databases, and then ranking the likelihood of these potential matches using machine learning. The external databases that \soweego considers when performing these matches are the following:
 
-\todo[inline,color=green!25]{Work in progress}
+\begin{itemize}
+    \item \texttt{IMDb}: for information regarding \textit{actors, musicians, directors, producers,} and \textit{writers}.
+    \item \texttt{Musicbrainz} and \texttt{Discogs}: for information regarding \textit{musicians} and \textit{bands}.
+\end{itemize}
 
-This project's goal is to aid in the development of the
-\texttt{soweego}\footurl{https://meta.wikimedia.org/wiki/Grants:Project/Hjfocs/soweego}
-, which is a data importing system that adds references to Wikipedia
-pages.
+This dissertation aims at improving the prediction power of \soweego. Specifically, the current set of machine learning classifiers available in the \soweego project will be improved upon by finding the best configuration for them. Following that, the idea of \textit{ensemble classifiers} will be explored, in which all of the classifiers available in \soweego will be joined, and the \textit{opinion} of the whole group will be considered when making a prediction. Motivating this choice is the fact that considering the viewpoint of multiple base classifiers, may smooth out errors which might be produced by any classifier individually. 
 
-\texttt{soweego} was developed as an answer to the amount of Wikipedia pages that
-do not have reliable external references, which are necessary to ensure data
-quality. Specifically, its aim is to align the Wikidata entities with a set of
-external databases (catalogs).
+In \autoref{chap:state-of-the-art}, the technique or \textit{record linkage} will be explained. This is commonly used when working with a problem where there is the need to find matching entries across different catalogs. It will also be shown how the process of performing record linkage can be thought of as as a pipeline with different steps, each of which is in charge of performing a different transformation on the data. Common terms which will be used when talking about record linkage, and in this dissertation in general, can be found in the \hyperref[sec:apx-glossary]{Glossary}.
+
+A more in depth description of the problem that \soweego solves will be presented in \autoref{chap:problem-statement}. This section will also present an overview of the data that will be used, and which areas the current project aims to improve.
+
+\soweego, as record linkage, can be viewed as a series of step which are closely related with that of the record linkage framework presented in \autoref{chap:state-of-the-art}. In \autoref{chap:apprach}, an explanation about every part of \soweego will be given, together with what happens during each part. 
+
+The data used in this project will be described in \autoref{chap:data}. Here the external databases will be explored, centering around explaining its shape, provided fields, and the quality of each database. After this, an explanation of how the data is preprocessed before being consumed by \soweego is given. Finally an explanation of each feature extracted from the data is given.
+
+In \autoref{chap:algorithms} an explanation of each of the machine learning classifiers provided by \soweego is given. These will be called the \textit{baseline classifiers} since are what the new \textit{ensemble classifiers} will be compared against. An explanation of the ensemble models used will also be given in this chapter.
+
+Following that, \autoref{chap:results} proceeds to show how the \textit{configuration} of the baseline classifiers was optimized, and the evaluation performances obtained by the baseline classifiers after said optimization and the ensemble classifiers. An explanation of the metrics used, and a comparison of the results between baseline and ensembles will also be given in this chapter, where the differences between the performances obtained is explored.
+
+Finally, in \autoref{chap:conclusion} it will be discussed how ensembles classifiers are better across all considered metrics than almost all of the baseline models. According to the results obtained, ensembles are better than all baseline classifiers at predicting when a pair of records is actually different (e.g. only pairs which the classifier is very sure about are classified as pairs). As such, ensemble models are a great choice when they are used in a situation where predicting a negative sample as positive is not desirable. As shown, there are also differences among the evaluated ensemble models, some are more \textit{precise} (they tend to mark as pairs entries which are actually pairs), while others are more \textit{inclusive} (they tend to recognize more pairs as so, even if some non-pairs are also marked as matches). 
+
+\todo[inline,color=green!25]{should do a \textit{contributions subsection?}. Introduce Wikidata section below }
+
 
 
 \section{A brief overview of Wikidata}
@@ -849,7 +848,8 @@ https://www.census.gov/srd/papers/pdf/rrs2006-02.pdf
   Specifically naive bayes ones and multi record linkage (although that can be
   in the next section)}
 
-For cases where there are different, but related, entities, a technique called \textit{collective record} \cite{Kalashnikov2006_collective_graph,Dong2005_reference_reconciliation,bhattacharya07_collec_entit_resol_relat_data} linkage has been developed. In these scenarios,  a model is constructed (usually a graph) that symbolizes the dependencies between  different entities. For example, the similarity between two actors may be dependent on the similarity score between the two entities and the similarity between the  movies they appear in.
+
+\cite{Wilson2011_slp_in_rl}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -862,7 +862,7 @@ Currently, the latest available snapshot in the Wikimedia Grafana interface\foot
 
 \texttt{soweego} is a great answer to this problem since it strives to automatically link Wikidata with external catalogs, making its content more trustworthy. Even though the project has done great contributions by constructing a machine learning based pipeline to automatically link entities, there is still some space for improvement. Specifically, \texttt{soweego}'s pipeline allows for only one machine learning algorithm to operate at a time. This means that, when executing the pipeline, a single algorithm needs to be chosen. This is not an easy task since not all algorithms perform optimally on all catalogs. Meaning that a trade-off must ultimately be made.
 
-\texttt{soweego} may benefit from considering the opinion of more than one algorithm at a time, since it allows the final result to be derived from a wider spectrum of information provided by a diverse set of classifiers.
+\texttt{soweego} may benefit from considering the opinion of more than one algorithm at a time, since it allows the final result to be derived from a wider spectrum of information provided by a diverse set of classifiers. 
 
 
 
@@ -934,8 +934,9 @@ From the Discogs database the information retrieved are the following entity typ
 
 
 \chapter{Approach}
-\label{chap:apprach}
+\label{chap:approach}
 
+This chapter will cover the architecture of \soweego project, and a description of each of its parts, and how it relates to the record linkage \textit{workflow}.
 
 \section{System Architecture}
 \label{sec:system-architecture}
@@ -1989,7 +1990,7 @@ The mean for some features seem to be maintained similar across each concrete en
 % When it comes to \textit{standard deviation}, it seems that all name similarity measures and \textit{occ.shr} are those with the highest variation. 
 
 
-\begin{table}[h]
+\begin{table}[H]
 \centering
 \begin{tabular}{l|c|c|c|c|c|c|c|c|c|}
 \cline{2-10}
@@ -2020,7 +2021,7 @@ It is easy to see that features do behave similarly across the different heatmap
 
 Examples which can readily be discerned from the graphic are: \textit{nm,exct}, \textit{born and died similar}, \textit{occ.shr}, \textit{url.exct}, \textit{url.shr}, and \textit{des.cos}. Interestingly, it also seems that \textit{nmtshr} has, in most cases, a higher mean than the respective entries in the classification set.
 
-\begin{table}[h]
+\begin{table}[H]
 \centering
 \begin{tabular}{l|c|c|c|c|c|c|c|c|c|}
 \cline{2-10}
@@ -2049,7 +2050,7 @@ Now, the used features can be said to be effective if they acually separate the 
 Among all features it seems that the most significant ones for separating positive and negative samples are: \textit{nm.exct}, which is almost 1 in the positive set, and very low in the negative set, also \textit{born and died similar} are much higher for the positive set, and finally the url features are also much higher for positive samples. Finally, it should also be pointed out that the \textit{occ.shr} feature is similar in value between the two sets, but is a little higher in positive samples. An exception to this last is \textit{IMDb/Actor}, which seems to have the same mean value for this feature in both sets.
 
 
-\begin{table}[h]
+\begin{table}[H]
 \centering
 \begin{tabular}{l|c|c|c|c|c|c|c|c|c|}
 \cline{2-10}
@@ -2073,7 +2074,7 @@ Among all features it seems that the most significant ones for separating positi
 
 
 
-\begin{table}[h]
+\begin{table}[H]
 \centering
 \begin{tabular}{l|c|c|c|c|c|c|c|c|c|}
 \cline{2-10}
@@ -2096,28 +2097,19 @@ Among all features it seems that the most significant ones for separating positi
 
 
 
-\begin{figure}[h]
+\begin{figure}[H]
   \centering \includegraphics[width=.8\textwidth]{feature_heatmap_classification_and_training} 
   \caption{Average values of the features obtained for each concrete entity. Separated by classification and training datasets.}
   \label{fig:average-features-classification-training}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[H]
   \centering \includegraphics[width=.8\textwidth]{feature_heatmap_training_positive_and_negative} 
   \caption{Average values of the features obtained for each concrete entity. Separated by positive (matches) and negative (non-matches) labelled points in the training data.}
   \label{fig:average-features-positive-negative}
 \end{figure}
 
-
 For completeness, \autoref{sec:apx-feature-distribution} contains distribution plots of the feature values for training and the classification sets, and also for positive and negative samples. 
-
-
-% PCA of features?
-% https://mlens.readthedocs.io/en/0.1.x/getting_started/
-
-% https://www.cs.cmu.edu/~elaw/papers/pca.pdf
-
-%  "On Lines and Planes of Closest Fit to Systems of Points in Space". Philosophical Magazine. 2 (11): 559–572. doi:10.1080/14786440109462720.
 
 
 \section{Difference between training and real-world data}
@@ -2133,7 +2125,7 @@ If training and classification sets were of the same quality then this differenc
 
 
 
-\begin{table}[]
+\begin{table}[H]
 \centering
 \begin{tabular}{ll|l|l|l|l|l|l|l|l|l|}
 \cline{3-11}
@@ -2190,8 +2182,6 @@ If training and classification sets were of the same quality then this differenc
 
 \chapter{Algorithms}
 \label{chap:algorithms}
-
-\todo[inline,color=green!25]{Chapter in progress}
 
 This chapter will cover the machine learning algorithms used in the project. The first section will talk about the \textit{baseline} classifiers, a set of standalone classification algorithms. Each algorithm has \textit{hyperparameters}, which are parameters that regulate the functionality of different parts of each algorithm. These are unique to each, and the choice of the best hyperparameter is usually different for diverse problems. \autoref{sec:hyperpar-optimization} will talk about how and according to which procedures the hyperparameters for these baseline algorithms were chosen. Following that, \autoref{sec:ensemble-models} will talk about ensemble models, the motivation for using them, and which techinques for creating them were employed in the project.
 
@@ -2605,7 +2595,7 @@ Supposing that the output of each base classifier $h_i$ is the probability of a 
 
 The main idea behind stacked classifiers \cite{wolpert1992stacked,Breiman1996_stack}, which is also named as \textit{Super Learner} \cite{van2007super}, is that of aggregating the results of the base classifiers by means of a \textit{meta learner}. In the most basic case, a stacked ensemble is composed of one collection of base classifiers followed by a \textit{meta learner} (which is just another classifier), that uses the prediction made by these base classifiers to make the final decision. This can however be extended, and an arbitrary number of \textit{layers} of classifiers can be used.
 
-The way in which a stacked ensemble is trained differs from the procedure mentioned for the baseline and bagging classifiers, especially since it needs to account for the fact that the classifiers are layered. When training, only the first layer directly see the training data. Further layers see only the predictions of the layers before. The training algorithm also makes use of the concept of $k-$fold to generate the training data for further layers.  Following is the explanation of how the training of a stacked ensemble with two layers, one input and a meta layers, proceeds.
+The way in which a stacked ensemble is trained differs from the procedure mentioned for the baseline and bagging classifiers, especially since it needs to account for the fact that the classifiers are layered. When training, only the first layer directly see the training data. Further layers see only the predictions of the layers before. The training algorithm also makes use of the concept of $k$-fold to generate the training data for further layers (the process of using $k$-fold cross validation will be explained later in \autoref{sec:cross-validation}). Following is the explanation of how the training of a stacked ensemble with two layers, one input and a meta layers, proceeds.
 
 Suppose the algorithm is provided with a training set $T$ where $|T| = n$, and $T_i = (x, y)$. Also suppose that the set of base learners is $L$. The first layer needs to process the original training set, and generate from it a new training set $T'$ which will be fed to the meta layer. If the original training set $T$ had $n$ elements, then the training set which will be generated by the $L$ base classifiers is an $n \times L$ matrix, which will be denoted as $Z$, and is produced by the following steps:
 
@@ -2653,7 +2643,7 @@ The metrics measured during evaluation are: \textit{F1 score}, \textit{Precision
 
 Note that this section includes only the results obtained during evaluation. In the appendix, specifically in \autoref{sec:apx-classification-results} a brief analysis of the distribution of predictions obtained when predicting on the classification set can be found.
 
-Besides presenting the results, \autoref{sec:sec:comparative-evaluation} will strive to compare the results obtained for the baseline and ensemble models, and point out any differences.
+Besides presenting the results, \autoref{sec:comparative-evaluation} will strive to compare the results obtained for the baseline and ensemble models, and point out any differences.
 
 
 \section{Cross Validation}
@@ -3248,12 +3238,13 @@ Ensembles have better precision but tend to have a lower recall. Because of this
 
 As seen in the results comparison section, the \textit{multi-layer perceptron} performs well in most cases, and the aggregated complexity of training an ensemble of models may not be worth it even if they do provide a higher precision. Obviously, the decision of whether this is worth or not must be taken on a per problem basis. Besides this, 4 out of the 5 models with best F1 score, presented in the last section, are ensemble models, showing that they're still better than most baseline models.
 
-Even though the performance of the ensembles in terms of \textit{F1} and \textit{recall}, was not the best, they did show a very good precision. Meaning that the mixing of opinions from its base classifiers actually supplies valuable information to the prediction process, and makes it more sensitive to \textit{negative} samples. Some their application may make more sense if the problem currently being worked on does not tolerate \textit{false positives}.
+Even though the performance of the ensembles in terms of \textit{F1} and \textit{recall}, was not the best, they did show a very good precision. Meaning that the mixing of opinions from its base classifiers actually supplies valuable information to the prediction process, and makes it more sensitive to \textit{negative} samples. Their application may make more sense if the problem currently being worked on does not tolerate \textit{false positives}.
 
-Another thing that should be kept in mind is that the results presented for the ensemble models are for ensemble who use as their base classifiers all models available in the baseline. This might not actually be optimal, and as said in the previous section, there may be some models which are driving the ensembles to make miss-predictions. A more careful construction of the base model set may improve the final performance of the ensembles. 
+Another thing that should be kept in mind is that the results presented for the ensemble models are for ensemble who use as their base classifiers all models available in the set of baseline classifier. This might not actually be optimal, and as said in the previous section, there may be some models which are driving the ensembles to make miss-predictions. A more careful construction of the base model set may improve the final performance of the ensembles. 
 
-% - maybe write something about what was expected and if this was attained or not. And why not or yes
-% - 
+
+
+However, for the current project the use of ensembles is. good. not so good. soweego preference precision/recall?
 
 
 \section{Future Work}
@@ -3269,12 +3260,16 @@ data we know that \textit{actors} are part of \textit{movies}, and that
 \textit{actors}/\textit{musicians} may be dependent upon the similarity of the
 movies in which they appear, or the bands in which they have performed.
 
+% For cases where there are different, but related, entities, a technique called \textit{collective record} \cite{Kalashnikov2006_collective_graph,Dong2005_reference_reconciliation,bhattacharya07_collec_entit_resol_relat_data} linkage has been developed. In these scenarios,  a model is constructed (usually a graph) that symbolizes the dependencies between  different entities. For example, the similarity between two actors may be dependent on the similarity score between the two entities and the similarity between the  movies they appear in.
+
+
+
 % ---
 better selection of base models may reduce noise in ensembles and improve final performance. 
 % ---
 It would be interesting to see how the performance would vary if new catalogs were to be added.
 % ---
-There are also other assembling approaches that weren't explored to maintain the scope of the thesis manageable (ie, boosting, bayesian record linkage.)
+There are also other assembling approaches that weren't explored to maintain the scope of the thesis manageable (ie, boosting, bayesian record linkage, subsemble, blending.)
 % ---
 Introduce a different number of base classifiers to ensembles
 % ---
@@ -3283,7 +3278,6 @@ Introduce a different number of base classifiers to ensembles
 \endgroup
 
 
-bibliografia in formato bibtex
      
 % aggiunta del capitolo nell'indice
 \addcontentsline{toc}{chapter}{Bibliography}
