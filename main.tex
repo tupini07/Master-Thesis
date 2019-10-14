@@ -2385,7 +2385,7 @@ After training the probability \cite{Fan:2008_liblinear} of a class $y$ given th
 
 
 \subsection{Random Forest}
-\label{sec:clf-rgc}
+\label{sec:clf-rfc}
 
 An \textit{ensemble forest} \cite{breiman2001random_forest} is a collection of \textit{decision trees} classifiers. This is actually an ensemble, specifically a \textit{bagging ensemble}, which will be explained in further detain in \autoref{sec:ensemble-models}. The \textit{decision tree} classifier will be explained shortly.
 
@@ -2534,6 +2534,8 @@ All of the baseline classifiers presented in the previous section are able to ca
 
 Luckily there is the possibility to use more than one model at once, and join the predictions of these \textit{base classifiers} in some way. This is called an \textit{ensemble classifier} \cite{zhou2012ensemble}. There are multiple kinds of ensemble classifiers \cite{opitz1999popular,dietterich2000ensemble}, with the difference being mainly on how they're constructed and how the predictions of the base classifiers are joined. However, in this work only \textit{bagging} and \textit{stacked} ensembles will be explored.
 
+The ensembles presented in this section use as their base classifiers all the baseline models except for \textit{Linear SVM} since this is incapable if predicting probabilities (it only predicts labels). 
+
 \autoref{sec:motivation-ensemble} will explain the motivation for using an ensemble of models. Following that, \autoref{sec:voting-ensembles} and \autoref{sec:stacked-ensembles} will explain the voting and stacked ensembles used in the project.
 
 
@@ -2548,22 +2550,55 @@ From the above also follows that a good ensemble is one where the base classifie
 
 Ensemble models are commonly seen in the top places of machine learning competitions \cite{Bell:2007_netflix_competition}. They have also been successfully employed in diverse areas \cite{zhou2012ensemble} like computer vision, computer security, intrusion detection, in medical applications, among others.
 
-\subsection{Voting Based Ensembles}
-\label{sec:voting-ensembles}
 
-Voting based ensembles are a kind of \textit{bagging} ensembles \cite{zhou2012ensemble,Breiman1996_bagging_predictors}. The name of bagging is short for \textit{bootstrapping} and \textit{aggregating}.
+\subsection{Bagging Ensembles}
+\label{sec:bagging-ensembles}
 
-% interesting notions https://towardsdatascience.com/ensemble-methods-bagging-boosting-and-stacking-c9214a10a205
+The main idea of \textit{bagging} \cite{zhou2012ensemble,Breiman1996_bagging_predictors} is that if the collection of base models have all been trained on different data then they can be said to be independent among themselves. This means that their predictions can be averaged to consider different opinions about a problem \cite{Breiman1996_bagging_predictors}. This decreases the error, especially if the base models are unstable ones \cite{zhou2012ensemble}. As an example, the \textit{random forest} classifier presented in \autoref{sec:clf-rfc}, is an ensemble of \textit{decision trees} using \textit{bagging}. A decision tree on its own normally does not perform very well, but its performance is increased when joined with that of other trees.
 
+The name \textit{bagging} is an abbreviation for \textit{bootstrapping} and \textit{aggregating}. The \textit{aggregation} refers to joining the predictions of different classifiers. This is usually done either by averaging their predictions (\textit{soft voting}) or by choosing as final label that which was predicted the greatest amount of time (majority vote/\textit{hard voting}). 
 
+Since it is almost never the case that enough training data is available to split it into disjoint sets, one for each classifier, the technique of \textit{bootstrapping} needs to be used. This refers to the fact that each base classifier can be trained on a different set of data, which is created from the original training set $|T| = n$ by uniformly sampling, with replacement, $n$ elements from $T$. In this way, a new set $T_i$ is created for each base model.
 
-% this is implemented by the sklearn library
+By constructing new training sets in such a way, it is possible that a set has multiple entries of an item in the training set, or that it has no entries at all of that item. In \cite{Breiman1996_bagging_predictors} it is shown that the probability of sampling a given element $i \in T$ at least once, is $1 - \frac{1}{e} \approx 63.2\%$. This means that for each created $T_i$ there are around $36.8\%$ of unique examples which do not appear in it.
+
+Suppose $h_i$ represents the $i$th classifier, $f$ is the real function that the ensemble should learn, $\vec{x}$ is the input vector, and that the problem being dealt with is a binary classification problem, where labels can be either $\{-1,1\}$. Each $h_i$ has its own probability of being mistaken $\epsilon$.
+
+\begin{equation*}
+    P(h_i(\vec{x}) \neq f(\vec{x})) = \epsilon
+\end{equation*}
+
+If there are a total of $B$ base classifiers, then the final prediction of the ensemble $H$ would be:
+
+\begin{equation}
+    H(\vec{x}) = \texttt{sign} \Big( \sum_{i=1}^B h_i (\vec{x}) \Big)
+    \label{eq:hard-voting-ensemble}
+\end{equation}
+
+This means that the complete ensemble $H$ will only make a classification mistake when more than half of its base classifiers make one. Moreover, as shown in, \cite{zhou2012ensemble}, theoretically the maximum error of the ensemble decreases exponentially as the number of base classifiers approaches $+\infty$. Although this is impossible to do in practice, and \cite{zhou2012ensemble} shows that the error in an ensemble tends to decrease with each extra base classifier added, until it a certain number is attained and the error then decreases asymptotically. This number is dependent on the problem.
+
+The implementation of bagging ensembles used is provided by the Scikit-Learn \cite{scikit-learn} library. Specifically, two main models of this class are used, which mainly differ in how the predictions of base classifiers are joined. These are explained in the following subsections. 
+
 
 \subsubsection{Hard Voting Classifier}
 \label{sec:hard-voting-classifier}
 
+A \textit{hard voting classifier} is an ensemble model which joins the predictions of its base classifiers using a \textit{majority vote} scheme. This type of ensemble does not consider how \textit{sure} its base classifiers are of a given prediction, it only considers how many times each label was predicted. This might be helpful when the base classifiers are not very good at giving a predictions (e.g. Naive Bayes \cite{Domingos1997,scikit-learn}).
+
+For a binary classification problem, the output of a hard voting ensemble can be calculated with \autoref{eq:hard-voting-ensemble}, supposing that the individual classifiers $h_i$ are predicting the class label and not the probability of the outcome being positive.
+
+
 \subsubsection{Soft Voting Classifier}
 \label{sec:soft-voting-classifier}
+
+A \textit{soft voting classifier} is a bagging ensemble which joins the predictions of its base classifiers by means of averaging them. This method of aggregating the predictions considers how \textit{sure} each base classifier is about said prediction. 
+
+Supposing that the output of each base classifier $h_i$ is the probability of a positive outcome, the output of the \textit{soft voting ensemble} can be calculated as:
+
+\begin{equation*}
+    H(\vec{x}) = \frac{1}{B} \sum_{i=1}^B h_i (\vec{x}) 
+\end{equation*}
+
 
 \subsection{Stack Based Ensembles}
 \label{sec:stacked-ensembles}
