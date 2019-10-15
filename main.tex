@@ -159,34 +159,34 @@
 \chapter{Introduction}
 \label{chap:introduction}
 
-In this era of \textit{big data}, there are scores of datasets of every kind, for all sorts of human endeavours. Now a days, most companies strive to create some sort of dataset of its customers and enlarge it as the years go by, allowing them to better understand their clientele and provide the best service possible. In many domains, however, there is no need to start a dataset from scratch, since much of the information is readily available in public knowledge bases. \textit{Wikidata} is one such knowledge base, and it is the workhorse that powers the \textit{Wikipedia} free encyclopedia, and all of Wikimedia's projects.
+In this era of \textit{big data}, there are scores of datasets of every kind, for all sorts of human endeavours. Nowadays, most companies strive to create some sort of dataset of its customers and enlarge it as the years go by, allowing them to better understand their clientele and provide the best service possible. In many domains, however, there is no need to start a dataset from scratch, since much of the information is readily available in public knowledge bases. \textit{Wikidata} is one such knowledge base, and it is the workhorse that powers the \textit{Wikipedia} free encyclopedia, and all of Wikimedia's projects.
 
-From the perspective of Wikidata, having these external datasets consume its knowledge is normal. On the other hand, there might be an external dataset which grows to contain some information that might become useful to Wikidata, since it will allow the enrichment of its own knowledge base. This information is usually manually added by volunteers, but may sometimes be too much, some information might be overlooked. One of Wikidata's concerns is maintaining the highest quality of data, however, some of the data suffers from lack of references which are invaluable to verify the accuracy of the information contained on their datasets.
+From the perspective of Wikidata, having these external datasets consume its knowledge is normal. On the other hand, there might be an external dataset which grows to contain some information that might become useful to Wikidata, since it will allow the enrichment of its own knowledge base. This information is usually manually added by volunteers, but may sometimes be too much, some information might be overlooked. One of Wikidata's concerns is maintaining the highest quality of data, however, some of the data suffer from lack of references which are invaluable to verify the accuracy of the information contained on their datasets.
 
-The root of the problem may come from the fact that references are only added for a subset of the data, like some of the most visited or sought after articles. The project \soweego, aims to automate this task by automatically adding external references to Wikidata information. 
+The root of the problem may come from the fact that references are only added for a subset of the data, like some of the most visited or sought after articles. The project \soweego aims to automate this task by automatically adding external references to Wikidata information. 
 
-\soweego is an open source project of the Wikimedia foundation, which uses techniques of record linkage together with machine learning classifiers to find the external references for Wikidata entities. \soweego does this by finding potential matches of Wikidata entities in external databases, and then ranking the likelihood of these potential matches using machine learning. The external databases that \soweego considers when performing these matches are the following:
+\soweego is an open source project of the Wikimedia Foundation, which uses techniques of record linkage together with machine learning classifiers to find the external references for Wikidata entities. \soweego does this by finding potential matches of Wikidata entities in external databases and then ranking the likelihood of these potential matches using machine learning. The external databases \soweego considers when performing these matches are the following:
 
 \begin{itemize}
     \item \texttt{IMDb}: for information regarding \textit{actors, musicians, directors, producers,} and \textit{writers}.
     \item \texttt{Musicbrainz} and \texttt{Discogs}: for information regarding \textit{musicians} and \textit{bands}.
 \end{itemize}
 
-This dissertation aims at improving the prediction power of \soweego. Specifically, the current set of machine learning classifiers available in the \soweego project will be improved upon by finding the best configuration for them. Following that, the idea of \textit{ensemble classifiers} will be explored, in which all of the classifiers available in \soweego will be joined, and the \textit{opinion} of the whole group will be considered when making a prediction. Motivating this choice is the fact that considering the viewpoint of multiple base classifiers, may smooth out errors which might be produced by any classifier individually. 
+This dissertation aims at improving the prediction power of \soweego. Specifically, the current set of machine learning classifiers available in the \soweego project will be improved by finding the best configuration for them. Following that, the idea of \textit{ensemble classifiers} will be explored, in which all of the classifiers available in \soweego will be joined, and the \textit{opinion} of the whole group will be considered when making a prediction. Motivating this choice is the fact that considering the viewpoint of multiple base classifiers, may smooth out errors that might be produced by any classifier individually. 
 
-In \autoref{chap:state-of-the-art}, the technique or \textit{record linkage} will be explained. This is commonly used when working with a problem where there is the need to find matching entries across different catalogs. It will also be shown how the process of performing record linkage can be thought of as as a pipeline with different steps, each of which is in charge of performing a different transformation on the data. Common terms which will be used when talking about record linkage, and in this dissertation in general, can be found in the \hyperref[sec:apx-glossary]{Glossary}.
+In \autoref{chap:state-of-the-art}, the technique of \textit{record linkage} will be explained. This is commonly used when working with a problem where there is a need to find matching entries across different catalogs. It will also be shown how the process of performing record linkage can be thought of as a pipeline with different steps, each of which is in charge of performing a different transformation on the data. Common terms that will be used when talking about record linkage, and in this dissertation in general, can be found in the \hyperref[sec:apx-glossary]{Glossary}.
 
 A more in depth description of the problem that \soweego solves will be presented in \autoref{chap:problem-statement}. This section will also present an overview of the data that will be used, and which areas the current project aims to improve.
 
-\soweego, as record linkage, can be viewed as a series of step which are closely related with that of the record linkage framework presented in \autoref{chap:state-of-the-art}. In \autoref{chap:approach}, an explanation about every part of \soweego will be given, together with what happens during each part. 
+\soweego, as record linkage, can be viewed as a series of steps that are closely related to that of the record linkage framework presented in \autoref{chap:state-of-the-art}. In \autoref{chap:approach}, an explanation about every part of \soweego will be given, together with what happens during each part. 
 
-The data used in this project will be described in \autoref{chap:data}. Here the external databases will be explored, centering around explaining its shape, provided fields, and the quality of each database. After this, an explanation of how the data is preprocessed before being consumed by \soweego is given. Finally an explanation of each feature extracted from the data is given.
+The data used in this project will be described in \autoref{chap:data}. Here the external databases will be explored, centering around explaining its shape, provided fields, and the quality of each database. After this, an explanation of how the data is preprocessed before being consumed by \soweego is given. Finally, an explanation of each feature extracted from the data is given.
 
-In \autoref{chap:algorithms} an explanation of each of the machine learning classifiers provided by \soweego is given. These will be called the \textit{baseline classifiers} since are what the new \textit{ensemble classifiers} will be compared against. An explanation of the ensemble models used will also be given in this chapter.
+In \autoref{chap: algorithms} an explanation of each of the machine learning classifiers provided by \soweego is given. These will be called the \textit{baseline classifiers} since are what the new \textit{ensemble classifiers} will be compared against. An explanation of the ensemble models used will also be given in this chapter.
 
-Following that, \autoref{chap:results} proceeds to show how the \textit{configuration} of the baseline classifiers was optimized, and the evaluation performances obtained by the baseline classifiers after said optimization and the ensemble classifiers. An explanation of the metrics used, and a comparison of the results between baseline and ensembles will also be given in this chapter, where the differences between the performances obtained is explored.
+Following that, \autoref{chap: results} proceeds to show how the \textit{configuration} of the baseline classifiers was optimized, and the evaluation performances obtained by the baseline classifiers after said optimization and the ensemble classifiers. An explanation of the metrics used, and a comparison of the results between baseline and ensembles will also be given in this chapter, where the differences between the performances obtained are explored.
 
-Finally, in \autoref{chap:conclusion} it will be discussed how ensembles classifiers are better across all considered metrics than almost all of the baseline models. According to the results obtained, ensembles are better than all baseline classifiers at predicting when a pair of records is actually different (e.g. only pairs which the classifier is very sure about are classified as pairs). As such, ensemble models are a great choice when they are used in a situation where predicting a negative sample as positive is not desirable. As shown, there are also differences among the evaluated ensemble models, some are more \textit{precise} (they tend to mark as pairs entries which are actually pairs), while others are more \textit{inclusive} (they tend to recognize more pairs as so, even if some non-pairs are also marked as matches). 
+Finally, in \autoref{chap: conclusion} it will be discussed how ensembles classifiers are better across all considered metrics than almost all of the baseline models. According to the results obtained, ensembles are better than all baseline classifiers at predicting when a pair of records is actually different (e.g. only pairs which the classifier is very sure about are classified as pairs). As such, ensemble models are a great choice when they are used in a situation where predicting a negative sample as positive is not desirable. As shown, there are also differences among the evaluated ensemble models, some are more \textit{precise} (they tend to mark as pairs entries which are actually pairs), while others are more \textit{inclusive} (they tend to recognize more pairs as so, even if some non-pairs are also marked as matches). 
 
 
 
@@ -200,13 +200,14 @@ As said in the introduction, the present dissertation centers around contributin
     
     \item Implement some of the \textit{baseline} algorithms (explained in \autoref{sec:baseline-classifiers}) used by \soweego. The implemented models are specifically: \textit{logistic regression}, \textit{random forest}, and \textit{single layer} and \textit{multi layer} perceptrons.
     
-    \item Optimize the \textit{configuration} of the baseline algorithms by means of a grid search procedure. This is explained in \autoref{sec:hyperpar-optimization}.
+    \item Optimize the \textit{configuration} of the baseline algorithms employing a grid search procedure. This is explained in \autoref{sec:hyperpar-optimization}.
     
     \item Implement 4 different methods to \textit{ensemble} the baseline classifiers, described in \autoref{sec:ensemble-models}. 
     
     \item Evaluate the performance of the baseline and ensemble classifiers when applied to the current problem. This is done in \autoref{sec:baseline-evaluation} and \autoref{sec:ensemble-evaluation} respectively.
     
     \item Compare the evaluation performance of \textit{ensembles} and \textit{baseline} classifiers to see how their behaviour differs and if there was any improvement when using ensembles (\autoref{sec:comparative-evaluation}).
+    
     
 \end{itemize}
 
@@ -233,17 +234,16 @@ The key of each statement is a \textit{property}, and the value can be a referen
 files\footurl{https://www.wikidata.org/wiki/Help:Statements}. Statements can
 also be extended by the use of \textit{qualifiers} which are \textit{extra information} about the
 statement. An example of this can be a person who studied at some university for
-a certain period of time (this period of time would be the qualifier).
+a certain period of time (this duration would be the qualifier).
 
 Properties\footurl{https://www.wikidata.org/wiki/Help:Properties}, like items,
-have their own ID. These are known as \texttt{PID} (Property-ID). Some properties may accept only one value, or multiple values, and
+have their own ID. These are known as \texttt{PID} (Property-ID). Some properties may accept only one value or multiple values, and
 some may also be constrained in some specific way: for example, its value can
 only be a string composed of one letter.
 
 In Wikidata both \textit{items} and \textit{properties} are associated with a name and a
 brief description, the main difference is how they are used: items, have the
-goal of representing a specific entity while properties, are used to express 
-information regarding said entity. Another difference between them would be that \textit{items} are displayed on their respective page on Wikipedia and \textit{properties} are not.
+goal of representing a specific entity while properties are used to express information regarding said entity. Another difference between them would be that \textit{items} are displayed on their respective pages on Wikipedia and \textit{properties} are not.
 
 Consider the QID \textit{Q42}, which identifies the writer
 \textit{Douglas Adams}. Below is a table representing which shows some of the statements about him
@@ -304,21 +304,23 @@ matching on this attribute and merging the resulting pairs.
 However, it is commonly the case (as is the case for this project as well), that
 catalogs do not have a common unique identifying attribute, thus requiring a less trivial approach.
 
-As shown later in this chapter (\autoref{sec:rl-main-approaches}), there are two main methods of performing record linkage, but basically they can be separated into methods which match directly comparing pairs of fields, and methods which measure the similarity between said pairs.
+As shown later in this chapter (\autoref{sec:rl-main-approaches}), there are two main methods of performing record linkage, but basically, they can be separated into methods which match directly comparing pairs of fields, and methods which measure the similarity between said pairs.
 
-Besides not having a unique identifier, it may also be the case that the datasets that need to be merged, have some mistakes. This is something which is especially noticeable when we are working with data representing people. These are some of the mistakes that might come up: 
+
+Besides not having a unique identifier, it may also be the case that the datasets that need to be merged, have some mistakes. This is something especially noticeable when we are working with data representing people. These are some of the mistakes that might come up: 
 
 \begin{itemize}
 \item The names were misspelled.
 \item The first and last names are reversed.
-\item The format of the date is not standardised.
-\item The dates presented are simply not possible, since they are too forward in the future or too far in the past.
+\item The format of the date is not standardized.
+\item The dates presented are simply not possible since they are too forward in the future or too far in the past.
 \end{itemize}
 
 Many of these can be somewhat reduced by preprocessing the dataset, but others may not, and it is necessary to account for them when working with the data.
 
 To give an example of a situation in which \textit{record linkage} would be used,
-suppose there are two databases of clients which need to be joined for some company. The tables below represent said databases.
+suppose there are two databases of clients that need to be joined for some company. The tables below represent said databases.
+
 
 \begin{table}[H]
   \centering{}
@@ -347,7 +349,7 @@ suppose there are two databases of clients which need to be joined for some comp
   \label{tab:ex-catalog-2}
 \end{table}
 
-The catalogs above do not have a unique identifier which unequivocally links them, so it is necessary to check the attributes which are available. The fields can be compared in turn and if they all match then it can be said that two entities are the same. For example, it can be easily seen that \textit{Gary Crowley} is in both datasets since an entity with said name exists in both and their birth dates match. On the other hand, nothing can be confidently said about the other possible matches since for none of them all the fields match. There is a pair (\textit{Meng Yu} in the first dataset, and \textit{Yu Meng} in the second) which might be the same person since the names are similar and they share a birth date. For this last instance there is no way to be sure if the first and last names are reversed in one of the dataset of if they are actually different people. This kind of situation is quite common in real-world datasets.
+The catalogs above do not have a unique identifier that unequivocally links them, so it is necessary to check the available attributes. The fields can be compared in turn and if they all match then it can be said that two entities are the same. For example, it can be easily seen that \textit{Gary Crowley} is in both datasets since an entity with said name exists in both and their birth dates match. On the other hand, nothing can be confidently said about the other possible matches since none of them all the fields match. There is a pair (\textit{Meng Yu} in the first dataset, and \textit{Yu Meng} in the second) which might be the same person since the names are similar and they share a birth date. For this last instance, there is no way to be sure if the first and last names are reversed in one of the datasets or if they are actually different people. This kind of situation is quite common in real-world datasets.
 
 
 
@@ -358,18 +360,19 @@ The catalogs above do not have a unique identifier which unequivocally links the
 
 There are two main approaches\footnote{Besides these two approaches, in the record linkage literature we commonly find the term \textit{clerical}, which entails \textit{manual} work, i.e., by a clerk.} to consider when talking about record linkage: 1)\textit{deterministic}, and 2) \textit{probabilistic}. 
 
-The main difference between these is the way in which the pairs of entities are compared. A more thorough description of each method follows.
+The main difference between these is how the pairs of entities are compared. A more thorough description of each method follows.
 
 
 \subsubsection{Deterministic}
 \label{sec:rl-approach-deterministic}
 
-In deterministic record linkage all fields are compared to see if they match. If the fields do match, then it can be said that these entities are the same. However, if any of the fields that are being compared only partially match, then the pair is considered as a non-match. 
+In deterministic record linkage, all fields are compared to see if they match. If the fields do match, then it can be said that these entities are the same. However, if any of the fields that are being compared only partially match, then the pair is considered as a non-match. 
 
-Take for instance the task of joining a catalog which provides information regarding where someone
+Take for instance the task of joining a catalog that provides information regarding where someone
 lives with another catalog that provides their age. Both catalogs only contain the
 name of the person as an identifying feature, so a composition of
 these two fields (attributes) can be used to identify each entity.
+
 
 \begin{table}[H]
   \centering{}
@@ -396,24 +399,25 @@ these two fields (attributes) can be used to identify each entity.
 
 After matching these results, there is a clear match for \textit{Sarah Miller}, but no available match for \textit{John Piers} and \textit{Johnny Piers}, since the
 names are different and there is no way to be sure if \textit{Johnny} is just a nickname (making them the same person)
-or if these two entities are actually different people.
+or if these two entities are different people.
 
 Note also that in this example both rows coincide completely on the \textit{Last Name} field. However, when doing deterministic record linkage partial matches are not considered \cite{dusetzina_m_2014}, because there can be no uncertainty in the match.
 
 It should be noted that this linking procedure is not optimal when the provided data is not very clean. Preprocessing steps can be taken to ensure that the catalogs are as
-uniform as possible, but even so, it is never easy to know if there might be match missing or not.
+uniform as possible, but even so, it is never easy to know if there might be a match missing or not.
 
 
 \subsubsection{Probabilistic}
 \label{sec:rl-approach-probabilistic}
 
-In simple terms, probabilistic record linkage \cite{Sayers2015} compares a shared subset of fields of a given entity pair, then decides, whether the pair is a match or not, with a certainty value. The main difference with respect to \textit{deterministic record linkage} is that now it is allowed for fields to partially match.
+
+In simple terms, probabilistic record linkage \cite{Sayers2015} compares a shared subset of fields of a given entity pair, then decides, whether the pair is a match or not, with a certainty value. The main difference concerning \textit{deterministic record linkage} is that now it is allowed for fields to partially match, and probabilistic record linkage considers a likelihood that the given attribute matches.
 
 By default, the task is achieved by comparing all entities in the source catalog with all entities in the target catalog (unless we opt for \textit{blocking}, as explained in \autoref{sec:rl-workflow-blocking}). 
 
-In its most basic form, two entities are taken and compared in all their fields; which may then match completely if they are exactly the same, or partially match if they are similar but not exactly equal. This \textit{partial match} of the fields is measured by a percentage stating how similar they actually are. 
+In its most basic form, two entities are taken and compared in all their fields; which may then match completely if they are exactly the same, or partially match if they are similar but not equal. This \textit{partial match} of the fields is measured by a percentage stating how similar they actually are. 
 
-Any similarity metric can be used to measure partial similarity. For example, \textit{edit distance} for strings, which is basically the number of changes needed to transform one of the strings into the other in order to make them equal (either by adding, removing or updating characters). 
+Any similarity metric can be used to measure partial similarity. For example, \textit{edit distance} for strings, which is basically the number of changes needed to transform one of the strings into the other to make them equal (either by adding, removing or updating characters). 
 
 As a standard, if a comparison yields a 0 then it means the two fields are completely different, and if it yields a 0 they are the same, any value in between specifies how similar or how diverse the fields are.
 
@@ -422,20 +426,22 @@ Suppose they are compared with a function $fc$ that provides the percentage of
 letters both fields have in common.
 
 
+
 $$
 fc(s1, s2) = \frac{\| s1 \cap s2 \|}{\| s1 \cup s2 \|}
 $$
 
 
-It might be that both last names are exactly the same, as is with the first name for \textit{Sarah}. However, with the first name for \textit{John} it would show a similarity of only $0.8$ with \textit{Johnny}. Taking both the similarity given for the first and last names then it is possible to make a better informed final decision on whether both records should be marked as a definite match or not.  For instance, it may be said that if the average similarity assigned to all fields is greater than $0.5$ then it may be stated that a pair is a match. Under this assumptions \textit{John Piers} and \textit{Johnny Piers} will be classified as the same person.
 
-The probabilistic record linkage approach is the one which will be implemented in this project.
+It might be that both last names are exactly the same, as is with the first name for \textit{Sarah}. However, with the first name for \textit{John} it would show a similarity of only $0.8$ with \textit{Johnny}. Taking both the similarity given for the first and last names then it is possible to make a better informed final decision on whether both records should be marked as a definite match or not.  For instance, it may be said that if the average similarity assigned to all fields is greater than $0.5$ then it may be stated that a pair is a match. Under these assumptions \textit{John Piers} and \textit{Johnny Piers} will be classified as the same person.
+
+The probabilistic record linkage approach is the one that will be implemented in this project.
 
 
 \section{Record Linkage as a Workflow}
 \label{sec:rl-as-a-workflow}
 
-An abstraction which is commonly used when performing record linkage is that of viewing the problem as a workflow \cite{christen12_data}, where each step is in charge of performing a different transformation to the data. In probabilistic record linkage \cite{fellegi69_theor_recor_linkag} the resulting matches are usually segmented into three sets depending on how sure the probabilistic model was that a pair was a match or not. For example, pairs for which the certainty of the model falls in the interval $[0, 0.4]$ are \textit{non-matches}. Pairs whose certainty of a match is in $[0.4, 0.6]$ are \textit{potential matches}. And those whose certainty is in the range $[0.6, 1.0]$ are \textit{matches}.
+An abstraction that is commonly used when performing record linkage is that of viewing the problem as a workflow \cite{christen12_data}, where each step is in charge of performing a different transformation to the data. In probabilistic record linkage \cite{fellegi69_theor_recor_linkag} the resulting matches are usually segmented into three sets depending on how sure the probabilistic model was that a pair was a match or not. For example, pairs for which the certainty of the model falls in the interval $[0, 0.4]$ are \textit{non-matches}. Pairs whose certainty of a match is in $[0.4, 0.6]$ are \textit{potential matches}. And those whose certainty is in the range $[0.6, 1.0]$ are \textit{matches}.
 
 \autoref{fig:rl-workflow} shows a graphical representation of said steps.
 
@@ -445,7 +451,7 @@ An abstraction which is commonly used when performing record linkage is that of 
   \label{fig:rl-workflow}
 \end{figure}
 
-This process is separated into five steps and it may be applied to $n$ input catalogs, the most important part is for them to be submitted to the \textit{Data Preprocessing} step so they're as uniform and clean as possible. 
+This process is separated into five steps and it may be applied to $n$ input catalogs, the most important part is for them to be submitted to the \textit{Data Preprocessing} step so they are as uniform and clean as possible. 
 
 
 
@@ -526,22 +532,23 @@ catalogs have been cleaned they may be sent over to the next step of the workflo
 \subsection{Blocking}
 \label{sec:rl-workflow-blocking}
 
-Once the cleaned entities from the previous step are available, its necessary to define which
-of them should be compared with one another. By default the pairwise comparison will be performed over all entities from all catalogs . However this can quickly
+
+Once the cleaned entities from the previous step are available, it is necessary to define which
+of them should be compared with one another. By default, the pairwise comparison will be performed over all entities from all catalogs. However, this can quickly
 become infeasible when catalogs start getting bigger, or when their number starts to increase. 
 
 Also, if the dataset being utilized has many different
-entities then when comparing all entities against each other it will show that most of these are non matches.
+entities then when comparing all entities against each other it will show that most of these are not matches.
 
 % Suppose for example that we have two datasets with $100 000$ entities each. If
 % we were to
 
 It is generally the case when comparing all entities with each other then,
-the number of comparison needed increases quadratically with the size of the
+the number of comparisons needed increases quadratically with the size of the
 catalogs, while the number of true matches increases linearly
 \cite{christen12_data}.
 
-Blocking (also known as \textit{indexing}) is defined as comparing a specific entity only against entities which might be a match. When matching said entity against a dataset, its possible to use a simple rule to define a subset of all entities
+Blocking (also known as \textit{indexing}) is defined as comparing a specific entity only against entities that might be a match. When matching said entity against a dataset, it is possible to use a simple rule to define a subset of all entities
 composed only of those which the rule suggests are possible matches. 
 
 This new set of entities made to be matched against is not guaranteed to contain any match, nor it
@@ -549,7 +556,7 @@ is guaranteed that none of the sets in an entity which is an actual match were l
 If a good blocking rule is chosen then the record linkage process becomes much more efficient.
 
 Suppose there are two catalogs, $\Psi$ and $\Omega$, and one specific entity is being considered $x \in
-\Psi$ and there is need to know which entities in the catalog $\Omega$ match with it.
+\Psi$ and there is a need to know which entities in the catalog $\Omega$ match with it.
 Rather than comparing $x$ with the whole $\Omega$ dataset (which would result in
 $\Psi \times \Omega$ comparisons), what must be done is derive a subset of possible matches using a
 blocking rule $r$, which takes a pair of entities and shows if they might be a \textit{match} according to the rule or not.
@@ -561,35 +568,35 @@ $$
 There are many possible blocking rules that can be used
 \cite{christen12_survey_index_techn_scalab_recor_linkag_dedup}, ranging from the
 very simple \textit{exact string match}, to the more complex phonetical q-gram
-comparison of text. Usually, the more a blocking algorithm is complex the more computational power it requires. A more complex algorithm may be more precise than a simpler one. For example, a metric which compares multiple subsets of a text may be resistant to minor spelling errors, while one that compares the string character by character may not. However, the latter is less computationally expensive to perform.
+comparison of text. Usually, the more a blocking algorithm is complex the more computational power it requires. A more complex algorithm may be more precise than a simpler one. For example, a metric that compares multiple subsets of a text may be resistant to minor spelling errors, while one that compares the string character by character may not. However, the latter is less computationally expensive to perform.
 
 These rules are applied to a pair of fields from two different entities. For
-example, its possible to apply an \textit{exact string match} rule to the \textit{name}
+example, it is possible to apply an \textit{exact string match} rule to the \textit{name}
 field of two entities and see that they match if their names are exactly the
 same. This simple operation makes it easy and fast to segment the dataset into
 clusters of possible matches.
 
 The decision regarding the \textit{rule} used for blocking is part of the record
 linkage problem, and it needs to be simple enough so that there is an actual gain in performance, but good enough so that the resulting set of potential
-matches actually includes real matches. 
+matches includes real matches. 
 
-Its also practical to freely use multiple blocking
+It is also practical to freely use multiple blocking
 rules to get multiple sets of possible matches and then use the union of these
 to do the final comparisons.
 
 The concept of \textit{blocking} has been used in record linkage almost since
-the start of the field \cite{fellegi69_theor_recor_linkag}, and it is now an
-integral part in most record linkage solutions \cite{winkler2006overview}. The
+the start of the field \cite{fellegi69_theor_recor_linkag}, and it is now an integral part of most record linkage solutions \cite{winkler2006overview}. The
 field of blocking is a big area of research in and of itself, with many
 different methods proposed over the years
 \cite{christen12_survey_index_techn_scalab_recor_linkag_dedup, Baxter2003ACO}.
 
-However the evaluation of these methods is outside the scope of the current
-work, and it will be limited to work with one of the most basic blocking rules,
+However, the evaluation of these methods is outside the scope of the current
+dissertation and it will be limited to work with one of the most basic blocking rules,
 known as a blocking technique which divides two strings into its corresponding
 tokens, and if any of these match then it is considered for the pair to be a potential match.
 
-For now only blocking for fields which are strings has been covered and discussed. But
+
+For now, only blocking for fields which are strings has been covered and discussed. But
 blocking can be applied to many other fields as well (although strings are the
 most common ones). For example, other possible ways in which blocking could be applied are: 
 
@@ -597,7 +604,7 @@ most common ones). For example, other possible ways in which blocking could be a
 
 2) Gather all entities which were born on a specific \textit{year}; etc.
 
-Blocking is quite flexible, and is up to the designer how strict he or she wishes to make it.
+Blocking is quite flexible and it is up to the designer how strict he or she wishes to make it.
 Although it is agreed
 \cite{christen12_survey_index_techn_scalab_recor_linkag_dedup} that it is better
 to have a more \textit{lax} blocking technique which includes entities that are
@@ -605,12 +612,13 @@ not a match and later filter this out during the actual \textit{linking} step
 (see \autoref{sec:rl-workflow-linking}), than using a more precise blocking but
 which leaves out potential matches. 
 
-In other words, when choosing a blocking rule its preferable to choose one which tends to include more entities than necessary, than having one which only includes few non-matches. Obviously, the choice of this trade-off needs to be done on an individual per problem basis.
+In other words, when choosing a blocking rule its preferable to choose one which tends to include more entities than necessary, than having one which only includes a few non-matches. The choice of this trade-off needs to be done on an individual per problem basis.
 
 As an example suppose the following two catalogs are available. They both contain the
-first and last names, and the zip code of each person. The first also contains
+first and last names and the zip code of each person. The first also contains
 whether said person is \textit{male} or \textit{female}, while the second catalog
 contains the \textit{academic title} of each person.
+
 
 \begin{table}[H]
   \centering
@@ -636,24 +644,24 @@ contains the \textit{academic title} of each person.
 \end{table}
 
 Suppose the goal is to perform blocking on the \textit{Zip Code} field, and to achieve that, 
-\textit{exact match} strategy is used. Its possible to see that in total there are only two zip
+\textit{exact match} strategy is used. It is possible to see that in total there are only two zip
 codes (\textit{27321} and \textit{34918}), so after blocking there will end up being two sets. The first one (for zip code \textit{27321}) will contain the pair
-$[(A1, B1)]$, both of which could arguably be the same person. In the second set the remaining pairs $[(A2, B2), (A2, B3)]$ can be found.
+$[(A1, B1)]$, both of which could arguably be the same person. In the second set, the remaining pairs $[(A2, B2), (A2, B3)]$ can be found.
 
 For the first set its only necessary to compare the source entity \textit{Anna Claire}
 with \textit{one} target entity. In the second the
-source entity \textit{Claudio Bari} must be compared with two target entities. In both cases the
+source entity \textit{Claudio Bari} must be compared with two target entities. In both cases, the
 total number of comparisons for a source entity is less than what would be needed
 without blocking (3 comparisons).
 
 The gain in the example doesn't seem like much, but it is easy to imagine that
 this procedure would be very effective at reducing the total number of
-comparisons once the amount of zip codes and, by extension the amount of sets
+comparisons once the number of zip codes and, by extension the amount of sets
 generated by blocking, start to increase in number.
 
 In short, the goal of blocking is to reduce as much as possible the number of
 comparisons that each entity will be subject to by using a \textit{blocking
-  rule} which finds the best potential matches for said entity in an efficient
+  rule} which finds the best potential matches for a said entity in an efficient
 way.
 
   
@@ -675,12 +683,11 @@ feature_i = f(entity_y.field_i , entity_z.field_q)
 $$
 
 The function $f$ is a \textit{comparison function}, which shows the
-similarity, or distance, between two fields of the same kind (for example, the
-name field of both entities). As such, the decision of which functions to select is
+similarity, or distance, between two fields of the same kind (for example, the name field of both entities). As such, the decision of which functions to select is
 part of the record linkage problem, and the designer is free to use as many as needed (ie, if desired the designer could compare two textual fields from a pair of entities
 using multiple string similarity functions).
 
-Some of these comparison functions yield a percentage which describes how
+Some of these comparison functions yield a percentage that describes how
 similar two specific fields are. Others only provide information on whether or not two fields are the same,
 the latter are referred to as \textbf{exact match} functions.
 
@@ -689,7 +696,7 @@ pair as if it was not a match and returns a similarity of zero.
 
 For example, one such comparison function can be the \textit{Levenshtein distance} \cite{levenshtein1966binary}, which provides the difference between two strings, for this specific case it will be used to see how similar two strings truly are (this distance will be explained more in depth in \autoref{sec:feature-levenshtein-on-name-tokens}). 
 
-Actually the \texttt{Levenshtein} function will show a distance which increases the more two strings are dissimilar, which is not the desired behaviour. What is needed is for the result to be $0$ when the strings are dissimilar, and $1$ when they're the same. So the distance function will need to be adapted to be the $1 -$ [this value divided by the length of the longest string\footnote{which is also, incidentally, the maximum value the \texttt{Levenshtein} function can return}]. Basically, the new function is just the complement of the percentage of the maximum value that can be returned by \texttt{Levenshtein(a, b)}.
+Actually, the \texttt{Levenshtein} function will show a distance that increases the more two strings are dissimilar, which is not the desired behaviour. What is needed is for the result to be $0$ when the strings are dissimilar and $1$ when they're the same. So the distance function will need to be adapted to be the $1 -$ [this value divided by the length of the longest string\footnote{which is also, incidentally, the maximum value the \texttt{Levenshtein} function can return}]. Basically, the new function is just the complement of the percentage of the maximum value that can be returned by \texttt{Levenshtein(a, b)}.
 
 $$
 lev(a,b) = 1 - \frac{Levenshtein(a, b)}{max(|a|, |b|)}
@@ -724,7 +731,7 @@ functions can be used for the same fields.
 \subsection{Linking/Classification}
 \label{sec:rl-workflow-linking}
 
-In the \textit{linking} (also called \textit{classification}) step, the list of features extracted in the previous part is consequently fed to a decision model which takes the features and then decides whether the said pair is a match or not.
+In the \textit{linking} (also called \textit{classification}) step, the list of features extracted in the previous part is consequently fed to a decision model that takes the features and then decides whether the said pair is a match or not.
 
 There are many decision models to choose from and that might be considered to be utilized. \cite{gu06_decis_model_recor_linkag}.
 The \textit{go to} model for record linkage is the basic probabilistic model defined in
@@ -767,15 +774,15 @@ With these results it is now possible to merge the corresponding entities (in th
 \subsection{Evaluation}
 \label{sec:rl-workflow-evaluation}
 
-As the name suggests, in the evaluation step, the evaluation of the record linkage procedure performance is made. Record linkage can be thought of as a supervised machine learning problem. As such, it is results are evaluated like those of any other supervised algorithm.
+As the name suggests, in the evaluation step, the evaluation of the record linkage procedure performance is made. Record linkage can be thought of as a supervised machine learning problem. As such, its results are evaluated like those of any other supervised algorithm.
 
-To do this its necessary to have some previously labeled data that  may  be used to calculate the metrics given the prediction of the model. This \textit{data} is nothing more than the labeled pairs of entities which say whether they are actually a match or not\footnote{similar to the \textit{training set} when referring to supervised machine learning}, and it should be different from the one that’s currently being classified.\footnote{\textit{classification set} in supervised learning}.
+To do this its necessary to have some previously labeled data that may be used to calculate the metrics given the prediction of the model. This \textit{data} is nothing more than the labeled pairs of entities that say whether they are actually a match or not\footnote{similar to the \textit{training set} when referring to supervised machine learning}, and it should be different from the one that’s currently being classified.\footnote{\textit{classification set} in supervised learning}.
 
 The metrics considered when evaluating a record linkage pipeline are the commonly used
 \cite{Powers2011_evaluation} \textit{precision}, \textit{recall}, and
 \textit{$F_1$-Score}.
 
-Before defining the above metrics more in depth, its necessary to firstly define the concept of \textbf{true/false positive} and \textbf{true/false negatives} from which they are derived.
+Before defining the above metrics more in depth, its necessary to first define the concept of \textbf{true/false positive} and \textbf{true/false negatives} from which they are derived.
 
 \begin{table}[H]
   \centering
@@ -824,7 +831,7 @@ $$
 \subsubsection{Recall}
 \label{sec:evaluation-metric-recall}
 
-\textit{Recall}, on the other hand, measures the percentage of \textit{positive} values which where actually predicted as \textit{positive}. The less \textit{positive} examples are miss-classfied as \textit{negative}, the higher the
+\textit{Recall}, on the other hand, measures the percentage of \textit{positive} values which where actually predicted as \textit{positive}. The less \textit{positive} examples are miss-classified as \textit{negative}, the higher the
 \textit{Recall} will be. It is defined as:
 
 $$
@@ -860,7 +867,7 @@ Even though the $F_1$ metric is commonly used for evaluating machine learning pr
 
 Record Linkage was first defined in \cite{dunn46_recor_linkag}, where the author
 mentioned the importance of having a reliable method to aggregate all the
-information about a person. However, this paper didn't define any actual method
+information about a person. However, this paper did not define any actual method
 per se, and it was in \cite{newcombe59_autom_linkag_vital_recor} that the first
 foundation of record linkage was laid. Then \cite{fellegi69_theor_recor_linkag}
 established that the probabilistic foundation was optimal. \todo[inline]{maybe explain a bit more in depth}
@@ -882,11 +889,11 @@ https://www.census.gov/srd/papers/pdf/rrs2006-02.pdf
 
 Wikidata is a huge repository of knowledge which people from all over the world consume. However, a big part of the information it contains can not be verified since it is missing references to external, and trusted, sources of information. These references are essential to ensure that the content is of the highest quality. 
 
-Currently, the latest available snapshot in the Wikimedia Grafana interface\footnote{Snapshot for \textit{2019-09-05} can be seen at \url{https://grafana.wikimedia.org/dashboard/snapshot/jWeAFAg0QczHXK62h7rXvJPH2Zh4D609}}, states that there are a total of \textit{744.4 million} \textbf{statements} in Wikidata. Of these, a full \textit{200.5 million (26.89\%)} are un-referenced, which represents a large chunk of the total statements. This means that a sure way to improve the quality of Wikidata is to develop a way in which these statements can be populated with its respective reference.
+Currently, the latest available snapshot in the Wikimedia Grafana interface\footnote{Snapshot for \textit{2019-09-05} can be seen at \url{https://grafana.wikimedia.org/dashboard/snapshot/jWeAFAg0QczHXK62h7rXvJPH2Zh4D609}}, states that there are a total of \textit{744.4 million} \textbf{statements} in Wikidata. Of these, a full \textit{200.5 million (26.89\%)} is un-referenced, which represents a large chunk of the total statements. This means that a sure way to improve the quality of Wikidata is to develop a way in which these statements can be populated with its respective reference.
 
 \texttt{soweego} is a great answer to this problem since it strives to automatically link Wikidata with external catalogs, making its content more trustworthy. Even though the project has done great contributions by constructing a machine learning based pipeline to automatically link entities, there is still some space for improvement. Specifically, \texttt{soweego}'s pipeline allows for only one machine learning algorithm to operate at a time. This means that, when executing the pipeline, a single algorithm needs to be chosen. This is not an easy task since not all algorithms perform optimally on all catalogs. Meaning that a trade-off must ultimately be made.
 
-\texttt{soweego} may benefit from considering the opinion of more than one algorithm at a time, since it allows the final result to be derived from a wider spectrum of information provided by a diverse set of classifiers. 
+\texttt{soweego} may benefit from considering the opinion of more than one algorithm at a time since it allows the final result to be derived from a wider spectrum of information provided by a diverse set of classifiers. 
 
 
 
@@ -895,9 +902,9 @@ Currently, the latest available snapshot in the Wikimedia Grafana interface\foot
 
 As a starting point, \texttt{soweego} currently focuses on the \textit{people} domain. At the time of this writing, the \textit{Wikidata Statistics} page\footurl{https://www.wikidata.org/wiki/Wikidata:Statistics}, states that there are a total of 61 million entities, of which 5.2 million are people (roughly 10\% of all entities), which is a large portion of all entities. 
 
-Note that even though the development is centered around \textit{people} the idea is to develop a flexible system which can easily be extended to include external catalogs containing different kinds of entities and not exclusively centering on people. 
+Note that even though the development is centered around \textit{people} the idea is to develop a flexible system that can easily be extended to include external catalogs containing different kinds of entities and not exclusively centering on people. 
 
-For the purposes of this project the following ones were selected as a starting point\footurl{https://meta.wikimedia.org/wiki/Grants:Project/Hjfocs/soweego/Timeline\#Monthly\_updates}. Note that this section is limited to mention the catalogs and their entities, and a more in depth explanation of each will be done in \autoref{sec:data-preprocessing}. 
+For the purpose of this dissertation the following ones were selected as a starting point\footurl{https://meta.wikimedia.org/wiki/Grants:Project/Hjfocs/soweego/Timeline\#Monthly\_updates}. Note that this section is limited to mention the catalogs and their entities, and a more in depth explanation of each will be done in \autoref{sec:data-preprocessing}. 
 
 
 
@@ -906,7 +913,7 @@ For the purposes of this project the following ones were selected as a starting 
 
 \textbf{IMDb}\footurl{https://www.imdb.com/} provides a complete and up to date list of information about movies and the people that appear in them. They provide a dump of their data which is free to use, although somewhat limited on the information it contains.
 
-The \textit{people dump} from IMDb states the three primary professions of each person, which are actually the three main jobs for which they have appeared in credits of movies. 
+The \textit{people dump} from IMDb states the three primary professions of each person, which are the three main jobs for which they have appeared in credits of movies. 
 
 
 This information may be leveraged by separating the incoming data into their corresponding professions. These professions will come to be the \textit{type of entities} that are provided by the external catalog. In IMDb, these professions are not mutually exclusive, so there might be a person which is an \textbf{actor} and also a \textbf{musician}. The following list contains all the types of entities extracted from IMDb: 
@@ -919,20 +926,19 @@ This information may be leveraged by separating the incoming data into their cor
 \item Writer
 \end{itemize}
 
-IMDb’s dump does not actually provide such a clean separation of the different types of entities. This clear segmentation was the result of an analysis made with the scope of finding the best matches between the IMDb professions and Wikidata entities. Said analysis can be found in the appendix, specifically in \autoref{sec:imdb-profs-to-wikidata}. 
+IMDb’s dump does not provide such a clean separation of the different types of entities. This clear segmentation was the result of an analysis made with the scope of finding the best matches between the IMDb professions and Wikidata entities. Said analysis can be found in the appendix, specifically in \autoref{sec:imdb-profs-to-wikidata}. 
 
-The IMDb’s data is mostly provided by contributors. However, information like \textit{name}, \textit{description}, \textit{image} (either the profile image of a person or the cover for a movie/TV-Series), are manually curated by the IMDb team. Automated access to the data itself is, as said above, restricted since IMDb only provides a partial dump of their whole database, and using web crawlers to access more information is not permitted according to their terms of usage.
+IMDb’s data is mostly provided by contributors. However, information like \textit{name}, \textit{description}, \textit{image} (either the profile image of a person or the cover for a movie/TV-Series), are manually curated by the IMDb team. Automated access to the data itself is, as said above, restricted since IMDb only provides a partial dump of their whole database, and using web crawlers to access more information is not permitted according to their terms of usage.
+
 
 
 \subsection{MusicBrainz}
 \label{sec:catalog-musicbrainz}
 
-\textbf{MusicBrainz}\footurl{https://musicbrainz.org/} is a music encyclopedia, which contains metadata about music, musicians, and bands. From this external database this project is specially interested in their information regarding \textit{musicians} and \textit{bands}. 
+\textbf{MusicBrainz}\footurl{https://musicbrainz.org/} is a music encyclopedia, which contains metadata about music, musicians, and bands. 
+Note that in this chapter’s introduction it was mentioned that \texttt{soweego} works mainly with people, however now it is possible to see that it also includes \textit{musical bands}. This is because \textit{bands} have very similar fields to people, and it is an example of the project's flexibility.
 
-
-Note that on this chapter’s introdution it was mentioned that \texttt{soweego} works mainly with people, however now its possible to see that it also includes \textit{musical bands}. This is because \textit{bands} have very similar fields to people, and it is an example of the project's flexibility.
-
-The MusicBrainz database is collectively maintained, with the help of the Musicbrainz team. All of Musicbrainz data is in the public domain, and as such it is free to use.
+The MusicBrainz database is collectively maintained, with the help of the Musicbrainz team. All of Musicbrainz data is in the public domain, and as such, it is free to use.
 
 The types of entities utilized for this project from the Musicbrainz database are:
 
@@ -957,8 +963,9 @@ From the Discogs database the information retrieved are the following entity typ
 \end{itemize}
 
 
-\chapter{Approach}
+\chapter{Approach} 
 \label{chap:approach}
+%llegue hasta aqui spellchecking Kate
 
 This chapter will cover the architecture of \soweego project, and a description of each of its parts, and how it relates to the record linkage \textit{workflow}.
 
