@@ -40,6 +40,7 @@
 
 \usepackage{listings}
 \usepackage{xcolor}
+\usepackage{xspace}
  
 \definecolor{codegreen}{rgb}{0,0.6,0}
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}
@@ -74,7 +75,7 @@
 \lstset{style=mystyle}
 
 \newcommand{\footurl}[1]{\footnote{\url{#1}}}
-\newcommand{\soweego}[0]{\texttt{soweego}}
+\newcommand{\soweego}[0]{\texttt{soweego}\xspace}
 
 \linespread{1.25}
 
@@ -177,7 +178,7 @@ In \autoref{chap:state-of-the-art}, the technique or \textit{record linkage} wil
 
 A more in depth description of the problem that \soweego solves will be presented in \autoref{chap:problem-statement}. This section will also present an overview of the data that will be used, and which areas the current project aims to improve.
 
-\soweego, as record linkage, can be viewed as a series of step which are closely related with that of the record linkage framework presented in \autoref{chap:state-of-the-art}. In \autoref{chap:apprach}, an explanation about every part of \soweego will be given, together with what happens during each part. 
+\soweego, as record linkage, can be viewed as a series of step which are closely related with that of the record linkage framework presented in \autoref{chap:state-of-the-art}. In \autoref{chap:approach}, an explanation about every part of \soweego will be given, together with what happens during each part. 
 
 The data used in this project will be described in \autoref{chap:data}. Here the external databases will be explored, centering around explaining its shape, provided fields, and the quality of each database. After this, an explanation of how the data is preprocessed before being consumed by \soweego is given. Finally an explanation of each feature extracted from the data is given.
 
@@ -187,14 +188,37 @@ Following that, \autoref{chap:results} proceeds to show how the \textit{configur
 
 Finally, in \autoref{chap:conclusion} it will be discussed how ensembles classifiers are better across all considered metrics than almost all of the baseline models. According to the results obtained, ensembles are better than all baseline classifiers at predicting when a pair of records is actually different (e.g. only pairs which the classifier is very sure about are classified as pairs). As such, ensemble models are a great choice when they are used in a situation where predicting a negative sample as positive is not desirable. As shown, there are also differences among the evaluated ensemble models, some are more \textit{precise} (they tend to mark as pairs entries which are actually pairs), while others are more \textit{inclusive} (they tend to recognize more pairs as so, even if some non-pairs are also marked as matches). 
 
-\todo[inline,color=green!25]{should do a \textit{contributions subsection?}. Introduce Wikidata section below }
+
+
+\section{Contributions}
+\label{sec:contributions}
+
+As said in the introduction, the present dissertation centers around contributing to the open source project \soweego. The  main contributions made to the project as part of this work are the following:
+
+\begin{itemize}
+    \item The creation of an \textit{importer} functionality which allows \soweego to work with data from IMDb. This functionality will be explained in \autoref{sec:soweego-st-importer}.
+    
+    \item Implement some of the \textit{baseline} algorithms (explained in \autoref{sec:baseline-classifiers}) used by \soweego. The implemented models are specifically: \textit{logistic regression}, \textit{random forest}, and \textit{single layer} and \textit{multi layer} perceptrons.
+    
+    \item Optimize the \textit{configuration} of the baseline algorithms by means of a grid search procedure. This is explained in \autoref{sec:hyperpar-optimization}.
+    
+    \item Implement 4 different methods to \textit{ensemble} the baseline classifiers, described in \autoref{sec:ensemble-models}. 
+    
+    \item Evaluate the performance of the baseline and ensemble classifiers when applied to the current problem. This is done in \autoref{sec:baseline-evaluation} and \autoref{sec:ensemble-evaluation} respectively.
+    
+    \item Compare the evaluation performance of \textit{ensembles} and \textit{baseline} classifiers to see how their behaviour differs and if there was any improvement when using ensembles (\autoref{sec:comparative-evaluation}).
+    
+\end{itemize}
+
 
 
 
 \section{A brief overview of Wikidata}
 \label{sec:intro-wikidata}
 
-\textit{Wikidata} is defined as the \textit{knowledge base} that supports
+This section will give a brief overview of what Wikidata is and how it works. These concepts will be extensively used throughout the discussion. 
+
+\textit{Wikidata}, is defined as the \textit{knowledge base} that supports
 \textit{Wikipedia} and all of the \textit{Wikimedia Foundation}
 projects\footurl{https://wikimediafoundation.org/}. A \textit{knowledge base} is a collection of statements of and about the world. There are many different knowledge bases available on the web but, \textit{Wikidata} is one of the most complete out there, it also has a very active and extense community of users and volunteers. 
 
@@ -3232,35 +3256,32 @@ For example, one of the least performing baseline models, specifically those wit
 \chapter{Conclusion}
 \label{chap:conclusion}
 
-\todo[inline,color=green!25]{Work in progress}
-
 Ensembles have better precision but tend to have a lower recall. Because of this their F1 suffers, and as such they do not manage to get the top score for this metric. However, if the situation we're currently in values precision above recall, ensemble models are the best choice.
 
-As seen in the results comparison section, the \textit{multi-layer perceptron} performs well in most cases, and the aggregated complexity of training an ensemble of models may not be worth it even if they do provide a higher precision. Obviously, the decision of whether this is worth or not must be taken on a per problem basis. Besides this, 4 out of the 5 models with best F1 score, presented in the last section, are ensemble models, showing that they're still better than most baseline models.
+As seen in the results comparison section, the \textit{multi-layer perceptron} performs well in most cases, and the aggregated complexity of training an ensemble of models may not be worth it even if they do provide a higher precision. Obviously, the decision of whether this is worth or not must be taken on a per problem basis. Besides this, 4 out of the 5 models with the best F1 score, presented in the last section, are ensemble models, showing that they're still better than most baseline models.
 
 Even though the performance of the ensembles in terms of \textit{F1} and \textit{recall}, was not the best, they did show a very good precision. Meaning that the mixing of opinions from its base classifiers actually supplies valuable information to the prediction process, and makes it more sensitive to \textit{negative} samples. Their application may make more sense if the problem currently being worked on does not tolerate \textit{false positives}.
 
-Another thing that should be kept in mind is that the results presented for the ensemble models are for ensemble who use as their base classifiers all models available in the set of baseline classifier. This might not actually be optimal, and as said in the previous section, there may be some models which are driving the ensembles to make miss-predictions. A more careful construction of the base model set may improve the final performance of the ensembles. 
+Another thing that should be kept in mind is that the results presented for the ensemble models are for ensembles who use as their base classifiers all models available in the set of baseline classifier. This might not actually be optimal, and as said in the previous section, there may be some models that are driving the ensembles to make miss-predictions. More careful construction of the base model set may improve the final performance of the ensembles. 
 
+%improve \/
+For the context of \soweego, a classifier with high precision allows for the confident upload those matches the classifier is sure about, so as to not degrade the quality of the data in Wikidata by adding false matches. Even if the matches found by a more precise algorithm may be less than those found by one with higher recall. The matches of which the model is unsure, but thinks are may be matches (e.g. those with a probability of match $50\% < x < 80\%$) can be uploaded to the \texttt{Mix'n'match} platform to be manually reviewed by the community. In this way, none of the potential matches is thrown away.
 
+The process has up to now been considered as a single execution of the \soweego pipeline. However, in reality this will be an iterative process, where the pipeline gets executed repeatedly after some interval of time. This means that the next time \soweego is executed it will use all the confident matches it found in the previous run, plus those added by the community in the interval, and use those to train a new generation of classifiers. Doing so will improve the amount of training data available for the machine learning algorithms, which in turn means they may be better learn how to separate entities as matches and non-matches. This approach, of iterative training a record linkage pipeline, has been successfully used in \cite{Bhattacharya:2004_iterative}. It is, however, important to pick an appropriate interval of time to give time to the community to delete all incorrect matches made by \soweego in the previous execution, so that these do not get included in the training data for the next generation. 
 
-However, for the current project the use of ensembles is. good. not so good. soweego preference precision/recall?
 
 
 \section{Future Work}
 \label{sec:future-work}
 
+\todo[inline,color=green!25]{Work in progress}
+
 Other things that might still be done to improve the project.
 
-It would be a good idea to use one of the collective matching methods
-\cite{Dong2005_reference_reconciliation,bhattacharya07_collec_entit_resol_relat_data,Kalashnikov2006_collective_graph}
-to leverage the information of composed entities. For example, in the current
-data we know that \textit{actors} are part of \textit{movies}, and that
-\textit{musicians} are part of \textit{bands}. The similarity among
-\textit{actors}/\textit{musicians} may be dependent upon the similarity of the
-movies in which they appear, or the bands in which they have performed.
+For cases where there are different, but related, entities, a technique called \textit{collective record linkage} \cite{Kalashnikov2006_collective_graph,Dong2005_reference_reconciliation,bhattacharya07_collec_entit_resol_relat_data} has been developed. In these scenarios, a model is constructed (usually a graph) that symbolizes the dependencies between  different entities. For example, the similarity between two actors may be dependent on the similarity score between said entities and the similarity between the  movies they appear in.
 
-% For cases where there are different, but related, entities, a technique called \textit{collective record} \cite{Kalashnikov2006_collective_graph,Dong2005_reference_reconciliation,bhattacharya07_collec_entit_resol_relat_data} linkage has been developed. In these scenarios,  a model is constructed (usually a graph) that symbolizes the dependencies between  different entities. For example, the similarity between two actors may be dependent on the similarity score between the two entities and the similarity between the  movies they appear in.
+It would be a good idea to use one of the collective matching methods to leverage the information of composed entities. For example, in the current data we know that \textit{actors} are part of \textit{movies}, and that \textit{musicians} are part of \textit{bands}. The similarity among \textit{actors}/\textit{musicians} may be dependent upon the similarity of the movies in which they appear, or the bands in which they have performed.
+
 
 
 
