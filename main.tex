@@ -182,11 +182,11 @@ A more in depth description of the problem that \soweego solves will be presente
 
 The data used in this project will be described in \autoref{chap:data}. Here the external databases will be explored, centering around explaining its shape, provided fields, and the quality of each database. After this, an explanation of how the data is preprocessed before being consumed by \soweego is given. Finally, an explanation of each feature extracted from the data is given.
 
-In \autoref{chap: algorithms} an explanation of each of the machine learning classifiers provided by \soweego is given. These will be called the \textit{baseline classifiers} since are what the new \textit{ensemble classifiers} will be compared against. An explanation of the ensemble models used will also be given in this chapter.
+In \autoref{chap:algorithms} an explanation of each of the machine learning classifiers provided by \soweego is given. These will be called the \textit{baseline classifiers} since are what the new \textit{ensemble classifiers} will be compared against. An explanation of the ensemble models used will also be given in this chapter.
 
-Following that, \autoref{chap: results} proceeds to show how the \textit{configuration} of the baseline classifiers was optimized, and the evaluation performances obtained by the baseline classifiers after said optimization and the ensemble classifiers. An explanation of the metrics used, and a comparison of the results between baseline and ensembles will also be given in this chapter, where the differences between the performances obtained are explored.
+Following that, \autoref{chap:results} proceeds to show how the \textit{configuration} of the baseline classifiers was optimized, and the evaluation performances obtained by the baseline classifiers after said optimization and the ensemble classifiers. An explanation of the metrics used, and a comparison of the results between baseline and ensembles will also be given in this chapter, where the differences between the performances obtained are explored.
 
-Finally, in \autoref{chap: conclusion} it will be discussed how ensembles classifiers are better across all considered metrics than almost all of the baseline models. According to the results obtained, ensembles are better than all baseline classifiers at predicting when a pair of records is actually different (e.g. only pairs which the classifier is very sure about are classified as pairs). As such, ensemble models are a great choice when they are used in a situation where predicting a negative sample as positive is not desirable. As shown, there are also differences among the evaluated ensemble models, some are more \textit{precise} (they tend to mark as pairs entries which are actually pairs), while others are more \textit{inclusive} (they tend to recognize more pairs as so, even if some non-pairs are also marked as matches). 
+Finally, in \autoref{chap:conclusion} it will be discussed how ensembles classifiers are better across all considered metrics than almost all of the baseline models. According to the results obtained, ensembles are better than all baseline classifiers at predicting when a pair of records is actually different (e.g. only pairs which the classifier is very sure about are classified as pairs). As such, ensemble models are a great choice when they are used in a situation where predicting a negative sample as positive is not desirable. As shown, there are also differences among the evaluated ensemble models, some are more \textit{precise} (they tend to mark as pairs entries which are actually pairs), while others are more \textit{inclusive} (they tend to recognize more pairs as so, even if some non-pairs are also marked as matches). 
 
 
 
@@ -411,31 +411,45 @@ uniform as possible, but even so, it is never easy to know if there might be a m
 \label{sec:rl-approach-probabilistic}
 
 
-In simple terms, probabilistic record linkage \cite{Sayers2015} compares a shared subset of fields of a given entity pair, then decides, whether the pair is a match or not, with a certainty value. The main difference concerning \textit{deterministic record linkage} is that now it is allowed for fields to partially match, and probabilistic record linkage considers a likelihood that the given attribute matches.
+In probabilistic record linkage \cite{fellegi69_theor_recor_linkag,Newcombe:1962_proba_rl,Sayers2015} all fields are compared, taking into account how good is each field at telling if a pair of entities is a match or not. This is done by using a weight $w_i$ for each field. 
 
-By default, the task is achieved by comparing all entities in the source catalog with all entities in the target catalog (unless we opt for \textit{blocking}, as explained in \autoref{sec:rl-workflow-blocking}). 
+The value of this weights is usually derived, for a pair of entities $r$, from the probabilities $u_i$ and $m_i$. Where $u_i$ is the probability that field $i$ matched and that $r \in U$ (the pair is not a match), and $m_i$ is the probability that the field $i$ matches and $r \in M$ (the pair is a match).
 
-In its most basic form, two entities are taken and compared in all their fields; which may then match completely if they are exactly the same, or partially match if they are similar but not equal. This \textit{partial match} of the fields is measured by a percentage stating how similar they actually are. 
+For example, if entities on the dataset currently being worked with have a \textit{weekday} field then it can be said that this field has 7 possible values, one for each day of the week. Moreover, every name of the week appears in the datasets approximately the same number of times, then the probability that for a random entity to have a specific weekday is $1/7$, and this is the $u_{weekday}$ probability for that field.
 
-Any similarity metric can be used to measure partial similarity. For example, \textit{edit distance} for strings, which is basically the number of changes needed to transform one of the strings into the other to make them equal (either by adding, removing or updating characters). 
+On the other hand, considering that the data has a perfect quality, if two entities are the same then this it is 100\% probable that the weekday field matches. But if the dataset has some error, say that the \textit{weekday} field has a 4\% error, then the probability that a pair $r \in M$ agrees on field \textit{weekday} is 96\%. This values are rarely known beforehand and may be estimated from the dataset \cite{christen12_data}.
 
-As a standard, if a comparison yields a 0 then it means the two fields are completely different, and if it yields a 0 they are the same, any value in between specifies how similar or how diverse the fields are.
+The weight $w_i$ for each field is then calculated as:
 
-Following the example catalogs defined in the previous section, now it is possible to compare the \textit{First Name} and \textit{Last Name} fields separately.
-Suppose they are compared with a function $fc$ that provides the percentage of
-letters both fields have in common.
+\begin{equation*}
+  w_i = \begin{cases}
+    \log_2(\frac{m_i}{u_i}) & \text{if}\ a_i = b_i \\
+    \log_2(\frac{1- m_i}{1-u_i}) & \text{if}\ a_i \neq b_i 
+    \end{cases}
+\end{equation*}
 
+Where $a_i$ and $b_i$ are the field $i$ of the entities $(a,b) = r$. If the fields match then the first case is taken, otherwise the fields don't match and the second is taken. The sum of the $w_i$ for every field in the pair can then be taken and compared against a set of upper $t_u$ and lower $t_l$ thresholds to know if the pair is a non-match, a match, or a potential match. These thresholds need to be determined a priori.
 
+\begin{equation*}
+  \begin{cases}
+    \text{non-match}, & \text{if}\ R \leq l_l \\
+    \text{potential-match}, & \text{if}\ l_l < R < l_u \\
+    \text{match}, & \text{if}\ l_u \leq R 
+  \end{cases}
+\end{equation*}
+
+An extension to the probabilistic record linkage method presented above is that instead of computing a weight $w_i$ for each pair of fields $i$, what is done is that this is instead substituted for a similarity metric that says how similar the fields are \cite{porter1997approximate,winkler1990string}. This metric is obtained by a \textit{comparison function}, which takes a pair of fields and tells, in percentage, how similar they are. One naive example of such a comparison function is the percentage of characters that two pieces of text share.
+
+Following the example catalogs defined in the previous section, now it is possible to compare the \textit{First Name} and \textit{Last Name} fields separately. Suppose they are compared with the function mentioned above that provides the percentage of letters both fields have in common.
 
 $$
 fc(s1, s2) = \frac{\| s1 \cap s2 \|}{\| s1 \cup s2 \|}
 $$
 
-
-
 It might be that both last names are exactly the same, as is with the first name for \textit{Sarah}. However, with the first name for \textit{John} it would show a similarity of only $0.8$ with \textit{Johnny}. Taking both the similarity given for the first and last names then it is possible to make a better informed final decision on whether both records should be marked as a definite match or not.  For instance, it may be said that if the average similarity assigned to all fields is greater than $0.5$ then it may be stated that a pair is a match. Under these assumptions \textit{John Piers} and \textit{Johnny Piers} will be classified as the same person.
 
 The probabilistic record linkage approach is the one that will be implemented in this project.
+
 
 
 \section{Record Linkage as a Workflow}
