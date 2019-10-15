@@ -2731,11 +2731,10 @@ The classifier is evaluated using each combination of hyperparameters, and final
 
 For the current project, the evaluation of the hyperparameters was done by performing a 5-fold cross validation with the classifier initialized using the specified parameters. After the 5-fold cross validation is complete, the average performance of these is returned. The \textit{grid search} eventually returns the combination of hyperparameters which gave the best \textit{average} performance while executing the \textit{cross validation}.
 
-Since the grid search procedure, plus the 5-fold cross validation, is quite a lengthy procedure, it was chosen to perform this optimization by only evaluating the performance of the models on \textit{Discogs/Musician}. The procedure searches for the combination of hyperparameters which makes the classifier give the best \textit{F1} score.
+Since the grid search procedure, plus the 5-fold cross validation, is quite a lengthy procedure, it was chosen to perform this optimization by only optimizing the performance of the models on \textit{Discogs/Musician}. The procedure searches for the combination of hyperparameters which makes the classifier give the best \textit{F1} score.
 
-The following tables show the hyperparameters tried for each for each baseline algorithm. In bold are the hyperparameter which were chosen as the best by the grid search procedure. 
+The following tables show the hyperparameters tried for each for each baseline algorithm. In bold are the hyperparameter which were chosen as the best by the grid search procedure. A brief clarification will also be given about the parameters which were not explicitly mentioned in the algorithm's description. 
 
-\todo[inline,color=blue!25]{explain those parameters that weren't mentioned in the model description.}
 
 \subsubsection{Naive Bayes}
 
@@ -2770,6 +2769,8 @@ C            & class\_weight & max\_iter    & solver             & tol          
 \end{tabular}
 \end{table}
 
+\textbf{max\_iter} is the maximum amount of iterations the optimization algorithm can perform when finding the optimal parameters for logistic regression. Said optimizer is defined by the hyperparameter \textbf{solver}.
+
 
 \subsubsection{Linear SVM}
 
@@ -2799,6 +2800,7 @@ False         & \textbf{entropy} & \textbf{None} & \textbf{500}  \\
 \end{tabular}
 \end{table}
 
+Specifying a \textbf{max\_features} allows the random forest algorithm to train each decision tree only on a certain subset of the features, this is used as an extra source of randomness.
 
 \subsubsection{Single Layer Perceptron}
 
@@ -2812,6 +2814,8 @@ activation       & batch\_size  & epochs        & optimizer      \\ \hline
                  & \textbf{256} & 100           & adam     
 \end{tabular}
 \end{table}
+
+\textbf{batch\_size} defines the among of items that the perceptron processes at once. The error at each evaluation is performed by considering the total error on the batch.
 
 
 \subsubsection{Multi-Layer Perceptron}
