@@ -749,7 +749,7 @@ In the \textit{linking} (also called \textit{classification}) step, the list of 
 
 There are many decision models to choose from and that might be considered to be utilized. \cite{gu06_decis_model_recor_linkag}.
 The \textit{go to} model for record linkage is the basic probabilistic model defined in
-\cite{fellegi69_theor_recor_linkag}. Other possible models \cite{Elfeky} include using the \textit{k-means} \cite{Hartigan1979} clustering algorithm to cluster the feature vectors into \textit{matched}, \textit{unmatched} and \textit{potential match} clusters, or if there is labeled data available then it is possible to train a supervised machine learning algorithm to learn when to classify
+\cite{fellegi69_theor_recor_linkag}. Other possible models \cite{Elfeky_tailor} include using the \textit{k-means} \cite{Hartigan1979} clustering algorithm to cluster the feature vectors into \textit{matched}, \textit{unmatched} and \textit{potential match} clusters, or if there is labeled data available then it is possible to train a supervised machine learning algorithm to learn when to classify
 feature vectors as a match or not.
 
 Regardless of the model used, the output of this step can be either two sets (\textit{matches} and \textit{non-matches}) or three sets (\textit{matches}, \textit{non-matches}, and \textit{potential matches}). Usually, the set of potential matches is reviewed manually to define which are actually a match \cite{dusetzina_m_2014}.
@@ -877,24 +877,24 @@ Even though the $F_1$ metric is commonly used for evaluating machine learning pr
 \section{Related Work}
 \label{sec:rl-related-work}
 
-\todo[inline,color=green!25]{Work in progress}
+This section shows related work which might be relevant to the present dissertation. Of special interest are any applications of machine learning for record linkage problems, and especially works that have successfully applied \textit{ensemble} classifiers in a record linkage pipeline. 
 
-Record Linkage was first defined in \cite{dunn46_recor_linkag}, where the author
-mentioned the importance of having a reliable method to aggregate all the
-information about a person. However, this paper did not define any actual method
-per se, and it was in \cite{newcombe59_autom_linkag_vital_recor} that the first
-foundation of record linkage was laid. Then \cite{fellegi69_theor_recor_linkag}
-established that the probabilistic foundation was optimal. \todo[inline]{maybe explain a bit more in depth}
+In \cite{Christen:2008_svm}, an SVM is trained as the model which distinguishes if two entities are the same or not given their comparison vectors. In this work, the authors start by identifying \textit{clear match} examples, which are those whose elements in the comparison vectors are near to 1. They then proceed to train the SVM on these \textit{clear matches}. The rest of the data then gets processed, and a prediction for each pair is obtained. Those pairs which are confidently predicted as matches are used, together with the original training data, to train a new SVM, iterating this process multiple times.
 
-This presents some work on record linkage
-https://www.census.gov/srd/papers/pdf/rrs2006-02.pdf
+In \cite{ektefa2011comparative} different classification models are tested for unsupervised record linkage. Specifically the comparison was made considering \textit{naive bayes}, \textit{support vector machines}, \textit{decision trees}, and \textit{bayesian networks}. After the comparison the result was that among these, \textit{SVM} and \textit{naive bayes} classifiers performs best. The way in which the training is done is similar to \cite{Christen:2008_svm}, where the set of clear entity pairs are chosen as initial training set, and then the classifier is trained in an iterative way, each time including in the training set the top predictions made during the previous generations. 
 
-\todo[inline]{mention some of the more contemporary record linkage research.
-  Specifically naive bayes ones and multi record linkage (although that can be
-  in the next section)}
+In \cite{Wilson2011_slp_in_rl} a \textit{single layer perceptron} is used to separate matching pairs from non-matching pairs. The authors report using this classifier outperforms the basic probabilistic record linkage approach.
 
+Instead of using a simple comparison function, in \cite{gottapu2016entity} a convolutional neural network (CNN) is used to extract how similar two strings of text are. The authors compare this with the \textit{Jaccard} text similarity metric and find that a record linkage pipeline using the CNN extracted comparisons has a better performance thank one using Jaccard similarity. 
 
-\cite{Wilson2011_slp_in_rl}
+In \cite{Cochinwala2001}, a record linkage pipeline is built that leverage a decision tree classifier to derive a series of rules to classify a pair of entities by looking directly at the fields of said entities.
+
+The TAILOR framework was developed in \cite{Elfeky_tailor} and provides a series of tools to perform record linkage. For using unlabelled datasets the authors propose clustering the unlabelled pairs of entities based on their comparison vectors into three clusters (matched, non-matches, and potential matches). The elements of the \textit{matches} and \textit{non-matches} clusters are then used to train a decision tree. The authors found that their method had better performance than the standard \textit{probabilistic record linkage} with thresholds. 
+
+In \cite{kim2016random_forest_dbscan}, the goal was to find, in a database of patents, all those entities which are the same. The \textit{DBSCAN} clustering algorithm is used to perform the blocking, and then the entities are fed to a \textit{random forest classifier} to predict if they are a match or not. 
+
+An ensemble composed of an \textit{SVM}, \textit{logistic regression}, and \textit{neural network} is made in \cite{KhaVo2019_metaensemble}. This ensemble is used as a classifier in a record linkage pipeline that needs to find the information of unique entities across multiple databases of medical domain. In this work, the authors optimize the base algorithms by means of a grid search procedure, and report that the ensemble has a better performance than any of the base classifiers when these are evaluated individually
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
