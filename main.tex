@@ -3299,41 +3299,34 @@ The process has up to now been considered as a single execution of the \soweego 
 \section{Future Work}
 \label{sec:future-work}
 
-\todo[inline,color=green!25]{Work in progress}
+For cases where there are different, but related, entities, a technique called \textit{collective record linkage} \cite{Kalashnikov2006_collective_graph,Dong2005_reference_reconciliation,bhattacharya07_collec_entit_resol_relat_data} has been developed. In these scenarios, a model is constructed (usually a graph) that symbolizes the dependencies between different entities. For example, the similarity between two actors may be dependent on the similarity score between said entities and the similarity between the  movies they appear in.
 
-Other things that might still be done to improve the project.
+It would be a good idea to use one of the collective matching methods to leverage the information of composed entities. For instance, in the data currently being used in the project we know that \textit{actors} are part of \textit{movies}, and that \textit{musicians} are part of \textit{bands}. The similarity among \textit{actors}/\textit{musicians} may be dependent upon the similarity of the movies in which they appear, or the bands in which they have performed.
 
-For cases where there are different, but related, entities, a technique called \textit{collective record linkage} \cite{Kalashnikov2006_collective_graph,Dong2005_reference_reconciliation,bhattacharya07_collec_entit_resol_relat_data} has been developed. In these scenarios, a model is constructed (usually a graph) that symbolizes the dependencies between  different entities. For example, the similarity between two actors may be dependent on the similarity score between said entities and the similarity between the  movies they appear in.
+The ensemble classifiers employed in this dissertation are all composed of the same base classifiers. Specifically, all of the baseline classifiers that are able to provide a probability output (i.e. all besides \textit{lsvm}) have been used to create the ensembles. There may be some of these that drive the ensembles to make certain decisions, or may actually be contributing only noise for the final prediction. A better way to chose the structure of the ensembles would be to try different base classifiers, and see which combination is the optimal. 
 
-It would be a good idea to use one of the collective matching methods to leverage the information of composed entities. For example, in the current data we know that \textit{actors} are part of \textit{movies}, and that \textit{musicians} are part of \textit{bands}. The similarity among \textit{actors}/\textit{musicians} may be dependent upon the similarity of the movies in which they appear, or the bands in which they have performed.
+Another related to the above that should be considered is that the hyperparameters of the base classifiers were optimized by considering the model as an individual. It might be that the optimal hyperaparameters for the model when it is part of an ensemble are different from those used when it makes predictions individually. 
+
+The base classifiers of the ensembles only contain \textit{one} of each type of baseline classifier. It would be interesting to also consider varying the number of times each base classifier appears besides varying the which of them are allowed to be part of the ensemble. 
+
+Seeing that ensembles did present an improvement, in general, when compared against the individual baseline classifiers, it would be interesting to see how other ensembling techinques which were not explored in the current dissertation, would perform.
+
+The evaluations presented in this work are on only on datasets about people and bands. It would be interesting to see if these performances would still be similar for datasets about different types of entities, like \textit{movies} and \textit{musical works}. Maybe the fact that the distribution of some of their data fields like \textit{name} would introduce important changes in the performance of the classifiers. 
+
+The grid search procedure to find the optimal hyperparameters of the baseline classifiers was only performed by evaluating said models on the \textit{Discogs/Musician} concrete entity. As seen in \autoref{sec:feature-viz}, features for different catalogs have markedly different distributions. It would be interesting to see the performance of each classifier when optimized separately for each catalog. 
 
 
-
-
-% ---
-better selection of base models may reduce noise in ensembles and improve final performance. 
-% ---
-It would be interesting to see how the performance would vary if new catalogs were to be added.
-% ---
-There are also other assembling approaches that weren't explored to maintain the scope of the thesis manageable (ie, boosting, bayesian record linkage, subsemble, blending.)
-% ---
-Introduce a different number of base classifiers to ensembles
-% ---
-
+% =======================================
+% =======================================
+% =======================================
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 \endgroup
-
-
-     
-% aggiunta del capitolo nell'indice
 \addcontentsline{toc}{chapter}{Bibliography}
-% stile con ordinamento alfabetico in funzione degli autori
 \bibliographystyle{plain} \bibliography{biblio}
 
 
-
 \titleformat{\chapter} {\normalfont\Huge\bfseries}{Apendix \thechapter}{1em}{}
-% sezione Allegati - opzionale
+
 \appendix
 \chapter{Appendix}
 
