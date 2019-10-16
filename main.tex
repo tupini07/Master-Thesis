@@ -979,7 +979,7 @@ From the Discogs database the information retrieved are the following entity typ
 
 \chapter{Approach} 
 \label{chap:approach}
-%llegue hasta aqui spellchecking Kate
+
 
 This chapter will cover the architecture of \soweego project, and a description of each of its parts, and how it relates to the record linkage \textit{workflow}.
 
@@ -1004,7 +1004,7 @@ Specifically, the \texttt{soweego} pipeline is structured as follows:
   \label{fig:soweego-structure}
 \end{figure}
 
-A section will be dedicated to each step, but just to give an overview, below is brief description of each one. To clarify the figure above, the \textit{Workflow} is a module which contains functionality for data cleaning and feature extraction. And the \textit{linker} is a module which contains functionality for blocking, the \textit{workflow}, and \textit{train, link, evaluate}.
+A section will be dedicated to each step, but just to give an overview, below is a brief description of each one. To clarify the figure above, the \textit{Workflow} is a module that contains functionality for data cleaning and feature extraction. And the \textit{linker} is a module which contains functionality for blocking, the \textit{workflow}, and \textit{train, link, evaluate}.
 
 \begin{enumerate}
 \item \texttt{Importer}: 
@@ -1029,7 +1029,7 @@ uses a previously trained machine learning algorithm to predict the final labels
 is in charge of taking the predicted matches and uploading the confident predictions (those above a threshold) to Wikidata, while potential matches are uploaded to the \texttt{Mix'n'match}\footurl{https://tools.wmflabs.org/mix-n-match} platform to be reviewed manually by the community.
 \end{enumerate}
 
-The current work will be mainly centered around the development of the \texttt{linker} modules, and small parts of the \texttt{importer}. Although for the discussion of results  (\autoref{chap:results}) only the results of  \texttt{evaluate} and \texttt{link} module will be evaluated.  The remaining modules were developed by the rest of the team working on \texttt{soweego}\footurl{https://github.com/Wikidata/soweego/}.
+The current work will be mainly centered around the development of the \texttt{linker} modules and small parts of the \texttt{importer}. Although for the discussion of results  (\autoref{chap:results}) only the results of  \texttt{evaluate} and \texttt{link} module will be evaluated.  The remaining modules were developed by the rest of the team working on \texttt{soweego}\footurl{https://github.com/Wikidata/soweego/}.
 
 
 \subsection{Importer}
@@ -1037,7 +1037,7 @@ The current work will be mainly centered around the development of the \texttt{l
 
 The importer is the first step in the pipeline, and is also the one that is in charge of taking an external source of data (for example, a \texttt{csv} file), and then interpreting it, and saving the results to \texttt{soweego}'s internal database so that it can be easily consumed by the following steps.
 
-The importer is composed of one \textit{adapter} for each external catalog. The adapter basically is the \textit{importer} for a specific catalog and is in charge of downloading the latest available dump for the catalog. 
+The importer is composed of one \textit{adapter} for each external catalog. The adapter is the \textit{importer} for a specific catalog and is in charge of downloading the latest available dump for the catalog. 
 
 
 Once this is done the adapter reads the obtained data and prepossesses it, so that it can be imported into the database. The adapter is necessary because the database dump from each catalog contains different fields, in different formats which need to be converted to a common representation. 
@@ -1062,7 +1062,7 @@ Following is an overview of the procedure used in each case.
 \begin{description}
 \item[Downloading training set:] 
 
-To download the Wikidata training set what needs to be done is to receive the \textit{QID} of the catalog and of the type of entity. This is achieved by asking Wikidata, via a \textit{SPARQL} query, to provide all the items it has which are of the specified entity type\footnote{for example, all items which are \textit{directors}} and which also have a \textit{statement} linking them to the given target catalog identifier. 
+To download the Wikidata training set what needs to be done is to receive the \textit{QIDs} representing the catalog and the type of entity. This is achieved by asking Wikidata, via a \textit{SPARQL} query, to provide all the items it has which are of the specified entity type\footnote{for example, all items which are \textit{directors}} and which also have a \textit{statement} linking them to the given target catalog identifier. 
 
 These identifier statements can be easily used to check which of the items provided by Wikidata have also been included in the catalog's dump. 
 
@@ -1079,13 +1079,13 @@ The difference is that now Wikidata is asked to only send  the data regarding it
 \subsection{Blocking}
 \label{sec:soweego-st-blocking}
 
-When performing the \textit{blocking} procedure, \soweego compares the entities by using the \textit{name\_tokens} field. This field get created during the \textit{import} process. It consists of a list of all parts of the name of the entity. For example, the name \textit{Bernie Stewart} is composed of the parts \textit{Bernie} and \textit{Stewart}.
+When performing the \textit{blocking} procedure, \soweego compares the entities by using the \textit{name\_tokens} field. This field gets created during the \textit{import} process. It consists of a list of all parts of the name of the entity. For example, the name \textit{Bernie Stewart} is composed of the parts \textit{Bernie} and \textit{Stewart}.
 
-When performing blocking, the first thing that need to be done is to receive a Wikidata set, and the concrete entity type for which \texttt{soweego} is currently running. Then, for every entity in the Wikidata set, the blocking is made by getting all entities in the external catalog which share \textit{name tokens} with the Wikidata entity. 
+When performing blocking, the first thing that needs to be done is to receive a Wikidata set, and the concrete entity type for which \texttt{soweego} is currently running. Then, for every entity in the Wikidata set, the blocking is made by getting all entities in the external catalog which share \textit{name tokens} with the Wikidata entity. 
 
 To prevent getting too many results it is allowed for only a maximum of 10 external entities to be retrieved for each Wikidata entity.
 
-For example, suppose a Wikidata entity is  currently processed, and in it's \textit{name\_tokens} field it has the following list of tokens: \texttt{[George, Hamilton]}, and suppose that the external catalog dataset for said entity is as follows:
+For example, suppose a Wikidata entity is currently processed, and in its \textit{name\_tokens} field it has the following list of tokens: \texttt{[George, Hamilton]}, and suppose that the external catalog dataset for said entity is as follows:
 
 \begin{table}[H]
 \centering
@@ -1134,7 +1134,7 @@ Finally, the feature extraction procedure also defines a list of which compariso
 
 The feature extraction proceeds in such a way that for every pair of entities the list of comparison functions mentioned above gets applied to each them. Each one of these \textit{function applications} will generate a value which will come to be a \textit{feature} that characterizes the relationship between the two entities.
 
-For example, consider using only one comparison function: the same modified \textit{Levenshtein} distance that was exposed in \autoref{sec:rl-workflow-feat-extraction}. Its specified that this function should be applied to the fields with the following names: \textit{[(source.name, target.name), (source.description, target.description)]}. Below is a figure which might help explain how this application happens.
+For example, consider using only one comparison function: the same modified \textit{Levenshtein} distance that was exposed in \autoref{sec:rl-workflow-feat-extraction}. It is specified that this function should be applied to the fields with the following names: \textit{[(source.name, target.name), (source.description, target.description)]}. Below is a figure which might help explain how this application happens.
 
 \begin{figure}[H]
   \centering \includegraphics[width=.6\textwidth]{feature_extraction}
@@ -1158,7 +1158,7 @@ Pair                     & Lev\_name             & Lev\_description      \\ \hli
 \end{table}
 
 
-For \texttt{soweego}, the list of functions applied may change depending on which fields are available in the target and source catalogs. For example, extracting a feature that compares the \texttt{description} of both entities only if both have said field. This means that the amount of feature vectors extracted for different concrete entities may be different. 
+For \texttt{soweego}, the list of functions applied may change depending on which fields are available in the target and source catalogs. For example, extracting a feature that compares the \texttt{description} of both entities only if both have said field. This means that the number of feature vectors extracted for different concrete entities may be different. 
 
 Once the feature vectors for all pairs become available, they may be fed to the \textit{train/evaluate/link} modules. 
 
@@ -1168,16 +1168,16 @@ Once the feature vectors for all pairs become available, they may be fed to the 
 
 These three can be treated described as one module since their functionality is very similar. The \textit{train} module trains one of the machine learning classifiers presented \autoref{chap:algorithms} on a given dataset. The \textit{evaluate} module performs the evaluation of said classifier (the evaluation step is explained more in depth in \autoref{chap:results}). And the \textit{link} module uses the trained classifier to predict whether the unlabelled pairs given by the blocking step are matches or not.
 
-All of these modules receive their as input the matrix of feature vectors from the previous step and feeds it to one of the machine learning algorithms.
+All of these modules receive as input the matrix of feature vectors from the previous step and feeds it to one of the machine learning algorithms.
 
 Besides this, the \textit{link} module also applies a couple of \textit{post-classification} steps on the predictions. Specifically, what it does is to apply the following \textit{linking rules} to each result in turn.
 
 \begin{description}
-\item[Wikidata URL] if the target in the corresponding pair thats currently processing has a URL, and said URL points to a Wikipedia/Wikidata page then it can automatically extract from said URL which Wikidata entity the target should be associated with. 
+\item[Wikidata URL] if the target in the corresponding pair that is currently processing has a URL, and said URL points to a Wikipedia/Wikidata page then it can automatically extract from said URL which Wikidata entity the target should be associated with. 
 
 If this extracted entity is the same as the source entity in the pair then the probability that they match is automatically changed to 1. 
 
-\item[Name Rule] this rule can be optionally activated when more confident results are desired, and by default is turned off. What it does is that, taking the current pair, it checks all possible fields which may be a name, and if there is no intersection among the tokenized contents of these fields then the probability of a match is decreased to 0.
+\item[Name Rule] this rule can be optionally activated when more confident results are desired, and by default is turned off. What it does is that taking the current pair, it checks all possible fields which may be a name, and if there is no intersection among the tokenized contents of these fields then the probability of a match is decreased to 0.
 \end{description}
 
 
@@ -1191,7 +1191,7 @@ For example, all predictions below 0.4 are \textit{non-matches}, above 0.4 but b
 
 The reason for this separation is because \texttt{soweego} uploads directly to Wikidata only those predictions which are very likely to be true, whilst the \textit{potential-matches} are uploaded to a service called \textit{Mix'n'match}, where the Wikidata community can check manually each proposed pair and define if it is actually a match or not.
 
-Confident results are \textit{uploaded} by editing the relevant stamement of each Wikidata item. For examaple, if QID \textit{Q185002} is a match with IMDb TID \textit{nm0310359} then the ingester will proceed to create or update a statement on the item with the given QID, using the property \textit{P345}\footurl{https://www.wikidata.org/wiki/Property:P345} and using as a value the given TID. 
+Confident results are \textit{uploaded} by editing the relevant statement of each Wikidata item. For example, if QID \textit{Q185002} is a match with IMDb TID \textit{nm0310359} then the ingester will proceed to create or update a statement on the item with the given QID, using the property \textit{P345}\footurl{https://www.wikidata.org/wiki/Property:P345} and using as a value the given TID. 
 
 The mentioned property is used to link an item with an IMDb ID (similar properties exist in Wikidata for all the other external catalogs used).
 
@@ -1199,14 +1199,14 @@ The mentioned property is used to link an item with an IMDb ID (similar properti
 \section{Implementation Details}
 \label{sec:soweego-implementation-details}
 
-All the development of \texttt{soweego} was made with the Python \cite{python-tutorial} programming language. To run the internal database  MariaDB\footurl{https://mariadb.com/} was used.(which is the same as that used by Wikidata, so there is minimum friction when moving the application from development to production). 
+All the development of \texttt{soweego} was made with the Python \cite{python-tutorial} programming language. To run the internal database  MariaDB\footurl{https://mariadb.com/} was used. (which is the same as that used by Wikidata, so there is minimum friction when moving the application from development to production). 
 The details of communicating with the database were abstracted away with the use of \texttt{SQLAlchemy} ORM \cite{sqlalchemy}, which provides an object like interface.
 
-To simplify the implementation of the record linkage workflow we also use the \texttt{Python Record Linkage Toolkit} \cite{recordlinkage-library} framework, which implements many useful functionalities for this goal. Mainly it eases the feature extraction and linking procedure. We also use the library \texttt{Pandas} \cite{mckinney2010_pandas} to make it easier to handle the data.
+To simplify the implementation of the record linkage workflow the \texttt{Python Record Linkage Toolkit} \cite{recordlinkage-library} was used, which implements many useful functionalities for this goal. Mainly it eases the feature extraction and linking procedure. The \texttt{Pandas} \cite{mckinney2010_pandas} library is employed to make it easier to handle the data.
 
 Some of the machine learning models provided were leveraged by \texttt{Scikit-Learn} \cite{scikit-learn} to be used in the linker, as well as their \textit{grid search} functionality to find the optimal hyperparameters.
 
-All the visualizations in this work have been done by using the tools \textit{Matplotlib} \cite{Hunter_Matplotlib}, and \textit{Seaborn} \cite{Seaborn}.% not really an implementation detail
+All the visualizations in this dissertation have been done by using the tools \textit{Matplotlib} \cite{Hunter_Matplotlib}, and \textit{Seaborn} \cite{Seaborn}.% not really an implementation detail
 
 Finally, the \texttt{ML-Ensemble} \cite{flennerhag:2017mlens} framework was used to make it easier to implement the different ensemble models used.
 
@@ -1219,7 +1219,8 @@ Development of \texttt{soweego} happens locally and new releases are uploaded to
 \chapter{Data}
 \label{chap:data}
 
-This chapter will be dedicated to showing and exploring the data that was used (next section), then mentioning which pre-processing steps the data undergoes and what it's final shape is (\autoref{sec:data-preprocessing}). Following that, the list of features extracted during the \textit{feature extraction} step of \texttt{soweego} will be discussed. Finally, a potential difference between the training and classification data is exposed in \autoref{sec:training-real-data-difference}.
+
+This chapter will be dedicated to showing and exploring the data that was used (next section), then mentioning which pre-processing steps the data undergoes and what its final shape is (\autoref{sec:data-preprocessing}). Following that, the list of features extracted during the \textit{feature extraction} step of \texttt{soweego} will be discussed. Finally, a potential difference between the training and classification data is exposed in \autoref{sec:training-real-data-difference}.
 
 
 \section{Original Shape of the Data}
@@ -1229,7 +1230,7 @@ This section will explore which shape the data received from the external catalo
 
 It must be pointed out for the external catalogs, that even though they are maintained by a group of contributors and, in some cases, also by dedicated teams, it does not mean that the data is 100\% clean. 
 
-During development there have been multiple encounters with malformed values (like birth or death dates in the future), spelling errors in  names, missing values (most commonly, missing birth and death dates), among others. 
+During development, there have been multiple encounters with malformed values (like birth or death dates in the future), spelling errors in names, missing values (most commonly, missing birth and death dates), among others. 
 
 As such, it must be kept in mind that the information coming from the external catalogs should not be considered the absolute truth.
 
@@ -1240,7 +1241,7 @@ As such, it must be kept in mind that the information coming from the external c
 
 IMDb provides multiple dumps of their data\footurl{https://www.imdb.com/interfaces/}, each is a snapshot of the database up until the current date, containing different information. The one used in this project, which is the one that contains information about people in IMDb's database, is \texttt{name.basics}\footurl{https://datasets.imdbws.com/name.basics.tsv.gz}. The specific dump that is going to be discussed was downloaded from the site on \textit{3 October 2019}.
 
-The data dump is one single tab separated file. It contains 6 different columns. An example of some rows, and explanation of each field are mentioned below.
+The data dump is one single tab separated file. It contains 6 different columns. An example of some rows and an explanation of each field are mentioned below.
 
 \begin{table}[H]
 \centering
@@ -1319,7 +1320,7 @@ All the items in the this list correspond to respective professions in Wikidata,
 
 There are a total of 9,613,243 entries in the dump. Of these, all of them have some value in their \textit{primaryName} field. There are 194,469 entries which have a single word in as the name, all the other have 2 or more. In \autoref{fig:imdb-num-tokens-name-pie} its possible to see that the great majority of entities have names composed of two tokens, and the next most common amount of tokens is 3 (possibly those with a middle name), followed by those with only one token, and finally all those entities with names containing 4 or more token.
 
-\begin{figure}[]
+\begin{figure}[H]
   \centering \includegraphics[width=.6\textwidth]{imdb_num_tokens_names}
   \caption{Amount of tokens in names of IMDb entities.}
   \label{fig:imdb-num-tokens-name-pie}
@@ -1328,7 +1329,7 @@ There are a total of 9,613,243 entries in the dump. Of these, all of them have s
 
 Of all the entries, there are only 488,727 which have a \textit{birthDate}, and 170,613 have a \textit{deathDate}. The distplots in \autoref{fig:imdb-years-distplot} show the distributions of birth and death dates for IMDb. It can be noted that most of the entities were born around the 1900, and there are less entities from closer years (possibly because those individuals are still too young to have any reason to possess a page in IMDb). On the other hand, death dates behave in the inverse manner: the greatest amount of deceased entities seems to have died in the last years.
 
-\begin{figure}[]
+\begin{figure}[H]
   \centering \includegraphics[width=.9\textwidth]{birth_and_death_frequencies_imdb}
   \caption{Birth (top) and death dates (bottom) for IMDb entities. Note that to generate this figure only dates later than 1800 were considered. There are 568 entities who were born earlier than 1800, and 305 entities who died before the same date. These entities are not being considered for the graphs above, in an effort to make them easier to interpret, but we do consider them during the record linkage process.}
   \label{fig:imdb-years-distplot}
@@ -1336,7 +1337,7 @@ Of all the entries, there are only 488,727 which have a \textit{birthDate}, and 
 
 The professions field is quite good: only 1,881,284 don't have a profession. The remaining 7,731,959 entities either have 1, 2 or 3 professions listed. \autoref{fig:imdb-profession-count-pie} is a pie chart showing their distribution. Its possible to see that roughly $3/4$ of the entities have only one profession, and the last quarter seems to be equally shared by entities with 2 and 3 professions.
 
-\begin{figure}[]
+\begin{figure}[H]
   \centering \includegraphics[width=.6\textwidth]{profession_counts_imdb}
   \caption{Counts of the number of professions listed for IMDb entities.}
   \label{fig:imdb-profession-count-pie}
@@ -1344,14 +1345,14 @@ The professions field is quite good: only 1,881,284 don't have a profession. The
 
 In \autoref{fig:imdb-profession-raw-counts} a barplot can be seen that shows the amount of times each profession appeared in the dump. And \autoref{fig:imdb-profession-single-percentage} shows the percentage of entities which only had one of the professions.
 
-\begin{figure}[]
+\begin{figure}[H]
   \centering \includegraphics[width=\textwidth]{raw_profession_counts_imdb}
   \caption{Raw counts of the number of professions listed for IMDb entities.}
   \label{fig:imdb-profession-raw-counts}
 \end{figure}
 
 
-\begin{figure}[]
+\begin{figure}[H]
   \centering \includegraphics[width=\textwidth]{imdb_percentage_single_professions}
   \caption{Percentage of how many times each profession appeared as the single profession of an entity.}
   \label{fig:imdb-profession-single-percentage}
@@ -1360,7 +1361,7 @@ In \autoref{fig:imdb-profession-raw-counts} a barplot can be seen that shows the
 
 By looking at \autoref{fig:imdb-profession-coocurrence-heatmap} a heatmap can be seen that describes the co-occurrence of the different professions (how frequent is it that an entity has them listed together in its \textit{primaryProfessions} field). Its possible to see there are some interesting correlations among them, for example, that the \textit{director} profession almost always appears together with the \textit{writer} profession. This shows that there is an underlying structure in the professions, which is another motivation to create a feature that leverages this field.
 
-\begin{figure}[]
+\begin{figure}[H]
   \centering \includegraphics[width=\textwidth]{imdb_profession_coorcurrence}
   \caption{Co-occurrence of IMDb professions.}
   \label{fig:imdb-profession-coocurrence-heatmap}
@@ -1410,7 +1411,7 @@ There are a total of 6,432,264 entities in the Discogs dump. Of these, 1,129,711
 
 There are 384,352 entities which have some value in the \textit{members} field, meaning that these are the bands in the data dump. And there are 749,499 which have a value in the \textit{groups} field (these are the musicians). There are also 4,140 entities which have \textit{both} members and groups. \autoref{fig:discogs-band-member-commonality} shows the most common number of bands a musician belongs to, and the most common number of members a band has. It can be seen that it is more common for bands to have multiple members, whilst it is not very common for a musician to be part of more than one band.
 
-\begin{figure}[]
+\begin{figure}[H]
   \centering \includegraphics[width=\textwidth]{discogs_band_belonging_barplots} 
   \caption{The plots above show what is the most common number of members in a band (top) and the most common number of bands a musician belongs to.}
   \label{fig:discogs-band-member-commonality}
@@ -1419,7 +1420,7 @@ There are 384,352 entities which have some value in the \textit{members} field, 
 
 Of all the entities, 935,456 are not associated with a real name. However, all of them do have a \textit{name}. Most of these are composed of 2 tokens. \autoref{fig:discogs-num-name-tokens-distplot} shows the distribution of the number of tokens for the names of the entities. Notice that 2 is the most common, but 3 and 4 are also quite common.
 
-\begin{figure}[]
+\begin{figure}[H]
   \centering \includegraphics[width=\textwidth]{discogs_distribution_num_name_tokens} 
   \caption{Distribution of the number of tokens in names of Discogs entities.}
   \label{fig:discogs-num-name-tokens-distplot}
@@ -1427,7 +1428,7 @@ Of all the entities, 935,456 are not associated with a real name. However, all o
 
 There are 492,315 entities which have at least one value in the \textit{namevariations} field. \autoref{fig:discogs-num-name-variations-barplot} shows which are the most common number of alternative names, among entities who actually have alternative names. Notice that it is much more likely to have only one name variation, with the likelihood of having another decreasing almost by half with each extra alternative name.
 
-\begin{figure}[]
+\begin{figure}[H]
   \centering \includegraphics[width=\textwidth]{discogs_num_name_variations} 
   \caption{Distribution of the 30 most common number of tokens in names of Discogs entities.}
   \label{fig:discogs-num-name-variations-barplot}
@@ -1436,7 +1437,7 @@ There are 492,315 entities which have at least one value in the \textit{namevari
 
 Regarding the \textit{profile} field, which comes to be like the description of the entity, 487,588 have some kind of value in it. \autoref{fig:discogs-num-words-profile-barplot} shows the distribution of how many words can be expected to be found in such description (among entities who do have one). Notice that if an entity has a profile description then the most likely scenario is that it will have one composed of only two words. It's interesting to notice that having only one word in the description is almost as likely as having 7 of them. 
 
-\begin{figure}[]
+\begin{figure}[H]
   \centering \includegraphics[width=\textwidth]{discogs_num_words_profile} 
   \caption{Distribution of the 30 most common amount of number of words in the \textit{profile} of Discogs entities.}
   \label{fig:discogs-num-words-profile-barplot}
@@ -1445,7 +1446,7 @@ Regarding the \textit{profile} field, which comes to be like the description of 
 
 Discogs also provides how many entities are associated with links to external pages. In the dump there are 243,757 entities with external links. \autoref{fig:discogs-external-links-counts-barplot} shows which amount of links is the most common among entities which do have links. It seems to be very common, if an entity has at least one link, that it actually has only one. Entities with 3 and 4 links can be found, but 5 or more are much less common.
 
-\begin{figure}[]
+\begin{figure}[H]
   \centering \includegraphics[width=\textwidth]{discogs_external_links_counts} 
   \caption{Distribution of the 30 most common amount of external links associated with Discogs entities.}
   \label{fig:discogs-external-links-counts-barplot}
@@ -1453,7 +1454,7 @@ Discogs also provides how many entities are associated with links to external pa
 
 The \textit{data\_quality} field shows how good the data about a certain entity is. All entities have a value in this field. \autoref{fig:discogs-data-quality-distribution-pie} provides the distribution of the various data quality labels. Its possible to see that more than half of them are marked as \textit{Needs Vote}, little less than a quarter are \textit{Correct}, and the rest are labelled as incorrect (in different degrees).
 
-\begin{figure}[]
+\begin{figure}[H]
   \centering \includegraphics[width=\textwidth]{discogs_data_quality_distribution} 
   \caption{Percentages of entities marked with a given \textit{data quality} label.}
   \label{fig:discogs-data-quality-distribution-pie}
@@ -2003,11 +2004,9 @@ To better understand the features exposed in the section above, and to learn wha
     \item Which features are extracted for a specific catalog?
     \item Is there an important variation among features extracted from training and classification data?
     \begin{itemize}
-        \item What about the variation among features extracted for positive and negative examples in the training data?
+        \item What about the variation among features for pairs in the training data which are labelled as matches and those that are non-matches?
     \end{itemize}
 \end{itemize}
-
-This section strives to answer all these questions.
 
 \autoref{tab:features-viz-average-std-classification}, presents the features extracted for each concrete entity in the \textit{classification set}. The first number in each cell is the average value, and the number below it, in parenthesis, is the standard deviation. If a cell has no value then it means that the given concrete entity does not have the required fields to extract said features and so it was not used. An example of this is the \textit{born\_similar} which was not applied to entities of the \textit{Discogs} catalog since they do not have birth dates. Note that to make the tables fit nicely in the page, the names of the features have been shortened. Below is a mapping from the complete feature name to its shortened version:
 
@@ -2090,10 +2089,19 @@ Examples which can readily be discerned from the graphic are: \textit{nm,exct}, 
 
 Now, the used features can be said to be effective if they acually separate the positive from negative examples. For this purpose, \autoref{tab:features-viz-average-std-positive} and \autoref{tab:features-viz-average-std-negative} present the mean and standard deviation values for positive and negative training examples respectively. It is easily seen that in most cases the mean values in the positive samples are much higher than those in the negative samples, meaning that the features are indeed significant to distinguish whether a sample is positive or not.
  
-\autoref{fig:average-features-positive-negative} shows two heatmaps similar to those described for the classification and training sets. It is easy to see that training samples have a higher mean value for almost all features/concrete-entities. An interesting thing to notice, however, is that \textit{nmt.lev} and \textit{nmt.cos} have quite high mean values compared to all the other values in the \textit{negative set}, and in some cases, for \textit{Discogs/Musician}, the mean value in the negative set is actually higher than the corresponding value in the positive set. 
+\autoref{fig:average-features-positive-negative} shows two heatmaps similar to those described for the classification and training sets. It is easy to see that training samples have a higher mean value for almost all features/concrete-entities. An interesting thing to notice, however, is that \textit{nmt.lev} and \textit{nmt.cos} have quite high mean values compared to all the other values in the \textit{negative set}. A reason for this might be that these string metrics are good at detecting partial matches on text, while the other feature metrics work by either predicting an exact match or the number of shared tokens (which themselves must exactly match).
 
-Among all features it seems that the most significant ones for separating positive and negative samples are: \textit{nm.exct}, which is almost 1 in the positive set, and very low in the negative set, also \textit{born and died similar} are much higher for the positive set, and finally the url features are also much higher for positive samples. Finally, it should also be pointed out that the \textit{occ.shr} feature is similar in value between the two sets, but is a little higher in positive samples. An exception to this last is \textit{IMDb/Actor}, which seems to have the same mean value for this feature in both sets.
+Among all features it seems that the most significant ones for separating positive and negative samples are: 
 
+\begin{itemize}
+    \item \textit{nm.exct}, which is almost 1 in the positive set, and very low in the negative set. This is expected considering that the training set was created to match on this value.
+    
+    \item \textit{born and died similar} are much higher for the positive set.
+    
+    \item \textit{url features} are also much higher for positive samples, meaning that the URLs related to an entity are actually good identifiers of entities.
+    
+    \item Finally, it should also be pointed out that the \textit{occ.shr} feature is similar in value between the two sets, but is a little higher in positive samples. An exception to this last is \textit{IMDb/Actor}, which seems to have the same mean value for this feature in both sets. Quite possibly the reason for this is because negative samples are also constructed from the same type of entity as the positive samples (e.g. \textit{musician, actor, director, etc}), so it is expected for some of their occupations to match. 
+\end{itemize}
 
 \begin{table}[H]
 \centering
@@ -2160,13 +2168,15 @@ For completeness, \autoref{sec:apx-feature-distribution} contains distribution p
 \section{Difference between training and real-world data}
 \label{sec:training-real-data-difference}
 
-Seeing that the catalogs used are maintained mainly by contributors, one may think that more important people/bands have more information on them than less important ones. From this follows that these entities may have already been linked with the respective external catalog entity. As such, one can assume that the training data is composed mainly of these already labelled \textit{more important} entities, and the classification data are \textit{less important} entities, and less accurately labelled. 
+Seeing that the catalogs used are maintained mainly by contributors, one may think that more important people/bands have more information on them than less important ones. From this follows that these entities may have already been linked with the respective external catalog entity. As such, one can assume that the positive samples in the training data are composed mainly of these already labelled, \textit{more important}, entities, and the classification data are \textit{less important} entities, and less accurately labelled. 
 
 This hypothesis, that training data is better quality than classification data, may impact the ability to extract meaningful features from the data. For example, it may be more common in the classification set than in the training set that an entity has no \textit{birth date}, or that this date is wrong.
 
 \autoref{tab:features-percentage-of-nans-or-zeroes} shows the percentage of zero values obtained for each feature, for each concrete entity. Most features behave similarly across the different sets, for example \textit{nmt.lev} which is always positive. Of more interest are the features \textit{born and die similar}, and \textit{nm.exact}, which are almost always zero in the classification set, but are considerably \textit{better} in the training set.
 
-If training and classification sets were of the same quality then this difference can be attributed to the simple fact that the classification set contains more negative examples than the training set. However, in the current case there is no way to know except by evaluating the classification predictions, which is something that will be automatically done by the Wikidata community once said predictions are uploaded. Regardless, this is something that must be kept in mind since the final performance of the algorithms on the classification data may actually be different from that on the training data. 
+If training and classification sets were of the same quality then this difference can be attributed to the simple fact that the classification set contains more negative examples than the training set. However, in the current case there is no way to know except by evaluating the classification predictions, which is something that will be done by the Wikidata community once said predictions are uploaded. 
+
+Regardless, this is something that must be kept in mind since the final performance of the algorithms on the classification data may actually be different from that on the training data. 
 
 
 
@@ -2981,8 +2991,6 @@ discogs     & nb    & 0.927004 & 0.001386   & 0.897476 & 0.001894     & 0.958554
 
 It seems that overrall \textit{mlp} is the best performing baseline model. It is interesting to note that although \textit{naive bayes} appears to have the highest \textit{precision} for \textit{Musicbrainz} is is also the model that has the lowest \textit{recall} for that same catalog. The same happens for IMDb, \textit{naive bayes} has the best \textit{recall} but the lowest precision. A slight exception is Discogs, where \textit{lsvm} has the best \textit{recall}, and is the second worst in \textit{precision}.
 
-
-
 Finally, the table below contains a summary of the metrics obtained by each classifier, these were obtained by averaging the metrics obtained for each concrete entity. The best value for each metric is denoted in \textbf{bold}.
 
 \begin{table}[H]
@@ -3001,7 +3009,7 @@ nb    & 0.915145 & 0.003473   & 0.886305 & 0.009108     & \textbf{0.949023}   & 
 \end{table}
 
 
-It can be seen in \autoref{tab:metrics-summary-baseline} that \textit{mlp} is the model with the best \textit{F1 score} (as expected). It also seems that \textit{mlp} has the best average \textit{precision} and is second in best \textit{recall}, with the first place being taken by \textit{naive bayes}.
+It can be seen in \autoref{tab:metrics-summary-baseline} that \textit{mlp} is the model with the best \textit{F1 score} (as expected from the results presented in \autoref{tab:best-model-per-metric-average}). It also seems that \textit{mlp} has the best average \textit{precision} and is second in best \textit{recall}, with the first place being taken by \textit{naive bayes}.
 
 \begin{figure}[H]
   \centering \includegraphics[width=\textwidth]{baseline_evluation_main_metrics_barplot} 
