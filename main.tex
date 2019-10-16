@@ -938,7 +938,7 @@ This information may be leveraged by separating the incoming data into their cor
 \item Writer
 \end{itemize}
 
-IMDb’s dump does not provide such a clean separation of the different types of entities. This clear segmentation was the result of an analysis made with the scope of finding the best matches between the IMDb professions and Wikidata entities. Said analysis can be found in the appendix, specifically in \autoref{sec:imdb-profs-to-wikidata}. 
+IMDb’s dump does not provide such a clean separation of the different types of entities. This clear segmentation was the result of an analysis and conversation made by the whole development group\footurl{https://github.com/Wikidata/soweego/issues/165} with the scope of finding the best matches between the IMDb professions and Wikidata entities.
 
 IMDb’s data is mostly provided by contributors. However, information like \textit{name}, \textit{description}, \textit{image} (either the profile image of a person or the cover for a movie/TV-Series), are manually curated by the IMDb team. Automated access to the data itself is, as said above, restricted since IMDb only provides a partial dump of their whole database, and using web crawlers to access more information is not permitted according to their terms of usage.
 
@@ -1312,7 +1312,7 @@ The actual possible values for the \textit{primaryProfession} field are:
     \end{itemize*}
 \end{quote}
 
-All the items in this list correspond to respective professions in Wikidata, meaning its possible to later compare these with the profession associated with a Wikidata item, and from the comparison derive a feature. The mapping from these professions to Wikidata professions is explained in \autoref{sec:imdb-profs-to-wikidata}, the feature mentioned will be explained later in \autoref{sec:used-features}.
+All the items in this list correspond to respective professions in Wikidata, meaning its possible to later compare these with the profession associated with a Wikidata item, and from the comparison derive a feature. The feature mentioned will be explained later in \autoref{sec:used-features}.
 
 There are a total of 9,613,243 entries in the dump. Of these, all of them have some value in their \textit{primaryName} field. There are 194,469 entries that have a single word in as the name, all the others have 2 or more. In \autoref{fig:imdb-num-tokens-name-pie} its possible to see that the great majority of entities have names composed of two tokens, and the next most common amount of tokens is 3 (possibly those with a middle name), followed by those with only one token, and finally all those entities with names containing 4 or more token.
 
@@ -2708,8 +2708,6 @@ Before training and evaluating the baseline models, a grid search was performed 
 
 The metrics measured during evaluation are: \textit{F1 score}, \textit{Precision}, and \textit{Recall}. These have been previously explained in \autoref{sec:rl-workflow-evaluation}. 
 
-Note that this section includes only the results obtained during evaluation. In the appendix, specifically in \autoref{sec:apx-classification-results} a brief analysis of the distribution of predictions obtained when predicting on the classification set can be found.
-
 Besides presenting the results, \autoref{sec:comparative-evaluation} will strive to compare the results obtained for the baseline and ensemble models, and point out any differences.
 
 
@@ -3395,13 +3393,6 @@ In related record linkage studies, these terms are also commonly referred to as 
 of target) .
    
 
-\section{Mapping IMDb Professions to Wikidata}
-\label{sec:imdb-profs-to-wikidata}
-
-\todo[inline,color=red!25]{Possibly this will be removed}
-
-almost everything said in https://github.com/Wikidata/soweego/issues/165
-
 
 \section{Distribution of features}
 \label{sec:apx-feature-distribution}
@@ -3481,186 +3472,6 @@ Comparing the positive and negative training distributions one can notice that f
       \label{fig:distribution-of-training-positive-features-2}
 \end{figure}
 
-\section{Analysis of classification distributions}
-\label{sec:apx-classification-results}
-
-\todo[inline,color=red!25]{Possibly this will be removed. Discussion on classification distribution does not add much if we don't know the labels}
-
-
-When a classifier predicts if a pair is a match or not it will yield a prediction which may be between 0 and 1. This predictions can be plotted with a distribution plot to see how different classifiers behave for the same concrete entity.
-
-This section contains the results of running the \texttt{soweego} pipeline on each concrete entity. The data used to create these results were the Wikidata training and classification dumps, and also the dumps for the external catalogs mentioned in \autoref{sec:orig-shape-of-data}. The training data was used for training each model, and the results were obtained from the classification data.
-
-The following sections will show the results obtained for the baseline and ensemble models separately.
-
-\subsection{Baseline classification results}
-\label{sec:apx-baseline-classification-results}
-
-The table below shows statics on the 
-
-\begin{table}[H]
-\centering
-\begin{tabular}{|l|l|l|l|ll|l|}
-\hline
-Model                             & Average Mean & Average STD & Average 25\% & Average 50\% & Average 75\% & Average Max \\ \hline
-single\_layer\_perceptron         & 0.911712     & 0.213713    & 0.963896     & 0.997227     & 0.998371     & 0.999749    \\
-multi\_layer\_perceptron          & 0.911148     & 0.212020    & 0.945349     & 0.999371     & 0.999781     & 0.999994    \\
-naive\_bayes                      & 0.077806     & 0.183952    & 0.000463     & 0.003623     & 0.078400     & 0.999998    \\
-linear\_support\_vector\_machines & 0.057549     & 0.225727    & 0.000000     & 0.000000     & 0.000000     & 1.000000    \\
-random\_forest                    & 0.053097     & 0.173311    & 0.000000     & 0.000000     & 0.000444     & 1.000000    \\
-logistic\_regression              & 0.051562     & 0.162769    & 0.001627     & 0.002700     & 0.005134     & 0.999925    \\ \hline
-\end{tabular}
-\caption{}
-\label{tab:my-table}
-\end{table}
-
-
-
-\begin{longtable}{|l|l|l|l|l|l|l|l|l|l|l|}
-\hline
-Catalog     & Entity   & Model                             & Count  & Mean     & STD      & Min      & 25\%     & 50\%     & 75\%     & Max      \\ \hline
-discogs     & band     & linear\_support\_vector\_machines & 92137  & 0.064480 & 0.245607 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
-discogs     & musician & linear\_support\_vector\_machines & 515082 & 0.032108 & 0.176286 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
-imdb        & writer   & linear\_support\_vector\_machines & 68702  & 0.053259 & 0.224551 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
-imdb        & musician & linear\_support\_vector\_machines & 944196 & 0.018987 & 0.136477 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
-imdb        & director & linear\_support\_vector\_machines & 35094  & 0.083775 & 0.277054 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
-imdb        & producer & linear\_support\_vector\_machines & 9351   & 0.094001 & 0.291845 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
-imdb        & actor    & linear\_support\_vector\_machines & 355515 & 0.085555 & 0.279706 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
-musicbrainz & musician & linear\_support\_vector\_machines & 652175 & 0.029915 & 0.170354 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
-musicbrainz & band     & linear\_support\_vector\_machines & 106026 & 0.055864 & 0.229659 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\ \hline
-discogs     & musician & logistic\_regression              & 515082 & 0.026798 & 0.125459 & 0.000000 & 0.000681 & 0.001240 & 0.002344 & 0.999997 \\
-discogs     & band     & logistic\_regression              & 92137  & 0.056130 & 0.165189 & 0.000000 & 0.004231 & 0.006317 & 0.010508 & 0.999984 \\
-imdb        & director & logistic\_regression              & 35094  & 0.066687 & 0.194344 & 0.000132 & 0.001263 & 0.002436 & 0.006390 & 0.999955 \\
-imdb        & producer & logistic\_regression              & 9351   & 0.076076 & 0.200209 & 0.000220 & 0.001204 & 0.002088 & 0.004567 & 0.999668 \\
-imdb        & actor    & logistic\_regression              & 355515 & 0.068824 & 0.188005 & 0.000236 & 0.002456 & 0.003915 & 0.006918 & 0.999943 \\
-imdb        & musician & logistic\_regression              & 944196 & 0.019788 & 0.089113 & 0.000075 & 0.000567 & 0.000977 & 0.001920 & 0.999975 \\
-imdb        & writer   & logistic\_regression              & 68702  & 0.044311 & 0.157563 & 0.000114 & 0.000965 & 0.001704 & 0.003226 & 0.999800 \\
-musicbrainz & band     & logistic\_regression              & 106026 & 0.077057 & 0.218408 & 0.000000 & 0.001852 & 0.002936 & 0.006318 & 1.000000 \\
-musicbrainz & musician & logistic\_regression              & 652175 & 0.028386 & 0.126628 & 0.000000 & 0.001425 & 0.002688 & 0.004012 & 1.000000 \\ \hline
-discogs     & band     & multi\_layer\_perceptron          & 92137  & 0.947446 & 0.169248 & 0.000000 & 0.994668 & 0.999367 & 0.999794 & 0.999977 \\
-discogs     & musician & multi\_layer\_perceptron          & 515082 & 0.974131 & 0.125070 & 0.000000 & 0.998604 & 0.999678 & 0.999942 & 0.999999 \\
-imdb        & director & multi\_layer\_perceptron          & 70188  & 0.934691 & 0.192393 & 0.002369 & 0.996334 & 0.999077 & 0.999737 & 0.999995 \\
-imdb        & writer   & multi\_layer\_perceptron          & 137404 & 0.954458 & 0.160987 & 0.004722 & 0.997428 & 0.999359 & 0.999802 & 0.999995 \\
-imdb        & producer & multi\_layer\_perceptron          & 18702  & 0.922224 & 0.204272 & 0.000604 & 0.996273 & 0.999268 & 0.999751 & 0.999984 \\
-imdb        & actor    & multi\_layer\_perceptron          & 355515 & 0.932479 & 0.185652 & 0.002369 & 0.996054 & 0.998967 & 0.999477 & 0.999999 \\
-imdb        & musician & multi\_layer\_perceptron          & 944196 & 0.982765 & 0.081712 & 0.001360 & 0.999014 & 0.999708 & 0.999881 & 0.999997 \\
-musicbrainz & musician & multi\_layer\_perceptron          & 652175 & 0.766345 & 0.411756 & 0.000000 & 0.820425 & 0.999451 & 0.999733 & 1.000000 \\
-musicbrainz & band     & multi\_layer\_perceptron          & 106026 & 0.785790 & 0.377086 & 0.000000 & 0.709337 & 0.999467 & 0.999908 & 1.000000 \\ \hline
-discogs     & musician & naive\_bayes                      & 515082 & 0.034216 & 0.161297 & 0.000000 & 0.000319 & 0.000319 & 0.005422 & 0.999999 \\
-discogs     & band     & naive\_bayes                      & 92137  & 0.069714 & 0.205292 & 0.000000 & 0.001541 & 0.013942 & 0.013942 & 0.999995 \\
-imdb        & musician & naive\_bayes                      & 944196 & 0.025071 & 0.111446 & 0.000000 & 0.000319 & 0.001574 & 0.001574 & 0.999999 \\
-imdb        & writer   & naive\_bayes                      & 68702  & 0.043241 & 0.152733 & 0.000000 & 0.000355 & 0.001883 & 0.001883 & 0.999999 \\
-imdb        & actor    & naive\_bayes                      & 355515 & 0.070022 & 0.192806 & 0.000000 & 0.000700 & 0.004079 & 0.004079 & 0.999999 \\
-imdb        & producer & naive\_bayes                      & 9351   & 0.070559 & 0.184460 & 0.000000 & 0.000417 & 0.001824 & 0.001824 & 0.999993 \\
-imdb        & director & naive\_bayes                      & 35094  & 0.060302 & 0.180137 & 0.000000 & 0.000438 & 0.002258 & 0.002790 & 0.999998 \\
-musicbrainz & band     & naive\_bayes                      & 106026 & 0.313230 & 0.366327 & 0.000000 & 0.000063 & 0.006630 & 0.673986 & 1.000000 \\
-musicbrainz & musician & naive\_bayes                      & 652175 & 0.013899 & 0.101066 & 0.000000 & 0.000012 & 0.000096 & 0.000096 & 1.000000 \\ \hline
-discogs     & band     & random\_forest                    & 92137  & 0.053361 & 0.180183 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
-discogs     & musician & random\_forest                    & 515082 & 0.024329 & 0.127647 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
-imdb        & producer & random\_forest                    & 9351   & 0.081674 & 0.221939 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
-imdb        & writer   & random\_forest                    & 68702  & 0.045897 & 0.167953 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
-imdb        & director & random\_forest                    & 35094  & 0.067178 & 0.204324 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
-imdb        & musician & random\_forest                    & 944196 & 0.018942 & 0.096642 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
-imdb        & actor    & random\_forest                    & 355515 & 0.070115 & 0.202583 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
-musicbrainz & musician & random\_forest                    & 652175 & 0.025781 & 0.128633 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
-musicbrainz & band     & random\_forest                    & 106026 & 0.090595 & 0.229891 & 0.000000 & 0.000000 & 0.000000 & 0.004000 & 1.000000 \\ \hline
-discogs     & musician & single\_layer\_perceptron         & 515082 & 0.973132 & 0.125103 & 0.000000 & 0.997566 & 0.998666 & 0.999229 & 0.999829 \\
-discogs     & band     & single\_layer\_perceptron         & 92137  & 0.943075 & 0.165641 & 0.000000 & 0.989174 & 0.993207 & 0.995274 & 0.998551 \\
-imdb        & writer   & single\_layer\_perceptron         & 68702  & 0.955303 & 0.161966 & 0.000147 & 0.997567 & 0.998731 & 0.999296 & 0.999923 \\
-imdb        & actor    & single\_layer\_perceptron         & 355515 & 0.930660 & 0.189850 & 0.000052 & 0.993078 & 0.996077 & 0.997540 & 0.999728 \\
-imdb        & director & single\_layer\_perceptron         & 35094  & 0.931354 & 0.200875 & 0.000025 & 0.994105 & 0.997881 & 0.998906 & 0.999895 \\
-imdb        & musician & single\_layer\_perceptron         & 944196 & 0.980424 & 0.089165 & 0.000026 & 0.998115 & 0.999061 & 0.999472 & 0.999938 \\
-imdb        & producer & single\_layer\_perceptron         & 9351   & 0.922776 & 0.206773 & 0.000165 & 0.996212 & 0.998406 & 0.999139 & 0.999876 \\
-musicbrainz & musician & single\_layer\_perceptron         & 652175 & 0.763318 & 0.411444 & 0.000000 & 0.795643 & 0.996459 & 0.997635 & 1.000000 \\
-musicbrainz & band     & single\_layer\_perceptron         & 106026 & 0.805367 & 0.372603 & 0.000000 & 0.913607 & 0.996555 & 0.998851 & 1.000000 \\ \hline
-\end{longtable}
-
-\begin{figure}[]
-  \centering \includegraphics[width=\textwidth]{baseline_classification_continuous_classifiers_distplots} 
-  \caption{Distribution of predictions for classifier whose output is in a binary space.}
-  \label{fig:apx-baseline-classification-barplot}
-\end{figure}
-
-\begin{figure}[]
-  \centering \includegraphics[width=\textwidth]{baseline_classification_binary_classifiers_barplot} 
-  \caption{Distribution of predictions for classifier whose output is in a binary space.}
-  \label{fig:apx-baseline-classification-barplot}
-\end{figure}
-
-
-\subsection{Ensembles classification results}
-\label{sec:apx-ensembles-classification-results}
-
-
-\begin{table}[H]
-\centering
-\begin{tabular}{|l|l|l|l|l|l|l|}
-\hline
-Model                    & Avg. Mean & Avg. STD & Avg. 25\% & Avg. 50\% & Avg. 75\% & Avg. Max \\ \hline
-voting\_classifier\_soft & 0.057636     & 0.158270    & 0.003207     & 0.007516     & 0.021039     & 0.999121    \\
-stacked\_classifier      & 0.056042     & 0.168406    & 0.009359     & 0.009674     & 0.011936     & 0.974617    \\
-voting\_classifier\_hard & 0.054288     & 0.218717    & 0.000000     & 0.000000     & 0.000000     & 1.000000    \\
-gated\_classifier        & 0.052910     & 0.167008    & 0.006857     & 0.007141     & 0.007596     & 0.989812    \\ \hline
-\end{tabular}
-\caption{}
-\label{tab:apx-ensemble-classification-summary}
-\end{table}
-
-% consider name abbreviations!
-
-
-\begin{longtable}{|l|l|l|l|l|l|l|l|l|l|l|}
-\hline
-Catalog     & Entity   & Model                    & Count  & Mean     & STD      & Min      & 25\%     & 50\%     & 75\%     & Max      \\ \hline
-discogs     & musician & gc        & 515082 & 0.029858 & 0.134515 & 0.000000 & 0.005109 & 0.005152 & 0.005247 & 0.984798 \\
-discogs     & band     & gc        & 92137  & 0.057388 & 0.179030 & 0.000000 & 0.009710 & 0.009955 & 0.010281 & 0.981458 \\
-imdb        & actor    & gc        & 355515 & 0.065065 & 0.181855 & 0.005060 & 0.005130 & 0.005192 & 0.005239 & 0.987478 \\
-imdb        & musician & gc        & 944196 & 0.017756 & 0.079748 & 0.004216 & 0.004266 & 0.004288 & 0.004328 & 0.988251 \\
-imdb        & writer   & gc        & 68702  & 0.048981 & 0.170615 & 0.005432 & 0.005505 & 0.005550 & 0.005590 & 0.989302 \\
-imdb        & producer & gc        & 9351   & 0.080576 & 0.213030 & 0.006867 & 0.007220 & 0.007352 & 0.007708 & 0.993112 \\
-imdb        & director & gc        & 35094  & 0.066865 & 0.202458 & 0.005077 & 0.005161 & 0.005196 & 0.005438 & 0.983906 \\
-musicbrainz & musician & gc        & 652175 & 0.027414 & 0.123071 & 0.000000 & 0.006402 & 0.006426 & 0.006457 & 1.000000 \\
-musicbrainz & band     & gc        & 106026 & 0.082290 & 0.218746 & 0.000000 & 0.013210 & 0.015158 & 0.018073 & 1.000000 \\ \hline
-discogs     & band     & sc      & 92137  & 0.054855 & 0.171827 & 0.000000 & 0.012356 & 0.012482 & 0.013273 & 0.959502 \\
-discogs     & musician & sc      & 515082 & 0.023429 & 0.111203 & 0.000000 & 0.004903 & 0.004904 & 0.004925 & 0.956270 \\
-imdb        & actor    & sc      & 355515 & 0.061541 & 0.175259 & 0.006668 & 0.006805 & 0.006814 & 0.007155 & 0.982776 \\
-imdb        & producer & sc      & 9351   & 0.106723 & 0.253498 & 0.014097 & 0.014177 & 0.015255 & 0.018345 & 0.970012 \\
-imdb        & musician & sc      & 944196 & 0.018207 & 0.082833 & 0.005190 & 0.005191 & 0.005253 & 0.005348 & 0.974544 \\
-imdb        & director & sc      & 35094  & 0.061921 & 0.188322 & 0.005990 & 0.006000 & 0.006003 & 0.006119 & 0.956035 \\
-imdb        & writer   & sc      & 68702  & 0.056798 & 0.194364 & 0.006776 & 0.006781 & 0.006801 & 0.007176 & 0.972416 \\
-musicbrainz & musician & sc      & 652175 & 0.027208 & 0.115886 & 0.000000 & 0.009073 & 0.009075 & 0.009164 & 1.000000 \\
-musicbrainz & band     & sc      & 106026 & 0.093695 & 0.222461 & 0.000000 & 0.018945 & 0.020480 & 0.035917 & 1.000000 \\ \hline
-discogs     & band     & vh & 92137  & 0.057187 & 0.232200 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
-discogs     & musician & vh & 515082 & 0.029859 & 0.170199 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
-imdb        & musician & vh & 337111 & 0.017525 & 0.131219 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
-imdb        & writer   & vh & 68702  & 0.048718 & 0.215279 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
-imdb        & actor    & vh & 355515 & 0.083248 & 0.276257 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
-imdb        & producer & vh & 9351   & 0.087156 & 0.282079 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
-imdb        & director & vh & 35094  & 0.081125 & 0.273031 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
-musicbrainz & band     & vh & 106026 & 0.061240 & 0.239771 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\
-musicbrainz & musician & vh & 652175 & 0.022537 & 0.148422 & 0.000000 & 0.000000 & 0.000000 & 0.000000 & 1.000000 \\ \hline
-discogs     & band     & vs & 92137  & 0.063509 & 0.168745 & 0.000000 & 0.008184 & 0.012160 & 0.017549 & 0.999697 \\
-discogs     & musician & vs & 515082 & 0.030028 & 0.133205 & 0.000000 & 0.001535 & 0.002331 & 0.004532 & 0.998474 \\
-imdb        & musician & vs & 944196 & 0.021848 & 0.092686 & 0.000205 & 0.001234 & 0.001659 & 0.002589 & 0.999709 \\
-imdb        & writer   & vs & 68702  & 0.043952 & 0.148484 & 0.000438 & 0.002171 & 0.002948 & 0.003702 & 0.999094 \\
-imdb        & producer & vs & 9351   & 0.076109 & 0.182346 & 0.002841 & 0.006002 & 0.006845 & 0.009239 & 0.996601 \\
-imdb        & actor    & vs & 355515 & 0.068285 & 0.185416 & 0.000203 & 0.002040 & 0.002958 & 0.004662 & 0.998976 \\
-imdb        & director & vs & 35094  & 0.064267 & 0.185011 & 0.000541 & 0.002337 & 0.002876 & 0.007271 & 0.999539 \\
-musicbrainz & band     & vs & 106026 & 0.126356 & 0.213054 & 0.000000 & 0.004267 & 0.034199 & 0.137530 & 1.000000 \\
-musicbrainz & musician & vs & 652175 & 0.024370 & 0.115483 & 0.000000 & 0.001089 & 0.001672 & 0.002279 & 1.000000 \\ \hline
-\end{longtable}
-
-\begin{figure}[]
-  \centering \includegraphics[width=\textwidth]{ensembles_classification_continuous_classifiers_distplots} 
-  \caption{Distribution of predictions for classifiers whose output is in a continuous space.}
-  \label{fig:apx-ensemble-classification-distplot}
-\end{figure}
-
-\begin{figure}[]
-  \centering \includegraphics[width=\textwidth]{ensembles_classification_binary_classifiers_barplot} 
-  \caption{Distribution of predictions for classifier whose output is in a binary space.}
-  \label{fig:apx-ensemble-classification-barplot}
-\end{figure}
 
 
 \end{document}
