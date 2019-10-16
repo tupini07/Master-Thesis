@@ -84,8 +84,7 @@
 
 \clearpage
 
-\listoftodos
-\todo[inline]{make all hyperlinks black}
+% \listoftodos
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -1490,7 +1489,7 @@ In the dump, there are a total of 1,003,366 musicians and 437,287 bands. The dum
 
 All entities have a name associated with them. \autoref{fig:musicbrainz-name-tokens-pie} shows the distributions for said number of tokens. It is interesting to note that bands are almost as likely to have a name composed by a single token than they are to have one with two. Another interesting thing is that the names of bands are more likely than those of people to contain more than two tokens.
 
-\begin{figure}[]
+\begin{figure}[H]
   \centering \includegraphics[width=\textwidth]{musicbrainz_token_names_entities} 
   \caption{Percentage of entities which have a name composed of a specific number of tokens.}
   \label{fig:musicbrainz-name-tokens-pie}
@@ -1498,7 +1497,7 @@ All entities have a name associated with them. \autoref{fig:musicbrainz-name-tok
 
 As per gender distribution, there are much more \textit{males} than \textit{females}. There are 767,616 musicians for which gender is specified. This distribution is shown in \autoref{fig:musicbrainz-gender-pie}. Notice that less than a quarter of entities are \textit{female}.
 
-\begin{figure}[]
+\begin{figure}[H]
   \centering \includegraphics[width=.8\textwidth]{musicbrainz_gender_pieplot} 
   \caption{Percentage of entities separated by gender.}
   \label{fig:musicbrainz-gender-pie}
@@ -1507,7 +1506,7 @@ As per gender distribution, there are much more \textit{males} than \textit{fema
 
 There are 297,011 musicians and 164,060 bands which are associated with a birth date. There are also 88,191 musicians and 34,213 bands who have a death date defined. The distribution of the frequency of said dates can be seen in \autoref{fig:musicbrainz-dates-distplot}. Notice how the curve symbolizing the birth date of musicians is much more smooth than that of groups, and there seems to have been a peak in the number of groups created in the latest years. This suggests the adaptation of this digital platform is more common for the newer generation of bands. Also, death years seem to follow this same behaviour.
 
-\begin{figure}[]
+\begin{figure}[H]
   \centering \includegraphics[width=\textwidth]{musicbrainz_birth_death_dates_distplot} 
   \caption{Distribution plot of the years musicians were born or died; and years in which bands were created or dissolved. Top shows the distribution of birth/creation years, while bottom shows the \textit{death}/\textit{dissolve} years. Dates for musicians are in \textit{blue}, and those for and bands are \textit{green}. Note that both graphs were created by considering dates later than \textit{1800} and earlier than \textit{2020} (which at the time of this writing is in the future). However, dates outside this range, were used during the performance of record linkage.}
   \label{fig:musicbrainz-dates-distplot}
@@ -1517,7 +1516,7 @@ There are 223,340 musicians and 94,826 bands associated with a birthplace. Simil
 
 There are 517,524 musicians and 266,206 bands which are associated with at least one external link. \autoref{fig:musicbrainz-links-number-pie} shows which percentage of musicians or bands have a certain number of links. It can be seen that both more commonly than not have only one link. However, it is more common for bands to have more links than musicians. 
 
-\begin{figure}[]
+\begin{figure}[H]
   \centering \includegraphics[width=\textwidth]{musicbrainz_number_of_links_musician_band} 
   \caption{Distributions of the number of external links for musicians and for bands.}
   \label{fig:musicbrainz-links-number-pie}
@@ -3396,9 +3395,6 @@ of target) .
 
 \section{Distribution of features}
 \label{sec:apx-feature-distribution}
-
-\todo[inline,color=red!25]{Possibly this will be removed, features are already explained in their own section, and distplots do not add much information}
-
 
 This section contains the plots which characterize the distributions of feature values extracted for different concrete entities. 
 
