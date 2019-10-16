@@ -3021,7 +3021,7 @@ nb    & 0.915145 & 0.003473   & 0.886305 & 0.009108     & \textbf{0.949023}   & 
 It can be seen in \autoref{tab:metrics-summary-baseline} that \textit{mlp} is the model with the best \textit{F1 score} (as expected from the results presented in \autoref{tab:best-model-per-metric-average}). It also seems that \textit{mlp} has the best average \textit{precision} and is second in best \textit{recall}, with the first place being taken by \textit{naive bayes}.
 
 \begin{figure}[H]
-  \centering \includegraphics[width=\textwidth]{baseline_evluation_main_metrics_barplot} 
+  \centering \includegraphics[width=\textwidth]{baseline_evluation_main_metrics_barplot_bigger} 
   \caption{Barplots of the evaluation metrics for the baseline models. Separated by concrete entity.}
   \label{fig:baseline-evaluation-barplots}
 \end{figure}
@@ -3102,11 +3102,13 @@ All classifiers except for \textit{gate classifier}, have as their best average 
 
 \autoref{fig:ensmble-evaluation-barplots} shows a graphical representation of the table above.
 
+
 \begin{figure}[H]
-  \centering \includegraphics[width=\textwidth]{ensemble_evluation_main_metrics_barplot} 
+  \centering \includegraphics[width=\textwidth]{ensemble_evluation_main_metrics_barplot_bigger} 
   \caption{Barplots of the evaluation metrics for ensemble models. Separated by concrete entity.}
   \label{fig:ensmble-evaluation-barplots}
 \end{figure}
+
 
 In the figure above it can be better appreciated which classifiers performs best for which metrics. It is also clear which concrete entities are easier for the models to predict. As for the baseline models, it still appears that \textit{IMDb/Actor} is the hardest one to classify. Stack classifier seems to yield an acceptable precision for this concrete entity, however its recall is quite low. As with the baseline models, it can also be noted that \textit{Musicbrainz/Band} has a high precision and a low recall.  
 
