@@ -161,7 +161,7 @@
 
 In this era of \textit{big data}, there are scores of datasets of every kind, for all sorts of human endeavours. Nowadays, most companies strive to create some sort of dataset of its customers and enlarge it as the years go by, allowing them to better understand their clientele and provide the best service possible. In many domains, however, there is no need to start a dataset from scratch, since much of the information is readily available in public knowledge bases. \textit{Wikidata} is one such knowledge base, and it is the workhorse that powers the \textit{Wikipedia} free encyclopedia, and all of Wikimedia's projects.
 
-From the perspective of Wikidata, having these external datasets consume its knowledge is normal. On the other hand, there might be an external dataset which grows to contain some information that might become useful to Wikidata, since it will allow the enrichment of its own knowledge base. This information is usually manually added by volunteers, but may sometimes be too much, some information might be overlooked. One of Wikidata's concerns is maintaining the highest quality of data, however, some of the data suffer from lack of references which are invaluable to verify the accuracy of the information contained on their datasets.
+From the perspective of Wikidata, having these external datasets consume its knowledge is normal. On the other hand, there might be an external dataset which grows to contain some information that might become useful to Wikidata, since it will allow the enrichment of its own knowledge base. This information is usually manually added by volunteers, but may sometimes be too much, some of it might be overlooked. One of Wikidata's concerns is maintaining the highest quality of data, however, some of the data suffer from lack of references which are invaluable to verify the accuracy of the information contained on their datasets.
 
 The root of the problem may come from the fact that references are only added for a subset of the data, like some of the most visited or sought after articles. The project \soweego aims to automate this task by automatically adding external references to Wikidata information. 
 
@@ -174,7 +174,7 @@ The root of the problem may come from the fact that references are only added fo
 
 This dissertation aims at improving the prediction power of \soweego. Specifically, the current set of machine learning classifiers available in the \soweego project will be improved by finding the best configuration for them. Following that, the idea of \textit{ensemble classifiers} will be explored, in which all of the classifiers available in \soweego will be joined, and the \textit{opinion} of the whole group will be considered when making a prediction. Motivating this choice is the fact that considering the viewpoint of multiple base classifiers, may smooth out errors that might be produced by any classifier individually. 
 
-In \autoref{chap:state-of-the-art}, the technique of \textit{record linkage} will be explained. This is commonly used when working with a problem where there is a need to find matching entries across different catalogs. It will also be shown how the process of performing record linkage can be thought of as a pipeline with different steps, each of which is in charge of performing a different transformation on the data. Common terms that will be used when talking about record linkage, and in this dissertation in general, can be found in the \hyperref[sec:apx-glossary]{Glossary}.
+In \autoref{chap:state-of-the-art}, the technique of \textit{record linkage} will be explained. This is commonly used when working with a problem where there is a need to find matching entries across different datasets. It will also be shown how the process of performing record linkage can be thought of as a pipeline with different steps, each of which is in charge of performing a different transformation on the data. Common terms that will be used when talking about record linkage, and in this dissertation in general, can be found in the \hyperref[sec:apx-glossary]{Glossary}.
 
 A more in depth description of the problem that \soweego solves will be presented in \autoref{chap:problem-statement}. This section will also present an overview of the data that will be used, and which areas the current project aims to improve.
 
@@ -184,9 +184,9 @@ The data used in this project will be described in \autoref{chap:data}. Here the
 
 In \autoref{chap:algorithms} an explanation of each of the machine learning classifiers provided by \soweego is given. These will be called the \textit{baseline classifiers} since are what the new \textit{ensemble classifiers} will be compared against. An explanation of the ensemble models used will also be given in this chapter.
 
-Following that, \autoref{chap:results} proceeds to show how the \textit{configuration} of the baseline classifiers was optimized, and the evaluation performances obtained by the baseline classifiers after said optimization and the ensemble classifiers. An explanation of the metrics used, and a comparison of the results between baseline and ensembles will also be given in this chapter, where the differences between the performances obtained are explored.
+Following that, \autoref{chap:results} proceeds to show how the \textit{configuration} of the baseline classifiers was optimized, and the evaluation performances obtained by the baseline classifiers, after said optimization, and the ensemble classifiers. An explanation of the metrics used, and a comparison of the results between baseline and ensembles will also be given in this chapter, where the differences between the performances obtained are explored.
 
-Finally, in \autoref{chap:conclusion} it will be discussed how ensembles classifiers are better across all considered metrics than almost all of the baseline models. According to the results obtained, ensembles are better than all baseline classifiers at predicting when a pair of records is actually different (e.g. only pairs which the classifier is very sure about are classified as pairs). As such, ensemble models are a great choice when they are used in a situation where predicting a negative sample as positive is not desirable. As shown, there are also differences among the evaluated ensemble models, some are more \textit{precise} (they tend to mark as pairs entries which are actually pairs), while others are more \textit{inclusive} (they tend to recognize more pairs as so, even if some non-pairs are also marked as matches). 
+Finally, in \autoref{chap:conclusion} it will be discussed how ensembles classifiers are better across all considered metrics than almost all of the baseline models. According to the results obtained, ensembles are better than all baseline classifiers at predicting when a pair of records is actually different (e.g. only pairs which the classifier is very sure about are classified as matches). As such, ensemble models are a great choice when they are used in a situation where predicting a negative sample as positive is not desirable. As shown, there are also differences among the evaluated ensemble models, some are more \textit{precise} (they tend to mark as matches pairs which are actually matches), while others are more \textit{inclusive} (they tend to recognize more matches as so, even if some non-matches are also included). 
 
 
 
@@ -246,7 +246,7 @@ brief description, the main difference is how they are used: items, have the
 goal of representing a specific entity while properties are used to express information regarding said entity. Another difference between them would be that \textit{items} are displayed on their respective pages on Wikipedia and \textit{properties} are not.
 
 Consider the QID \textit{Q42}, which identifies the writer
-\textit{Douglas Adams}. Below is a table representing which shows some of the statements about him
+\textit{Douglas Adams}. Below is a table which shows some of the statements about him
 using QIDs and PIDs.
 
 \begin{table}[H]
@@ -281,7 +281,7 @@ This chapter will mainly cover \textit{Record Linkage}, a standard method used t
 \section{Introduction to Record Linkage}
 \label{sec:rl-intro}
 
-\textit{Record linkage} is commonly used when there is a need for data integration. This is achieved by finding pairs of records which represent the same underlying \textit{entity}, and by joining them according to a previously defined set of criteria. It is possible to apply the technique both for, connecting a pair of databases (which we call \textit{catalogs} in this use case) and for removing duplicates from one single catalog.
+\textit{Record linkage} is commonly used when there is a need for data integration (e.g. merging two datasets). This is achieved by finding pairs of records which represent the same underlying \textit{entity}, and by joining them according to a previously defined set of criteria. It is possible to apply the technique both for connecting a pair of databases (which we call \textit{catalogs} in this use case) and for removing duplicates from one single catalog.
 
   
 
@@ -331,7 +331,7 @@ suppose there are two databases of clients that need to be joined for some compa
     Gary        & Crowley   &  1956 \\
     Bruno      & Lima       & 1956      
   \end{tabular}
-  \caption{Example catalog from bank \#1}
+  \caption{Example catalog from company \#1}
   \label{tab:ex-catalog-1}
 \end{table}
 
@@ -345,11 +345,11 @@ suppose there are two databases of clients that need to be joined for some compa
     Juri       &  Petrov    & 1932 \\
     Gary       & Crowley    & 1956      
   \end{tabular}
-  \caption{Example catalog from bank \#2}
+  \caption{Example catalog from company \#2}
   \label{tab:ex-catalog-2}
 \end{table}
 
-The catalogs above do not have a unique identifier that unequivocally links them, so it is necessary to check the available attributes. The fields can be compared in turn and if they all match then it can be said that two entities are the same. For example, it can be easily seen that \textit{Gary Crowley} is in both datasets since an entity with said name exists in both and their birth dates match. On the other hand, nothing can be confidently said about the other possible matches since none of them all the fields match. There is a pair (\textit{Meng Yu} in the first dataset, and \textit{Yu Meng} in the second) which might be the same person since the names are similar and they share a birth date. For this last instance, there is no way to be sure if the first and last names are reversed in one of the datasets or if they are actually different people. This kind of situation is quite common in real-world datasets.
+The catalogs above do not have a unique identifier that unequivocally links them, so it is necessary to check the available attributes. The fields can be compared in turn and if they all match then it can be said that two entities are the same. For example, it can be easily seen that \textit{Gary Crowley} is in both datasets since an entity with said name exists in both and their birth dates match. On the other hand, nothing can be confidently said about the other possible matches since none of them all the fields match. There is a pair (\textit{Meng Yu} in the first dataset, and \textit{Yu Meng} in the second) which might be the same person since the names are similar and they share a birth year. For this last instance, there is no way to be sure if the first and last names are reversed in one of the datasets or if they are actually different people. This kind of situation is quite common in real-world datasets.
 
 
 
@@ -366,7 +366,7 @@ The main difference between these is how the pairs of entities are compared. A m
 \subsubsection{Deterministic}
 \label{sec:rl-approach-deterministic}
 
-In deterministic record linkage, all fields are compared to see if they match. If the fields do match, then it can be said that these entities are the same. However, if any of the fields that are being compared only partially match, then the pair is considered as a non-match. 
+In deterministic record linkage, all fields are compared to see if they match. If the fields do match, then it can be said that a pair of entities are the same. However, if any of the fields that are being compared only partially match or do not match at all, then the pair is considered as a non-match. 
 
 Take for instance the task of joining a catalog that provides information regarding where someone
 lives with another catalog that provides their age. Both catalogs only contain the
@@ -413,11 +413,11 @@ uniform as possible, but even so, it is never easy to know if there might be a m
 
 In probabilistic record linkage \cite{fellegi69_theor_recor_linkag,Newcombe:1962_proba_rl,Sayers2015} all fields are compared, taking into account how good is each field at telling if a pair of entities is a match or not. This is done by using a weight $w_i$ for each field. 
 
-The value of this weights is usually derived, for a pair of entities $r$, from the probabilities $u_i$ and $m_i$. Where $u_i$ is the probability that field $i$ matched and that $r \in U$ (the pair is not a match), and $m_i$ is the probability that the field $i$ matches and $r \in M$ (the pair is a match).
+The value of this weights is derived, for a pair of entities $r$, from the probabilities $u_i$ and $m_i$. Where $u_i$ is the probability that field $i$ matched and that $r \in U$ (the pair is not a match), and $m_i$ is the probability that the field $i$ matches and $r \in M$ (the pair is a match).
 
-For example, if entities on the dataset currently being worked with have a \textit{weekday} field then it can be said that this field has 7 possible values, one for each day of the week. Moreover, every name of the week appears in the datasets approximately the same number of times, then the probability that for a random entity to have a specific weekday is $1/7$, and this is the $u_{weekday}$ probability for that field.
+For example, if entities on the dataset currently being worked with have a \textit{weekday} field then it can be said that this field has 7 possible values, one for each day of the week. Moreover, if every day of the week appears in the datasets approximately the same number of times, then the probability that for a random entity to have a specific weekday is $1/7$, and this is the $u_{weekday}$ probability for that field.
 
-On the other hand, considering that the data has a perfect quality, if two entities are the same then this it is 100\% probable that the weekday field matches. But if the dataset has some error, say that the \textit{weekday} field has a 4\% error, then the probability that a pair $r \in M$ agrees on field \textit{weekday} is 96\%. This values are rarely known beforehand and may be estimated from the dataset \cite{christen12_data}.
+On the other hand, considering that the data has a perfect quality, if two entities are the same then this it is 100\% probable that their weekday field matches. But if the dataset has some error, say that the \textit{weekday} field is wrong 4\% of the time, then the probability that a pair $r \in M$ agrees on field \textit{weekday} is 96\%. This values are rarely known beforehand and may be estimated from the dataset \cite{christen12_data}.
 
 The weight $w_i$ for each field is then calculated as:
 
@@ -428,17 +428,17 @@ The weight $w_i$ for each field is then calculated as:
     \end{cases}
 \end{equation*}
 
-Where $a_i$ and $b_i$ are the field $i$ of the entities $(a,b) = r$. If the fields match then the first case is taken, otherwise the fields don't match and the second is taken. The sum of the $w_i$ for every field in the pair can then be taken and compared against a set of upper $t_u$ and lower $t_l$ thresholds to know if the pair is a non-match, a match, or a potential match. These thresholds need to be determined a priori.
+Where $a_i$ and $b_i$ are the field $i$ of the entities $(a,b) = r$. If the fields match then the first case is taken, otherwise the fields don't match and the second is taken. The sum $W = \sum_{i=1}ˆN w_i$ for every field in the pair can then be taken and compared against a set of upper $t_u$ and lower $t_l$ thresholds to know if the pair is a non-match, a match, or a potential match. These thresholds need to be determined a priori.
 
 \begin{equation*}
   \begin{cases}
-    \text{non-match}, & \text{if}\ R \leq l_l \\
-    \text{potential-match}, & \text{if}\ l_l < R < l_u \\
-    \text{match}, & \text{if}\ l_u \leq R 
+    \text{non-match}, & \text{if}\ W \leq l_l \\
+    \text{potential-match}, & \text{if}\ l_l < W < l_u \\
+    \text{match}, & \text{if}\ l_u \leq W 
   \end{cases}
 \end{equation*}
 
-An extension to the probabilistic record linkage method presented above is that instead of computing a weight $w_i$ for each pair of fields $i$, what is done is that this is instead substituted for a similarity metric that says how similar the fields are \cite{porter1997approximate,winkler1990string}. This metric is obtained by a \textit{comparison function}, which takes a pair of fields and tells, in percentage, how similar they are. One naive example of such a comparison function is the percentage of characters that two pieces of text share.
+An extension to the probabilistic record linkage method presented above is that instead of computing a weight $w_i$ for each pair of fields $i$, what is done is that this is instead substituted for a similarity metric that says how similar the fields are \cite{porter1997approximate,winkler1990string}. This metric is obtained by a \textit{comparison function}, which takes a pair of fields and tells, in percentage, how similar they are. One naive example of such a comparison function is the percentage of characters that two texts have in common.
 
 Following the example catalogs defined in the previous section, now it is possible to compare the \textit{First Name} and \textit{Last Name} fields separately. Suppose they are compared with the function mentioned above that provides the percentage of letters both fields have in common.
 
@@ -465,7 +465,7 @@ An abstraction that is commonly used when performing record linkage is that of v
   \label{fig:rl-workflow}
 \end{figure}
 
-This process is separated into five steps and it may be applied to $n$ input catalogs, the most important part is for them to be submitted to the \textit{Data Preprocessing} step so they are as uniform and clean as possible. 
+This process is separated into five steps and it may be applied to $n$ input catalogs, they all need to go through the \textit{Data Preprocessing} step so they are as uniform and clean as possible. 
 
 
 
@@ -481,13 +481,13 @@ should be preprocessed \cite{Rahm00datacleaning}.
 However, some of the most common cleaning procedures which are almost always done are:
 
 \begin{enumerate}
-\item Normalize the case of the text (e.g., make sure all text is lowercase).
+\item Normalize the case of the text (e.g. make sure all text is lowercase).
 \item Remove invalid characters for the current encoding.
 \item Standardize all characters (e.g. transform accented characters into their
   \textit{non-accented} equivalent).
 \item Ensure all dates comply with a given format, such as \textit{DD/MM/YYYY}.
 \item Remove empty values or fill them with a default value.
-\item Standardize the \textit{gender} representation. (ie, either \textit{m} or
+\item Standardize the \textit{gender} representation. (i.e. either \textit{m} or
   \textit{male})
 \item Normalize names and addresses. \cite{Churches2002}
 \end{enumerate}
@@ -519,9 +519,9 @@ catalog or not, so in this specific example the
 \end{table}
 
 
-Before proceeding it is necessary to clean this data. Specifically, since the first entity has its first and last names written with Cyrillic letters, and the date format is different from what is expected. The second entity's first and last name use accented letters. And finally, the date of the third entity also does not respect the stated date requirements.
+Before proceeding it is necessary to clean this data. Specifically, since the first entity has its first and last names written with Cyrillic letters, and the date format is different from what is expected. The second entity's first and last name use accented letters. And finally, the date of the third entity also does not respect the stated date requirements (the month and day are reversed).
 
-After passing the input catalog through the data preprocessing step the following output will be available:
+After passing the input catalog through the data preprocessing step the following output will be obtained:
 
 \begin{table}[H]
   \centering
@@ -557,7 +557,7 @@ entities then when comparing all entities against each other it will show that m
 % Suppose for example that we have two datasets with $100 000$ entities each. If
 % we were to
 
-It is generally the case when comparing all entities with each other then,
+It is generally the case when comparing all entities with each other that
 the number of comparisons needed increases quadratically with the size of the
 catalogs, while the number of true matches increases linearly
 \cite{christen12_data}.
@@ -566,7 +566,7 @@ Blocking (also known as \textit{indexing}) is defined as comparing a specific en
 composed only of those which the rule suggests are possible matches. 
 
 This new set of entities made to be matched against is not guaranteed to contain any match, nor it
-is guaranteed that none of the sets in an entity which is an actual match were left out, but it entails a much smaller number of comparisons. 
+is guaranteed that none of the entities in the set which are an actual match were left out, but it entails a much smaller number of comparisons. 
 If a good blocking rule is chosen then the record linkage process becomes much more efficient.
 
 Suppose there are two catalogs, $\Psi$ and $\Omega$, and one specific entity is being considered $x \in
@@ -582,7 +582,7 @@ $$
 There are many possible blocking rules that can be used
 \cite{christen12_survey_index_techn_scalab_recor_linkag_dedup}, ranging from the
 very simple \textit{exact string match}, to the more complex phonetical q-gram
-comparison of text. Usually, the more a blocking algorithm is complex the more computational power it requires. A more complex algorithm may be more precise than a simpler one. For example, a metric that compares multiple subsets of a text may be resistant to minor spelling errors, while one that compares the string character by character may not. However, the latter is less computationally expensive to perform.
+comparison of text. A more complex algorithm may be more precise than a simpler one, but is usually slower. For example, a metric that compares multiple subsets of a text may be resistant to minor spelling errors, while one that compares the string character by character may not. However, the latter is less computationally expensive to perform.
 
 These rules are applied to a pair of fields from two different entities. For
 example, it is possible to apply an \textit{exact string match} rule to the \textit{name}
@@ -591,10 +591,10 @@ same. This simple operation makes it easy and fast to segment the dataset into
 clusters of possible matches.
 
 The decision regarding the \textit{rule} used for blocking is part of the record
-linkage problem, and it needs to be simple enough so that there is an actual gain in performance, but good enough so that the resulting set of potential
+linkage problem, and it needs to be simple enough so that performance does not suffer, but good enough so that the resulting set of potential
 matches includes real matches. 
 
-It is also practical to freely use multiple blocking
+It is also possible to freely use multiple blocking
 rules to get multiple sets of possible matches and then use the union of these
 to do the final comparisons.
 
@@ -606,17 +606,17 @@ different methods proposed over the years
 
 However, the evaluation of these methods is outside the scope of the current
 dissertation and it will be limited to work with one of the most basic blocking rules,
-known as a blocking technique which divides two strings into its corresponding
-tokens, and if any of these match then it is considered for the pair to be a potential match.
+which is a blocking technique that divides two strings into their corresponding
+tokens, and if any of these match then the pair is considered to be a potential match.
 
-
-For now, only blocking for fields which are strings has been covered and discussed. But
+For now, only blocking for fields which are strings has been discussed. But
 blocking can be applied to many other fields as well (although strings are the
 most common ones). For example, other possible ways in which blocking could be applied are: 
 
-1) Gather all entities with a specific \textit{zip code}. 
-
-2) Gather all entities which were born on a specific \textit{year}; etc.
+\begin{itemize}
+    \item Gather all entities with a specific \textit{zip code}. 
+    \item Gather all entities which were born on a specific \textit{year}; etc.
+\end{itemize}
 
 Blocking is quite flexible and it is up to the designer how strict he or she wishes to make it.
 Although it is agreed
@@ -626,13 +626,12 @@ not a match and later filter this out during the actual \textit{linking} step
 (see \autoref{sec:rl-workflow-linking}), than using a more precise blocking but
 which leaves out potential matches. 
 
-In other words, when choosing a blocking rule its preferable to choose one which tends to include more entities than necessary, than having one which only includes a few non-matches. The choice of this trade-off needs to be done on an individual per problem basis.
+In other words, when choosing a blocking rule its preferable to choose one which tends to include more entities than necessary, than having one which only includes a few non-matches. The choice of this trade-off needs to be done on an per problem basis.
 
 As an example suppose the following two catalogs are available. They both contain the
 first and last names and the zip code of each person. The first also contains
 whether said person is \textit{male} or \textit{female}, while the second catalog
 contains the \textit{academic title} of each person.
-
 
 \begin{table}[H]
   \centering
@@ -663,12 +662,12 @@ codes (\textit{27321} and \textit{34918}), so after blocking there will end up b
 $[(A1, B1)]$, both of which could arguably be the same person. In the second set, the remaining pairs $[(A2, B2), (A2, B3)]$ can be found.
 
 For the first set its only necessary to compare the source entity \textit{Anna Claire}
-with \textit{one} target entity. In the second the
+with \textit{one} target entity. In the second case, the
 source entity \textit{Claudio Bari} must be compared with two target entities. In both cases, the
 total number of comparisons for a source entity is less than what would be needed
 without blocking (3 comparisons).
 
-The gain in the example doesn't seem like much, but it is easy to imagine that
+The gain in the example above doesn't seem like much, but it is easy to imagine that
 this procedure would be very effective at reducing the total number of
 comparisons once the number of zip codes and, by extension the amount of sets
 generated by blocking, start to increase in number.
@@ -684,7 +683,7 @@ way.
 
 The feature extraction step is in charge of taking a pair of entities and
 extracting from them a set of \textit{features}, which characterize how similar
-this pair of entities is. The pair of entities for which the features are extracted
+the entities in said pair are. The pair of entities for which the features are extracted
 are those pairs which the previous \textit{blocking} step said may be good
 candidates for a match.
 
@@ -697,18 +696,17 @@ feature_i = f(entity_y.field_i , entity_z.field_q)
 $$
 
 The function $f$ is a \textit{comparison function}, which shows the
-similarity, or distance, between two fields of the same kind (for example, the name field of both entities). As such, the decision of which functions to select is
-part of the record linkage problem, and the designer is free to use as many as needed (ie, if desired the designer could compare two textual fields from a pair of entities
+similarity, or distance, between two fields of the same kind (for example, the \textit{name} field of both entities). As such, the decision of which functions to select is
+part of the record linkage problem, and the designer is free to use as many as needed (i.e. if desired the designer could compare two textual fields from a pair of entities
 using multiple string similarity functions).
 
 Some of these comparison functions yield a percentage that describes how
-similar two specific fields are. Others only provide information on whether or not two fields are the same,
-the latter are referred to as \textbf{exact match} functions.
+similar two specific fields are. Others only provide information on whether or not two fields are the same or not. The latter are referred to as \textbf{exact match} functions.
 
 When one of the fields being compared has no value then the function treats the
 pair as if it was not a match and returns a similarity of zero.
 
-For example, one such comparison function can be the \textit{Levenshtein distance} \cite{levenshtein1966binary}, which provides the difference between two strings, for this specific case it will be used to see how similar two strings truly are (this distance will be explained more in depth in \autoref{sec:feature-levenshtein-on-name-tokens}). 
+For example, one such comparison function can be the \textit{Levenshtein distance} \cite{levenshtein1966binary}, which provides the difference between two strings. For this specific case it will be used to see how similar two strings truly are (this similarity metric will be explained more in depth in \autoref{sec:feature-levenshtein-on-name-tokens}). 
 
 Actually, the \texttt{Levenshtein} function will show a distance that increases the more two strings are dissimilar, which is not the desired behaviour. What is needed is for the result to be $0$ when the strings are dissimilar and $1$ when they're the same. So the distance function will need to be adapted to be the $1 -$ [this value divided by the length of the longest string\footnote{which is also, incidentally, the maximum value the \texttt{Levenshtein} function can return}]. Basically, the new function is just the complement of the percentage of the maximum value that can be returned by \texttt{Levenshtein(a, b)}.
 
@@ -745,9 +743,9 @@ functions can be used for the same fields.
 \subsection{Linking/Classification}
 \label{sec:rl-workflow-linking}
 
-In the \textit{linking} (also called \textit{classification}) step, the list of features extracted in the previous part is consequently fed to a decision model that takes the features and then decides whether the said pair is a match or not.
+In the \textit{linking} (also called \textit{classification}) step, the list of features extracted in the previous part is consequently fed to a decision model that takes the features and then decides whether said pair is a match or not.
 
-There are many decision models to choose from and that might be considered to be utilized. \cite{gu06_decis_model_recor_linkag}.
+There are many decision models that can be used for this step \cite{gu06_decis_model_recor_linkag}.
 The \textit{go to} model for record linkage is the basic probabilistic model defined in
 \cite{fellegi69_theor_recor_linkag}. Other possible models \cite{Elfeky_tailor} include using the \textit{k-means} \cite{Hartigan1979} clustering algorithm to cluster the feature vectors into \textit{matched}, \textit{unmatched} and \textit{potential match} clusters, or if there is labeled data available then it is possible to train a supervised machine learning algorithm to learn when to classify
 feature vectors as a match or not.
@@ -790,7 +788,7 @@ With these results it is now possible to merge the corresponding entities (in th
 
 As the name suggests, in the evaluation step, the evaluation of the record linkage procedure performance is made. Record linkage can be thought of as a supervised machine learning problem. As such, its results are evaluated like those of any other supervised algorithm.
 
-To do this its necessary to have some previously labeled data that may be used to calculate the metrics given the prediction of the model. This \textit{data} is nothing more than the labeled pairs of entities that say whether they are actually a match or not\footnote{similar to the \textit{training set} when referring to supervised machine learning}, and it should be different from the one that’s currently being classified.\footnote{\textit{classification set} in supervised learning}.
+To do this its necessary to have some previously labeled data that may be used to calculate the metrics given the prediction of the model. This \textit{data} is nothing more than the labeled pairs of entities that say whether they are actually a match or not\footnote{same as the \textit{training set} when referring to supervised machine learning}, and it should be different from the one that’s currently being classified.\footnote{\textit{classification set} in supervised learning}.
 
 The metrics considered when evaluating a record linkage pipeline are the commonly used
 \cite{Powers2011_evaluation} \textit{precision}, \textit{recall}, and
@@ -965,8 +963,6 @@ The types of entities utilized for this project from the Musicbrainz database ar
 \subsection{Discogs}
 \label{sec:catalog-discogs}
 
-\todo[inline]{write more!}
-
 The \textbf{Discogs}\footurl{https://www.discogs.com} database is also maintained in a crowd sourced way. It contains information about musical records, musicians, and bands. The database is in the public domain, so it can be used freely.
 
 From the Discogs database the information retrieved are the following entity types:
@@ -1094,13 +1090,13 @@ name\_tokens        & TID   \\ \hline
 {[George, Thut]}      & m3289 \\
 {[Natalie, Hamilton]} & m2390 \\
 {[George, Hamilton]}  & m9942 \\
-{[Lucy, Waters]}      & n5932
+{[Lucy, Waters]}      & m5932
 \end{tabular}
 \caption{Blocking example external catalog}
 \label{tab:soweego-blocking-ex}
 \end{table}
 
-After blocking with the rule mentioned above, its possible to find that the Wikidata entity may be a possible match with \texttt{[m3289, m2390, and m9932]}, but is not a match with \texttt{n5932}.
+After blocking with the rule mentioned above, its possible to find that the Wikidata entity may be a possible match with \texttt{[m3289, m2390, and m9932]}, but is not a match with \texttt{m5932}.
 
 The main reason this blocking rule was chosen, is because all entities have a name field from which the tokens can be derived.  
 
@@ -1117,14 +1113,14 @@ The ways in which the entities get \textit{cleaned} is defined in depth in \auto
 \subsection{Feature Extractor}
 \label{sec:soweego-st-feature-ext}
 
-An in depth description of each feature used will be given in \autoref{sec:used-features}, for the moment it will be mentioned at a high level how the \textit{feature extraction} step works in \texttt{soweego}. 
+An in depth description of each feature used will be given in \autoref{sec:used-features}. For the moment, a high level overview of how the \textit{feature extraction} step works in \texttt{soweego} will be given. 
 
 The project leverages the \texttt{Python Record Linkage Toolkit} \cite{recordlinkage-library} to extract the features. By using this framework the process gets simplified, it only needs the definition of which feature functions to use, and to which fields they should be applied. 
 After this is done, the only thing that remains is feeding to the framework the pairs of potential matches as extracted during the blocking step, and it will automatically yield the extracted features for said pairs.
 
 For example, consider that this step gets as an input the list of potential matches extracted during the previous blocking procedure. An example of such list of pairs can be: 
 
-\begin{center}B
+\begin{center}
     \texttt{[('Q185002', 'nm0310359'), ('Q185002', 'nm2242569'), ('Q185002', 'nm0267785')]}
 \end{center}
 
@@ -1200,7 +1196,7 @@ The mentioned property is used to link an item with an IMDb ID (similar properti
 \label{sec:soweego-implementation-details}
 
 All the development of \texttt{soweego} was made with the Python \cite{python-tutorial} programming language. To run the internal database  MariaDB\footurl{https://mariadb.com/} was used. (which is the same as that used by Wikidata, so there is minimum friction when moving the application from development to production). 
-The details of communicating with the database were abstracted away with the use of \texttt{SQLAlchemy} ORM \cite{sqlalchemy}, which provides an object like interface.
+The details of communicating with the database were abstracted away with the use of \texttt{SQLAlchemy} ORM \cite{sqlalchemy}, which provides an object like interface to the database, and simplifies many of the most common operations.
 
 To simplify the implementation of the record linkage workflow the \texttt{Python Record Linkage Toolkit} \cite{recordlinkage-library} was used, which implements many useful functionalities for this goal. Mainly it eases the feature extraction and linking procedure. The \texttt{Pandas} \cite{mckinney2010_pandas} library is employed to make it easier to handle the data.
 
@@ -1226,9 +1222,9 @@ This chapter will be dedicated to showing and exploring the data that was used (
 \section{Original Shape of the Data}
 \label{sec:orig-shape-of-data}
 
-This section will explore which shape the data received from the external catalogs, as well as that received from Wikidata, takes. Since they are all different, a section will be dedicated to each catalog. 
+This section will explore waht is the shape of the data received from the external catalogs, as well as that received from Wikidata. Since they are all different, a section will be dedicated to each catalog. 
 
-It must be pointed out for the external catalogs, that even though they are maintained by a group of contributors and, in some cases, also by dedicated teams, it does not mean that the data is 100\% clean. 
+It must be pointed out for the external catalogs, that even though they are maintained by a group of contributors and, in some cases also by dedicated teams, it does not mean that the data is 100\% clean. 
 
 During development, there have been multiple encounters with malformed values (like birth or death dates in the future), spelling errors in names, missing values (most commonly, missing birth and death dates), among others. 
 
@@ -1256,17 +1252,17 @@ nm0000003 & Brigitte Bardot & 1934      & \textbackslash{}N & actress,producer  
 \end{table}
 
 \begin{description}
-\item[nconst] This is the column which holds the ID of the person in IMDb's internal database. This ID is what will later be used as the TID to identify a target entity from this catalog.
+\item[nconst] This is the column that holds the ID of the person in IMDb's internal database. This ID is what will later be used as the TID to identify a target entity from this catalog.
 
-\item[primaryName] Is the full name of the person. Usually consists of a first name followed by a last name, but may include the initials of middle names as well. As will be shown later, there are even some entities which have more than 3 parts to their name.
+\item[primaryName] Is the full name of the person. Usually consists of a first name followed by a last name, but may include the initials of middle names as well. As will be shown later, there are even some entities that have more than 3 parts to their name.
 
 \item[birthYear] The year in which the person was born.
 
 \item[deathYear] The year in which the person died.
 
-\item[primaryProfession] This field contains a comma separated list of main professions each person has, this list may contain a maximum of three professions. These \textit{professions} are names which describe the ocupation the person is known for, that is, reasons for which the person appeared in the credits of a movie or TV-series. 
+\item[primaryProfession] This field contains a comma separated list of main professions each person has, this list may contain a maximum of three professions. These \textit{professions} are names that describe the occupation the person is known for, that is, reasons for which the person appeared in the credits of a movie or TV-series. 
 
-These professions are not always specific, and sometimes act like clusters of similar, and more specific, professions.
+These professions are not always specific and sometimes act like clusters of similar, and more specific, professions.
 
 \item[knownForTitles] List of movie/TV-series IDs the person is known for. This information is not currently used in our project. 
 \end{description}
@@ -1316,9 +1312,9 @@ The actual possible values for the \textit{primaryProfession} field are:
     \end{itemize*}
 \end{quote}
 
-All the items in the this list correspond to respective professions in Wikidata, meaning its possible to later compare these with the profession associated with a Wikidata item, and from the comparison derive a feature. The mapping from these professions to Wikidata professions is explained in \autoref{sec:imdb-profs-to-wikidata}, the feature mentioned will be explained later in \autoref{sec:used-features}.
+All the items in this list correspond to respective professions in Wikidata, meaning its possible to later compare these with the profession associated with a Wikidata item, and from the comparison derive a feature. The mapping from these professions to Wikidata professions is explained in \autoref{sec:imdb-profs-to-wikidata}, the feature mentioned will be explained later in \autoref{sec:used-features}.
 
-There are a total of 9,613,243 entries in the dump. Of these, all of them have some value in their \textit{primaryName} field. There are 194,469 entries which have a single word in as the name, all the other have 2 or more. In \autoref{fig:imdb-num-tokens-name-pie} its possible to see that the great majority of entities have names composed of two tokens, and the next most common amount of tokens is 3 (possibly those with a middle name), followed by those with only one token, and finally all those entities with names containing 4 or more token.
+There are a total of 9,613,243 entries in the dump. Of these, all of them have some value in their \textit{primaryName} field. There are 194,469 entries that have a single word in as the name, all the others have 2 or more. In \autoref{fig:imdb-num-tokens-name-pie} its possible to see that the great majority of entities have names composed of two tokens, and the next most common amount of tokens is 3 (possibly those with a middle name), followed by those with only one token, and finally all those entities with names containing 4 or more token.
 
 \begin{figure}[H]
   \centering \includegraphics[width=.6\textwidth]{imdb_num_tokens_names}
@@ -1327,15 +1323,15 @@ There are a total of 9,613,243 entries in the dump. Of these, all of them have s
 \end{figure}
 
 
-Of all the entries, there are only 488,727 which have a \textit{birthDate}, and 170,613 have a \textit{deathDate}. The distplots in \autoref{fig:imdb-years-distplot} show the distributions of birth and death dates for IMDb. It can be noted that most of the entities were born around the 1900, and there are less entities from closer years (possibly because those individuals are still too young to have any reason to possess a page in IMDb). On the other hand, death dates behave in the inverse manner: the greatest amount of deceased entities seems to have died in the last years.
+Of all the entries, there are only 488,727 which have a \textit{birthDate}, and 170,613 have a \textit{deathDate}. The  \autoref{fig:imdb-years-distplot} show the distributions of birth and death dates for IMDb. It can be noted that most of the entities were born around the 20th century, and there are fewer entities from years closer to the present (possibly because those individuals are still too young to have any reason to possess a page in IMDb). On the other hand, death dates behave inversely: the greatest amount of deceased entities seems to have died in the latest years.
 
 \begin{figure}[H]
   \centering \includegraphics[width=.9\textwidth]{birth_and_death_frequencies_imdb}
-  \caption{Birth (top) and death dates (bottom) for IMDb entities. Note that to generate this figure only dates later than 1800 were considered. There are 568 entities who were born earlier than 1800, and 305 entities who died before the same date. These entities are not being considered for the graphs above, in an effort to make them easier to interpret, but we do consider them during the record linkage process.}
+  \caption{Birth (top) and death dates (bottom) for IMDb entities. Note that to generate this figure only dates later than 1800 were considered. 568 entities were born before the 1800s and 305 entities who died before the same date. These entities are not being considered for the graphs above, in an effort to make them easier to interpret, but they are considered  during the record linkage process.}
   \label{fig:imdb-years-distplot}
 \end{figure}
 
-The professions field is quite good: only 1,881,284 don't have a profession. The remaining 7,731,959 entities either have 1, 2 or 3 professions listed. \autoref{fig:imdb-profession-count-pie} is a pie chart showing their distribution. Its possible to see that roughly $3/4$ of the entities have only one profession, and the last quarter seems to be equally shared by entities with 2 and 3 professions.
+The professions field is quite good: only 1,881,284 do not have a profession. The remaining 7,731,959 entities either have 1, 2 or 3 professions listed. \autoref{fig:imdb-profession-count-pie} is a pie chart showing their distribution. It is possible to see that roughly $3/4$ of the entities have only one profession, and the last quarter seems to be equally shared by entities with 2 and 3 professions.
 
 \begin{figure}[H]
   \centering \includegraphics[width=.6\textwidth]{profession_counts_imdb}
@@ -1343,7 +1339,7 @@ The professions field is quite good: only 1,881,284 don't have a profession. The
   \label{fig:imdb-profession-count-pie}
 \end{figure}
 
-In \autoref{fig:imdb-profession-raw-counts} a barplot can be seen that shows the amount of times each profession appeared in the dump. And \autoref{fig:imdb-profession-single-percentage} shows the percentage of entities which only had one of the professions.
+In \autoref{fig:imdb-profession-raw-counts} a bar plot can be seen that shows the amount of times each profession appeared in the dump. And \autoref{fig:imdb-profession-single-percentage} shows the percentage of entities which only had one of the professions.
 
 \begin{figure}[H]
   \centering \includegraphics[width=\textwidth]{raw_profession_counts_imdb}
@@ -1359,7 +1355,7 @@ In \autoref{fig:imdb-profession-raw-counts} a barplot can be seen that shows the
 \end{figure}
 
 
-By looking at \autoref{fig:imdb-profession-coocurrence-heatmap} a heatmap can be seen that describes the co-occurrence of the different professions (how frequent is it that an entity has them listed together in its \textit{primaryProfessions} field). Its possible to see there are some interesting correlations among them, for example, that the \textit{director} profession almost always appears together with the \textit{writer} profession. This shows that there is an underlying structure in the professions, which is another motivation to create a feature that leverages this field.
+By looking at \autoref{fig:imdb-profession-coocurrence-heatmap} a heatmap can be seen that describes the co-occurrence of the different professions (how frequent is it that an entity has them listed together in its \textit{primaryProfessions} field). It is possible to see there are some interesting correlations among them, for example, that the \textit{director} profession almost always appears together with the \textit{writer} profession. This shows that there is an underlying structure in the professions, which is another motivation to create a feature that leverages this field.
 
 \begin{figure}[H]
   \centering \includegraphics[width=\textwidth]{imdb_profession_coorcurrence}
@@ -1367,7 +1363,7 @@ By looking at \autoref{fig:imdb-profession-coocurrence-heatmap} a heatmap can be
   \label{fig:imdb-profession-coocurrence-heatmap}
 \end{figure}
 
-Its evident that the IMDb dump does not provide much information that can be used. The name fields seem to be the ones with the highest quality (no empty values). Birth and death dates are quite informative but sadly only few entities have values there. The remaining field, \textit{primaryProfessions}, is also quite good in terms of data quality, and its underlying structure will allow the creation of an effective feature from it.
+It is evident that the IMDb dump does not provide much information that can be used. The name fields seem to be the ones with the highest quality (no empty values). Birth and death dates are quite informative but sadly only a few entities have values there. The remaining field, \textit{primaryProfessions}, is also quite good in terms of data quality, and its underlying structure will allow the creation of an effective feature from it.
 
 
 
@@ -1376,18 +1372,18 @@ Its evident that the IMDb dump does not provide much information that can be use
 
 Discogs provides multiple data dumps\footurl{https://data.discogs.com/}, and maintains records of dumps released in different dates. The one used for this project is \textit{discogs\_20190901\_artists}, whose last revision was on \textit{2019-09-08T13:03:25.000Z}.
 
-This dump contains information about artists, which can be either a single musicians or music groups. The dump is an XML file and for each entity (either band or musician) provides the following information:
+This dump contains information about artists, which can be either single musicians or music groups. The dump is an XML file and for each entity (either band or musician) provides the following information:
 
 \begin{description}
 \item[identifier] This is the ID of the entity in the Discogs database. It will be the field used as the TID for this catalog.
 
 \item[name] The main artistic name associated with the entity.
 
-\item[realname] The real name of the entity, which might differ from it's artist name.
+\item[realname] The real name of the entity, which might differ from its artist name.
 
 \item[namevariations] Possible different artist names for this entity.
 
-\item[data\_quality] Discogs specific metric that shows how good the data is. It's possible values are 
+\item[data\_quality] It is a Discogs specific metric that shows how good the data is. Its possible values are 
 \begin{itemize*}
     \item Correct
     \item Complete and Correct
@@ -1401,22 +1397,21 @@ This dump contains information about artists, which can be either a single music
 
 \item[living\_links] This field holds a list of hyperlinks associated with the entity. They are usually links that go to external sites (for example, Twitter, Wikipedia, YouTube, etc).
 
-\item[group] This field is specified for entities which are a musician. It specifies which groups the musician belongs to. This project only considers \textit{musicians} as those who have some value in this field. This information is only used to determine which entries are \textit{musicians}, and is not otherwise leveraged in the project. 
+\item[group] This field is specified for entities which are a musician. It specifies which groups the musician belongs to. This project only considers \textit{musicians} as those who have some value in this field. This information is only used to determine which entries are \textit{musicians} and is not otherwise leveraged in the project. 
 
-\item[members] This field is specified for bands, and shows which musicians are associated with which bands. This project  only considers as \textit{bands} those entities which have some value in this field. This information is only used to determine which entries are \textit{bands}, and is not otherwise leveraged in the project.
+\item[members] This field is specified for bands, and shows which musicians are associated with which bands. This project only considers as \textit{bands} those entities which have some value in this field. This information is only used to determine which entries are \textit{bands} and is not otherwise leveraged in the project.
 
 \end{description}
 
 There are a total of 6,432,264 entities in the Discogs dump. Of these, 1,129,711 have a value in either the \textit{band} or \textit{members} field. This is the final number of entities \texttt{soweego} will import into its database, so these are the ones for which all the next metrics will be derived.
 
-There are 384,352 entities which have some value in the \textit{members} field, meaning that these are the bands in the data dump. And there are 749,499 which have a value in the \textit{groups} field (these are the musicians). There are also 4,140 entities which have \textit{both} members and groups. \autoref{fig:discogs-band-member-commonality} shows the most common number of bands a musician belongs to, and the most common number of members a band has. It can be seen that it is more common for bands to have multiple members, whilst it is not very common for a musician to be part of more than one band.
+There are 384,352 entities that have some value in the \textit{members} field, meaning that these are the bands in the data dump. And there are 749,499 which have a value in the \textit{groups} field (these are the musicians). There are also 4,140 entities which have \textit{both} members and groups. \autoref{fig:discogs-band-member-commonality} shows the most common number of bands a musician belongs to and the most common number of members a band has. It can be seen that it is more common for bands to have multiple members, whilst it is not very common for a musician to be part of more than one band.
 
 \begin{figure}[H]
   \centering \includegraphics[width=\textwidth]{discogs_band_belonging_barplots} 
   \caption{The plots above show what is the most common number of members in a band (top) and the most common number of bands a musician belongs to.}
   \label{fig:discogs-band-member-commonality}
 \end{figure}
-
 
 Of all the entities, 935,456 are not associated with a real name. However, all of them do have a \textit{name}. Most of these are composed of 2 tokens. \autoref{fig:discogs-num-name-tokens-distplot} shows the distribution of the number of tokens for the names of the entities. Notice that 2 is the most common, but 3 and 4 are also quite common.
 
@@ -1435,7 +1430,7 @@ There are 492,315 entities which have at least one value in the \textit{namevari
 \end{figure}
 
 
-Regarding the \textit{profile} field, which comes to be like the description of the entity, 487,588 have some kind of value in it. \autoref{fig:discogs-num-words-profile-barplot} shows the distribution of how many words can be expected to be found in such description (among entities who do have one). Notice that if an entity has a profile description then the most likely scenario is that it will have one composed of only two words. It's interesting to notice that having only one word in the description is almost as likely as having 7 of them. 
+Regarding the \textit{profile} field, which comes to be like the description of the entity, 487,588 have some kind of value in it. \autoref{fig:discogs-num-words-profile-barplot} shows the distribution of how many words can be expected to be found in such description (among entities who do have one). Notice that if an entity has a profile description then the most likely scenario is that it will have one composed of only two words. It is interesting to notice that having only one word in the description is almost as likely as having 7 of them. 
 
 \begin{figure}[H]
   \centering \includegraphics[width=\textwidth]{discogs_num_words_profile} 
@@ -1444,7 +1439,7 @@ Regarding the \textit{profile} field, which comes to be like the description of 
 \end{figure}
 
 
-Discogs also provides how many entities are associated with links to external pages. In the dump there are 243,757 entities with external links. \autoref{fig:discogs-external-links-counts-barplot} shows which amount of links is the most common among entities which do have links. It seems to be very common, if an entity has at least one link, that it actually has only one. Entities with 3 and 4 links can be found, but 5 or more are much less common.
+Discogs also provides how many entities are associated with links to external pages. In the dump, there are 243,757 entities with external links. \autoref{fig:discogs-external-links-counts-barplot} shows which amount of links is the most common among entities that do have links. It seems to be very common, if an entity has at least one link, that it actually has only one. Entities with 3 and 4 links can be found, but 5 or more are much less common.
 
 \begin{figure}[H]
   \centering \includegraphics[width=\textwidth]{discogs_external_links_counts} 
@@ -1452,10 +1447,10 @@ Discogs also provides how many entities are associated with links to external pa
   \label{fig:discogs-external-links-counts-barplot}
 \end{figure}
 
-The \textit{data\_quality} field shows how good the data about a certain entity is. All entities have a value in this field. \autoref{fig:discogs-data-quality-distribution-pie} provides the distribution of the various data quality labels. Its possible to see that more than half of them are marked as \textit{Needs Vote}, little less than a quarter are \textit{Correct}, and the rest are labelled as incorrect (in different degrees).
+The \textit{data\_quality} field shows how good the data about a certain entity is. All entities have a value in this field. \autoref{fig:discogs-data-quality-distribution-pie} provides the distribution of the various data quality labels. It is possible to see that more than half of them are marked as \textit{Needs Vote}, little less than a quarter are \textit{Correct}, and the rest are labeled as incorrect (in different degrees).
 
 \begin{figure}[H]
-  \centering \includegraphics[width=\textwidth]{discogs_data_quality_distribution} 
+  \centering \includegraphics[width=.8\textwidth]{discogs_data_quality_distribution} 
   \caption{Percentages of entities marked with a given \textit{data quality} label.}
   \label{fig:discogs-data-quality-distribution-pie}
 \end{figure}
@@ -1464,13 +1459,14 @@ The \textit{data\_quality} field shows how good the data about a certain entity 
 \subsection{Musicbrainz}
 \label{sec:shape-musicbrainz}
 
-The Musicbrainz dump\footurl{https://musicbrainz.org/doc/MusicBrainz_Database/Download} is a snapshot of the whole dataset. As such, it contains a lot of data which is not of any interest for this project. The dump used for this catalog is the following:
+The Musicbrainz dump\footurl{https://musicbrainz.org/doc/MusicBrainz_Database/Download} is a snapshot of the whole dataset. As such, it contains a lot of data that is not of any interest to this project. The dump used for this catalog is the following:
+
 
 \begin{itemize}
     \item 20191002-001702/mbdump.tar.bz2
 \end{itemize}
 
-In the dump there are a total of 1,003,366 musicians and 437,287 bands. The dump provides the following information about each of these entities:
+In the dump, there are a total of 1,003,366 musicians and 437,287 bands. The dump provides the following information about each of these entities:
 
 \begin{description}
 \item[gid] The id of the entity in Musicbrainz's database. This is the ID that will be used as the TID during the record linkage procedure. 
@@ -1481,7 +1477,7 @@ In the dump there are a total of 1,003,366 musicians and 437,287 bands. The dump
 
 \item[death day, death month, death year] Same as the fields mentioned above, but for death dates.
 
-\item[birth place, death place] Specify information on where the person was born, and/or died. For bands, the birth and death dates symbolyze where the band was formed and where it separated.
+\item[birth place, death place] Specify information on where the person was born, and/or died. For bands, the birth and death date symbolize where the band was formed and where it separated.
 
 \item[gender] Specifies the gender of the entity (\textit{male} / \textit{female}).
 
@@ -1492,7 +1488,7 @@ In the dump there are a total of 1,003,366 musicians and 437,287 bands. The dump
 \item[relations with bands] It specifies the relation among artists and bands, specifically, the list of bands to which they belong. 
 \end{description}
 
-All entities have a name associated to them. \autoref{fig:musicbrainz-name-tokens-pie} shows the distributions for said number of tokens. It is interesting to note that bands are almost as likely to have a name composed by a single token than they are to have one with two. Another interesting thing is that names of bands are more likely than those of people to contain more than two tokens.
+All entities have a name associated with them. \autoref{fig:musicbrainz-name-tokens-pie} shows the distributions for said number of tokens. It is interesting to note that bands are almost as likely to have a name composed by a single token than they are to have one with two. Another interesting thing is that the names of bands are more likely than those of people to contain more than two tokens.
 
 \begin{figure}[]
   \centering \includegraphics[width=\textwidth]{musicbrainz_token_names_entities} 
@@ -1500,7 +1496,7 @@ All entities have a name associated to them. \autoref{fig:musicbrainz-name-token
   \label{fig:musicbrainz-name-tokens-pie}
 \end{figure}
 
-As per gender distribution, there are much more \textit{males} than \textit{females}. There are 767,616 musicians for which the gender is specified. This distribution is shown in \autoref{fig:musicbrainz-gender-pie}. Notice that less than a quarter of entities are \textit{female}.
+As per gender distribution, there are much more \textit{males} than \textit{females}. There are 767,616 musicians for which gender is specified. This distribution is shown in \autoref{fig:musicbrainz-gender-pie}. Notice that less than a quarter of entities are \textit{female}.
 
 \begin{figure}[]
   \centering \includegraphics[width=.8\textwidth]{musicbrainz_gender_pieplot} 
@@ -1509,7 +1505,7 @@ As per gender distribution, there are much more \textit{males} than \textit{fema
 \end{figure}
 
 
-There are 297,011 musicians and 164,060 bands which are associated with a birth date. There are also 88,191 musicians and 34,213 bands who have a death date defined. The distribution of the frequency of said dates can be seen in \autoref{fig:musicbrainz-dates-distplot}. Notice how the curve symbolizing the birth date of musicians is much more smooth than that of groups, and there seems to have been a peak in the amount of groups created in the latest years. This suggests the adaptation of this digital platform is more common for the newer generation of bands. Also death years seem to follow this same behaviour.
+There are 297,011 musicians and 164,060 bands which are associated with a birth date. There are also 88,191 musicians and 34,213 bands who have a death date defined. The distribution of the frequency of said dates can be seen in \autoref{fig:musicbrainz-dates-distplot}. Notice how the curve symbolizing the birth date of musicians is much more smooth than that of groups, and there seems to have been a peak in the number of groups created in the latest years. This suggests the adaptation of this digital platform is more common for the newer generation of bands. Also, death years seem to follow this same behaviour.
 
 \begin{figure}[]
   \centering \includegraphics[width=\textwidth]{musicbrainz_birth_death_dates_distplot} 
@@ -1517,7 +1513,7 @@ There are 297,011 musicians and 164,060 bands which are associated with a birth 
   \label{fig:musicbrainz-dates-distplot}
 \end{figure}
 
-There are 223,340 musicians and 94,826 bands associated with a birth place. Similarly there are 53,631 musicians and 4,885 bands associated with a death place. These behave similarly as the birth and death dates, where there are more entries with birth date than death date.
+There are 223,340 musicians and 94,826 bands associated with a birthplace. Similarly, there are 53,631 musicians and 4,885 bands associated with a death place. These behave similarly as the birth and death dates, where there are more entries with a birth date than death date.
 
 There are 517,524 musicians and 266,206 bands which are associated with at least one external link. \autoref{fig:musicbrainz-links-number-pie} shows which percentage of musicians or bands have a certain number of links. It can be seen that both more commonly than not have only one link. However, it is more common for bands to have more links than musicians. 
 
@@ -1534,19 +1530,20 @@ There are 517,524 musicians and 266,206 bands which are associated with at least
 % mention for each catalog, and which entities it has. Potentially mention the
 % number of entities for each type of entity.
 
-For Wikidata we download training and classification \textit{sets}, one pair for each concrete entity. As explained in \autoref{sec:importing-from-wikidata}, the training data already contains the labels, or true links, for each entity, and is what is used to train the different machine learning algorithms. This basically means that each Wikidata \textit{training} dump has a field named \textit{TID}, which is the ID of the target catalog. On the other hand, the classification data are the entities that don't have target identifiers and need to be linked. This data is downloaded through Wikidatas public SPARQL endpoint,\footurl{https://www.wikidata.org/wiki/Wikidata:SPARQL_query_service} which allows us to easily get the relevant statements about a given entity.
+For Wikidata training and classification \textit{sets} were downloaded, one pair for each concrete entity. As explained in \autoref{sec:importing-from-wikidata}, the training data already contains the labels, or true links, for each entity, and is what is used to train the different machine learning algorithms. This means that each Wikidata \textit{training} dump has a field named \textit{TID}, which is the ID of the target catalog. On the other hand, the classification data are the entities that don't have target identifiers and need to be linked. This data is downloaded through Wikidatas public SPARQL endpoint,\footurl{https://www.wikidata.org/wiki/Wikidata:SPARQL_query_service} which allows us to easily get the relevant statements about a given entity.
 
-Following are the fields that we gather from Wikidata. Note that, as said above, \textit{TID} only appears in \textit{training} set. 
+The following are the fields that we gather from Wikidata. Note that, as said above, \textit{TID} only appears in \textit{training} set. 
+
 
 \begin{description}
 
-\item[TID] ID of the entity in a specific external catalog. Only found in the dumps used for training. The actual values may change depending on which catalog this dump was downloaded for. For example: if the dump was downloaded to be used with IMDb, then the TIDs are reference to IMDb entities. If it was downloaded for Discogs, then the TID will reference Discogs entities. 
+\item[TID] ID of the entity in a specific external catalog. Only found in the dumps used for training. The actual values may change depending on which catalog this dump was downloaded for. For example: if the dump was downloaded to be used with IMDb, then the TIDs are referenced to IMDb entities. If it was downloaded for Discogs, then the TID will reference Discogs entities. 
 
 \item[QID] This is the unique identifier of the Wikidata entity. This is what will be used as the \textit{source ID} while performing record linkage. Note that in the present work the terms \textit{QID} and \textit{source ID} will be used interchangeably.
 
 \item[name] The name of the entity in Wikidata.
 
-\item[url] List of URLs associated with the entity. These are URLs about the entity, and may point to Wikidata pages in other languages, or external catalogs.
+\item[url] List of URLs associated with the entity. These are URLs about the entity and may point to Wikidata pages in other languages, or external catalogs.
 
 \item[description] The description of the entity in Wikidata.
 
@@ -1562,7 +1559,7 @@ Following are the fields that we gather from Wikidata. Note that, as said above,
 
 \item[pseudonym] Is a list of alternative names by which the entity might be known.
 
-\item[occupation] List of QIDs representing the professions an entity is known to have performed.
+\item[occupation] List of QID's representing the professions an entity is known to have performed.
 
 \item[birth\_name] The name of the entity, given at birth.
 
@@ -1571,7 +1568,7 @@ Following are the fields that we gather from Wikidata. Note that, as said above,
 \item[family\_name] The last name or surname of the entity.
 \end{description}
 
-\autoref{tab:wikidata-dumps-sizes} shows which is the size of the datasets, both the training and classification ones, for each concrete entity. It seems that the datasets for both musicians are among the largest in both cases, in fact they are except for the \textit{IMDb Actor} training set, which is the largest by a bit more than $50k$. On the other hand, the smallest classification set is \textit{IMDb Producer}, by almost $20k$. In the classification sets, the ones for IMDb \textit{producer} and \textit{director} are much tinier in comparison than all the other. 
+\autoref{tab:wikidata-dumps-sizes} shows which is the size of the datasets, both the training and classification ones, for each concrete entity. It seems that the datasets for both musicians are among the largest in both cases, in fact, they are except for the \textit{IMDb Actor} training set, which is the largest by a bit more than $50k$. On the other hand, the smallest classification set is \textit{IMDb Producer}, by almost $20k$. In the classification sets, the ones for IMDb \textit{producer} and \textit{director} are much tinier in comparison to all the other. 
 
 \begin{table}[H]
 \centering
@@ -1596,13 +1593,14 @@ Musicbrainz & Musician & 118,107                  & 153,437                     
 \section{Preprocessing}
 \label{sec:data-preprocessing}
 
-This section will show which steps the raw data undergoes before it can be used in the \textit{feature extraction} steps. There are actually two different preprocessing steps, one for data coming from Wikidata, and another for data coming from external catalogs. There are also some steps which are applied to data coming from both sources. That is why this section will be separated into three subsections, one explaining each set of steps. During the importing process, the raw dump of the external catalogs also gets briefly preprocessed, these modifications will me mentioned in the last subsection.
+This section will show which steps the raw data undergoes before it can be used in the \textit{feature extraction} steps. There are two different preprocessing steps, one for data coming from Wikidata, and another for data coming from external catalogs. There are also some steps that are applied to data coming from both sources. That is why this section will be separated into three subsections, one explaining each set of steps. During the importing process, the raw dump of the external catalogs also gets briefly preprocessed, these modifications will be mentioned in the last subsection.
 
 It is important to note that the preprocessing for \textit{Wikidata} or \textit{External} data happen before the \textit{Shared} preprocessing. 
 
-All of this preprocessing steps, except for those in made in the \textit{importer}, are done when the data is loaded from the database.
+All of these preprocessing steps, except for those in made in the \textit{importer}, are done when the data is loaded from the database.
 
 In the cases of \textit{Shared}, \textit{Wikidata}, and \textit{External} preprocessing, it is done for chunks of data at a time, currently 1000. The \textit{Importer} preprocessing, on the other hand, is done for each entity separately. 
+
 
 
 \subsection{Shared Preprocessing}
@@ -1611,13 +1609,15 @@ In the cases of \textit{Shared}, \textit{Wikidata}, and \textit{External} prepro
 \subsubsection{Normalize dates}
 \label{sec:data-preprocessiong-date-normalization}
 
-The dates are by default saved together with their precision. The precision is a number which signals which is the most specific part of the date that it can confidently be said is correct. Especially for data coming from Wikidata, this precision can be anything from knowing the exact second something happened, to knowing in which range of one billion years it happened\footurl{https://www.wikidata.org/wiki/Special:ListDatatypes}.
 
-For the current application, it is important that for all dates it is known at least the year. For instance, the worst precision, which is is any number $\leq 9$, will be converted to a precision of 9, which indicates that at most the year can be trusted. A precision of ten indicates that both the the month and year are known. A precision of 11 or more indicates that the year, month, and day are known. And so on until a precision of 14, which indicates that everything up to the second is known. 
+The dates are by default saved together with their precision. The precision is a number which signals which is the most specific part of the date that it can confidently be said is correct. Especially for data coming from Wikidata, this precision can be anything from knowing the exact second something happened to knowing in which range of one billion years it happened\footurl{https://www.wikidata.org/wiki/Special:ListDatatypes}.
+
+For the current application, it is important that for all dates it is known at least the year. For instance, the worst precision, which is is any number $\leq 9$, will be converted to a precision of 9, which indicates that at most the year can be trusted. A precision of 10 indicates that both the month and year are known. A precision of 11 or more indicates that the year, month and day are known. And so on until a precision of 14, which indicates that everything up to the second is known. 
 
 This date normalization what it does is convert the dates to \textit{Pandas} \cite{mckinney2010_pandas} \textit{Period} objects, which can contain the precision of the date internally. 
 
-This procedure is performed for both birth and death dates 
+This procedure is performed for both birth and death dates.
+
 
 \subsubsection{Normalize names}
 \label{sec:data-preprocessiong-name-normalization}
@@ -1634,7 +1634,7 @@ This step normalizes all possible \textit{name fields}, which are:
     \item real name
 \end{itemize}
 
-Any of these fields can contain a list of possible names for an entity. The way in which they're actually normalized is by performing the following steps on each possible name:
+Any of these fields can contain a list of possible names for an entity. The way in which they are normalized is by performing the following steps on each possible name:
 
 \begin{enumerate}
     \item Remove any white space padding which the name may have on the left or right.
@@ -1661,20 +1661,21 @@ As the name of this step implies, what is done is that all columns in the entity
 \subsubsection{Ensure one target ID per QID}
 \label{sec:data-preprocessiong-name-one-tid}
 
-This step is exclusively applied to Wikidata entities that come from a training dump. It ensures that all QIDs in the positive samples of the training data are only associated with one TID. This is done by checking all QIDs which are associate with more than one TID, all associations besides the first one are dropped. 
+This step is exclusively applied to Wikidata entities that come from a training dump. It ensures that all QIDs in the positive samples of the training data are only associated with one TID. This is done by checking all QIDs which are associated with more than one TID, all associations besides the first one are dropped. 
 
 \subsubsection{Tokenize names}
 \label{sec:data-preprocessiong-wik-name-tokenization}
 
-This step is applied to all \textit{name} fields, which were defined earlier in the shared \hyperref[sec:data-preprocessiong-name-normalization]{\textit{Normalize names}} step. In fact, this step performs the same normalization on the names as the previously mentioned step. But in addition to that it also tokenizes the resulting normalized names. 
+This step is applied to all \textit{name} fields, which were defined earlier in the shared \hyperref[sec:data-preprocessiong-name-normalization]{\textit{Normalize names}} step. This step performs the same normalization on the names as the previously mentioned step. But in addition to that, it also tokenizes the resulting normalized names. 
 
-This is done by splitting the resulting normalized names on the white space that separates each part of the name, and then removing from this list of \textit{name parts} all those which are considered \textit{stopwords} according to a previously defined list. Finally this filtered list is converted to a set so that it only contains unique \textit{tokens}. 
+This is done by splitting the resulting normalized names on the white space that separates each part of the name, and then removing from this list of \textit{name parts} all those which are considered \textit{stopwords} according to a previously defined list. Finally, this filtered list is converted to a set so that it only contains unique \textit{tokens}. 
 
 If an entity has more than one name in a given name field then the tokens coming from all names are added to the set mentioned above. 
 
 \subsubsection{Tokenize URLs}
 \label{sec:data-preprocessiong-wik-URL-tokenization}
 
+%llegue aqui Kate
 Each URL is first separated into the following five components:
 
 $$
@@ -1803,7 +1804,6 @@ Basically, this function measures the percentage of elements of the smallest set
 
 Using a set of stop words greatly diminishes the amount of times the function classifies as similar URLs which are not really similar. This set of stop words was constructed by taking all URL tokens in the database, counting them, and choosing the most common 850. Terms in this set are mainly domains to common websites like \textit{Facebook}, \textit{YouTube}, etc, as well as common words and names.
 
-\todo[inline,backgroundcolor=blue!25]{if time: add graphics relating urls and stopwords}
 
 \subsection{Similar Birth Dates}
 \label{sec:feature-similar-birth-dates}
@@ -2172,12 +2172,11 @@ Seeing that the catalogs used are maintained mainly by contributors, one may thi
 
 This hypothesis, that training data is better quality than classification data, may impact the ability to extract meaningful features from the data. For example, it may be more common in the classification set than in the training set that an entity has no \textit{birth date}, or that this date is wrong.
 
-\autoref{tab:features-percentage-of-nans-or-zeroes} shows the percentage of zero values obtained for each feature, for each concrete entity. Most features behave similarly across the different sets, for example \textit{nmt.lev} which is always positive. Of more interest are the features \textit{born and die similar}, and \textit{nm.exact}, which are almost always zero in the classification set, but are considerably \textit{better} in the training set.
+\autoref{tab:features-percentage-of-nans-or-zeroes} and \autoref{tab:features-percentage-of-nans-or-zeroes-pn} show the percentage of zero values obtained for each feature, for each concrete entity. Most features behave similarly across the different sets, for example \textit{nmt.lev} which is always positive. Of more interest are the features \textit{born and die similar}, which are almost always zero in the classification set, but are considerably \textit{better} in the training set. Similarly, \textit{nm.exact} appears to have much more zero values in the classification data than in the training data.
 
 If training and classification sets were of the same quality then this difference can be attributed to the simple fact that the classification set contains more negative examples than the training set. However, in the current case there is no way to know except by evaluating the classification predictions, which is something that will be done by the Wikidata community once said predictions are uploaded. 
 
 Regardless, this is something that must be kept in mind since the final performance of the algorithms on the classification data may actually be different from that on the training data. 
-
 
 
 \begin{table}[H]
@@ -2206,6 +2205,20 @@ Regardless, this is something that must be kept in mind since the final performa
 \multicolumn{1}{|l|}{}                                 & occ.shr  &             &                & 0.944 & 0.618    & 0.699    & 0.698    & 0.681  &               &                  \\ \cline{2-11} 
 \multicolumn{1}{|l|}{}                                 & url.exct & 0.935       & 0.962          &       &          &          &          &        & 0.805         & 0.843            \\ \cline{2-11} 
 \multicolumn{1}{|l|}{}                                 & url.shr  & 0.809       & 0.882          &       &          &          &          &        & 0.750         & 0.806            \\ \hline \hline
+\end{tabular}
+\caption{Percentage of zero values extracted for a given feature, for each concrete entity. Results have been separated by set of procedence: (C)lassification, (T)raining.}
+\label{tab:features-percentage-of-nans-or-zeroes}
+\end{table}
+
+
+
+
+\begin{table}[H]
+\centering
+\begin{tabular}{ll|l|l|l|l|l|l|l|l|l|}
+\cline{3-11}
+                                                       &          & \multicolumn{2}{l|}{discogs} & \multicolumn{5}{l|}{imdb}                       & \multicolumn{2}{l|}{musicbrainz} \\ \cline{3-11} 
+                                                       &          & band        & musician       & actor & director & musician & producer & writer & band          & musician         \\ \hline \hline
 \multicolumn{1}{|l|}{\multirow{10}{*}{N}}       & brn.sim  &             &                & 0.995 & 0.996    & 0.996    & 0.997    & 0.995  & 1.000         & 0.992            \\ \cline{2-11} 
 \multicolumn{1}{|l|}{}                                 & des.cos  & 0.843       & 0.747          &       &          &          &          &        &               &                  \\ \cline{2-11} 
 \multicolumn{1}{|l|}{}                                 & die.sim  &             &                & 0.999 & 0.999    & 0.999    & 0.999    & 0.999  & 1.000         & 0.999            \\ \cline{2-11} 
@@ -2227,10 +2240,9 @@ Regardless, this is something that must be kept in mind since the final performa
 \multicolumn{1}{|l|}{}                                 & url.exct & 0.782       & 0.828          &       &          &          &          &        & 0.181         & 0.268            \\ \cline{2-11} 
 \multicolumn{1}{|l|}{}                                 & url.shr  & 0.446       & 0.571          &       &          &          &          &        & 0.118         & 0.179            \\ \hline
 \end{tabular}
-\caption{Percentage of zero values extracted for a given feature, for each concrete entity. Results have been separated by set of procedence: (C)lassification, (T)raining, (N)egative samples, (P)ositive samples.}
-\label{tab:features-percentage-of-nans-or-zeroes}
+\caption{Percentage of zero values in features extracted for (P)ositive and (N)egative samples of the training set.}
+\label{tab:features-percentage-of-nans-or-zeroes-pn}
 \end{table}
-
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -2262,7 +2274,7 @@ This section strives to explain each baseline algorithm so that the differences 
 \subsection{Linear SVM}
 \label{sec:clf-lsvm}
 
-In its simplest sense, SVM \cite{Vapnik1995_svm, Cristianini2000_svm}, and by extension LSVM, are models that learn to segment data into two categories (a binary classifier). The model supposes that the data is sees is spread on a space of $n$ dimensions. When training, the SVM model will learn a hyperplane (which is just an $n-1$-dimensional line) that separates the points in each category by a \textit{gap} which should be wide as possible. The implementation of LSVM used in this project is the one provided by the LIBLINEAR \cite{Fan:2008_liblinear} library, which is accessed using the functionality provided by Scikit-Learn \cite{scikit-learn}. 
+In its simplest sense, SVM \cite{Vapnik1995_svm, Cristianini2000_svm}, and by extension LSVM, are models that learn to segment data into two categories (a binary classifier). The model supposes that the data is sees is spread on a space of $n$ dimensions. When training, the SVM model will learn a hyperplane (which is just an ($n-1$)-dimensional line) that separates the points in each category by a \textit{gap} which should be wide as possible. The implementation of LSVM used in this project is the one provided by the LIBLINEAR \cite{Fan:2008_liblinear} library, which is accessed using the functionality provided by Scikit-Learn \cite{scikit-learn}. 
 
 Suppose that an SVM gets as training input a series of points in the following format: $(\vec{x}_1, y_1), ..., (\vec{x}_n, y_n)$. Where $\vec{x}_i$ is an  $n$-dimensional vector representing the point, and $y_i$ is the value saying to which class this vector belongs to: either -1 or 1. As said above, the goal is to find a hyperplane which is as far as possible from the nearest points in each group (see \autoref{fig:svm-hyperplan-and-gap}). A hyperplane can be thought of as a series of $\vec{x}$ for which the following is true:
 
@@ -2425,7 +2437,7 @@ After training the probability \cite{Fan:2008_liblinear} of a class $y$ given th
 
 \begin{equation}
     P(y | \vec{x}) = \frac{1}{1+ e^{-y w^T x}}
-\end{equation}on
+\end{equation}
 
 
 
@@ -2868,7 +2880,7 @@ batch\_size  & epochs        & hidden\_activation & hidden\_layer\_dims    & opt
 
 This section presents the results of performing a 5-fold cross validation on the baseline models presented in \autoref{sec:baseline-classifiers}. 
 
-The table below shows the performance metrics for each classifier applied to each concrete entity. Note that the names of the algorithms have been shortened to make the table fit nicely in the page. The abbreviations are as follow:
+The table below shows the performance metrics for each classifier applied to each concrete entity. The bold values in the \textit{mean} columns are the best value for a given concrete entity. Note that the names of the algorithms have been shortened to make the table fit nicely in the page. The abbreviations are as follow:
 
 \begin{itemize}
     \item Linear Support Vector Machine: lsvm
@@ -2882,61 +2894,61 @@ The table below shows the performance metrics for each classifier applied to eac
 
 \begin{longtable}{|l|l|l|l|l|l|l|l|l|}
 \hline
-Catalog     & Entity   & Model & F1.Mean  & F1.STD   & Prec.Mean & Prec.STD & Rec.Mean & Rec.STD  \\ \hline
-discogs     & musician & lsvm  & 0.936944 & 0.001224 & 0.905424  & 0.002080 & 0.970741 & 0.000880 \\
-discogs     & band     & lsvm  & 0.925262 & 0.001267 & 0.896373  & 0.002110 & 0.956090 & 0.003388 \\
-imdb        & actor    & lsvm  & 0.894011 & 0.000789 & 0.875260  & 0.002088 & 0.913592 & 0.001998 \\
-imdb        & director & lsvm  & 0.912727 & 0.001597 & 0.880551  & 0.005850 & 0.947397 & 0.003670 \\
-imdb        & musician & lsvm  & 0.917906 & 0.001399 & 0.909440  & 0.002345 & 0.926534 & 0.001067 \\
-imdb        & producer & lsvm  & 0.905975 & 0.003885 & 0.894173  & 0.006799 & 0.918114 & 0.001219 \\
-imdb        & writer   & lsvm  & 0.928606 & 0.001983 & 0.919005  & 0.002274 & 0.938421 & 0.003574 \\
-musicbrainz & musician & lsvm  & 0.954410 & 0.001406 & 0.942882  & 0.002112 & 0.966225 & 0.001090 \\ 
-musicbrainz & band     & lsvm  & 0.913877 & 0.001689 & 0.961199  & 0.003976 & 0.871046 & 0.006050 \\ \hline
-discogs     & musician & lr    & 0.938138 & 0.001693 & 0.917022  & 0.002191 & 0.960250 & 0.001370 \\
-discogs     & band     & lr    & 0.924791 & 0.001550 & 0.908952  & 0.001476 & 0.941198 & 0.003025 \\
-imdb        & actor    & lr    & 0.893573 & 0.000579 & 0.878388  & 0.001838 & 0.909299 & 0.001406 \\
-imdb        & director & lr    & 0.913846 & 0.000694 & 0.892154  & 0.004468 & 0.936658 & 0.003834 \\
-imdb        & producer & lr    & 0.906045 & 0.002643 & 0.898064  & 0.005640 & 0.914192 & 0.000826 \\
-imdb        & musician & lr    & 0.917958 & 0.001717 & 0.908442  & 0.002911 & 0.927680 & 0.001280 \\
-imdb        & writer   & lr    & 0.928108 & 0.002082 & 0.924621  & 0.001792 & 0.931635 & 0.004264 \\
-musicbrainz & musician & lr    & 0.953083 & 0.001301 & 0.943755  & 0.002042 & 0.962600 & 0.001165 \\ 
-musicbrainz & band     & lr    & 0.918022 & 0.002327 & 0.937643  & 0.002251 & 0.899217 & 0.003973 \\ \hline
-discogs     & musician & mlp   & 0.940715 & 0.001443 & 0.921507  & 0.001770 & 0.960754 & 0.003867 \\
-discogs     & band     & mlp   & 0.928931 & 0.001310 & 0.915249  & 0.001875 & 0.943032 & 0.001727 \\
-imdb        & actor    & mlp   & 0.896922 & 0.000400 & 0.880657  & 0.003412 & 0.913832 & 0.004129 \\
-imdb        & director & mlp   & 0.919340 & 0.000980 & 0.899994  & 0.002724 & 0.939548 & 0.002002 \\
-imdb        & musician & mlp   & 0.925888 & 0.001165 & 0.942860  & 0.001545 & 0.909520 & 0.001863 \\
-imdb        & producer & mlp   & 0.909398 & 0.002913 & 0.894253  & 0.007249 & 0.925119 & 0.003188 \\
-imdb        & writer   & mlp   & 0.930302 & 0.002571 & 0.924571  & 0.003714 & 0.936149 & 0.006365 \\
-musicbrainz & musician & mlp   & 0.957375 & 0.001629 & 0.944146  & 0.004491 & 0.971004 & 0.002647 \\ 
-musicbrainz & band     & mlp   & 0.921134 & 0.002588 & 0.926546  & 0.004402 & 0.915818 & 0.004989 \\ \hline
-discogs     & musician & nb    & 0.931622 & 0.001314 & 0.903489  & 0.002155 & 0.961565 & 0.000812 \\
-discogs     & band     & nb    & 0.922386 & 0.001457 & 0.891462  & 0.001633 & 0.955542 & 0.003274 \\
-imdb        & actor    & nb    & 0.889563 & 0.001311 & 0.825956  & 0.002002 & 0.963789 & 0.001153 \\
-imdb        & musician & nb    & 0.904327 & 0.013959 & 0.868388  & 0.055110 & 0.948158 & 0.033475 \\
-imdb        & producer & nb    & 0.898657 & 0.004254 & 0.842785  & 0.008230 & 0.962525 & 0.001450 \\
-imdb        & director & nb    & 0.907755 & 0.002541 & 0.855312  & 0.005063 & 0.967075 & 0.001997 \\
-imdb        & writer   & nb    & 0.922121 & 0.002580 & 0.882778  & 0.004051 & 0.965145 & 0.002172 \\
-musicbrainz & musician & nb    & 0.952783 & 0.001847 & 0.953561  & 0.002394 & 0.952008 & 0.001847 \\
-musicbrainz & band     & nb    & 0.907094 & 0.001994 & 0.953012  & 0.001335 & 0.865401 & 0.002974 \\ \hline
-discogs     & musician & rf    & 0.933460 & 0.002427 & 0.917496  & 0.003021 & 0.949992 & 0.002296 \\
-discogs     & band     & rf    & 0.921673 & 0.001084 & 0.909216  & 0.002648 & 0.934490 & 0.002988 \\
-imdb        & actor    & rf    & 0.899161 & 0.000836 & 0.879621  & 0.001427 & 0.919592 & 0.001620 \\
-imdb        & director & rf    & 0.916903 & 0.000940 & 0.892806  & 0.003096 & 0.942355 & 0.002601 \\
-imdb        & musician & rf    & 0.922135 & 0.000594 & 0.932216  & 0.000733 & 0.912272 & 0.001018 \\
-imdb        & producer & rf    & 0.906239 & 0.004720 & 0.895270  & 0.008984 & 0.917553 & 0.005214 \\
-imdb        & writer   & rf    & 0.929301 & 0.002919 & 0.922216  & 0.004160 & 0.936508 & 0.003393 \\
-musicbrainz & musician & rf    & 0.953673 & 0.001146 & 0.943972  & 0.001591 & 0.963577 & 0.001052 \\ 
-musicbrainz & band     & rf    & 0.918844 & 0.002231 & 0.938321  & 0.005419 & 0.900192 & 0.003714 \\ \hline
-discogs     & musician & slp   & 0.938168 & 0.001664 & 0.917755  & 0.002291 & 0.959510 & 0.001258 \\
-discogs     & band     & slp   & 0.925647 & 0.001462 & 0.908264  & 0.001465 & 0.943716 & 0.003188 \\
-imdb        & actor    & slp   & 0.893205 & 0.000591 & 0.881499  & 0.001829 & 0.905232 & 0.001676 \\
-imdb        & director & slp   & 0.914070 & 0.000545 & 0.895414  & 0.003822 & 0.933551 & 0.003516 \\
-imdb        & musician & slp   & 0.917503 & 0.001383 & 0.909845  & 0.002659 & 0.925296 & 0.000865 \\
-imdb        & producer & slp   & 0.905526 & 0.002380 & 0.903146  & 0.006456 & 0.907958 & 0.001993 \\
-imdb        & writer   & slp   & 0.927724 & 0.001915 & 0.924983  & 0.002891 & 0.930499 & 0.003970 \\
-musicbrainz & musician & slp   & 0.953054 & 0.001383 & 0.943662  & 0.002094 & 0.962638 & 0.001341 \\
-musicbrainz & band     & slp   & 0.915977 & 0.002302 & 0.946439  & 0.002538 & 0.887441 & 0.005184 \\ \hline
+Catalog                       & Entity                    & Model & F1.Mean  & F1.STD   & Prec.Mean & Prec.STD & Rec.Mean & Rec.STD  \\ \hline
+\multirow{12}{*}{discogs}     & \multirow{6}{*}{band}     & lr    & 0.924791 & 0.001550 & 0.908952  & 0.001476 & 0.941198 & 0.003025 \\
+                              &                           & lsvm  & 0.925262 & 0.001267 & 0.896373  & 0.002110 & \textbf{0.956090} & 0.003388 \\
+                              &                           & mlp   & \textbf{0.928931} & 0.001310 & \textbf{0.915249}  & 0.001875 & 0.943032 & 0.001727 \\
+                              &                           & nb    & 0.922386 & 0.001457 & 0.891462  & 0.001633 & 0.955542 & 0.003274 \\
+                              &                           & rf    & 0.921673 & 0.001084 & 0.909216  & 0.002648 & 0.934490 & 0.002988 \\
+                              &                           & slp   & 0.925647 & 0.001462 & 0.908264  & 0.001465 & 0.943716 & 0.003188 \\ \cline{2-9} 
+                              & \multirow{6}{*}{musician} & lr    & 0.938138 & 0.001693 & 0.917022  & 0.002191 & 0.960250 & 0.001370 \\
+                              &                           & lsvm  & 0.936944 & 0.001224 & 0.905424  & 0.002080 & \textbf{0.970741} & 0.000880 \\
+                              &                           & mlp   & \textbf{0.940715} & 0.001443 & \textbf{0.921507}  & 0.001770 & 0.960754 & 0.003867 \\
+                              &                           & nb    & 0.931622 & 0.001314 & 0.903489  & 0.002155 & 0.961565 & 0.000812 \\
+                              &                           & rf    & 0.933460 & 0.002427 & 0.917496  & 0.003021 & 0.949992 & 0.002296 \\
+                              &                           & slp   & 0.938168 & 0.001664 & 0.917755  & 0.002291 & 0.959510 & 0.001258 \\ \hline
+\multirow{30}{*}{imdb}        & \multirow{6}{*}{actor}    & lr    & 0.893573 & 0.000579 & 0.878388  & 0.001838 & 0.909299 & 0.001406 \\
+                              &                           & lsvm  & 0.894011 & 0.000789 & 0.875260  & 0.002088 & 0.913592 & 0.001998 \\
+                              &                           & mlp   & 0.896922 & 0.000400 & 0.880657  & 0.003412 & 0.913832 & 0.004129 \\
+                              &                           & nb    & 0.889563 & 0.001311 & 0.825956  & 0.002002 & \textbf{0.963789} & 0.001153 \\
+                              &                           & rf    & \textbf{0.899161} & 0.000836 & 0.879621  & 0.001427 & 0.919592 & 0.001620 \\
+                              &                           & slp   & 0.893205 & 0.000591 & \textbf{0.881499}  & 0.001829 & 0.905232 & 0.001676 \\ \cline{2-9} 
+                              & \multirow{6}{*}{director} & lr    & 0.913846 & 0.000694 & 0.892154  & 0.004468 & 0.936658 & 0.003834 \\
+                              &                           & lsvm  & 0.912727 & 0.001597 & 0.880551  & 0.005850 & 0.947397 & 0.003670 \\
+                              &                           & mlp   & \textbf{0.919340} & 0.000980 & \textbf{0.899994}  & 0.002724 & 0.939548 & 0.002002 \\
+                              &                           & nb    & 0.907755 & 0.002541 & 0.855312  & 0.005063 & \textbf{0.967075} & 0.001997 \\
+                              &                           & rf    & 0.916903 & 0.000940 & 0.892806  & 0.003096 & 0.942355 & 0.002601 \\
+                              &                           & slp   & 0.914070 & 0.000545 & 0.895414  & 0.003822 & 0.933551 & 0.003516 \\ \cline{2-9} 
+                              & \multirow{6}{*}{musician} & lr    & 0.917958 & 0.001717 & 0.908442  & 0.002911 & 0.927680 & 0.001280 \\
+                              &                           & lsvm  & 0.917906 & 0.001399 & 0.909440  & 0.002345 & 0.926534 & 0.001067 \\
+                              &                           & mlp   & \textbf{0.925888} & 0.001165 & \textbf{0.942860}  & 0.001545 & 0.909520 & 0.001863 \\
+                              &                           & nb    & 0.904327 & 0.013959 & 0.868388  & 0.055110 & \textbf{0.948158} & 0.033475 \\
+                              &                           & rf    & 0.922135 & 0.000594 & 0.932216  & 0.000733 & 0.912272 & 0.001018 \\
+                              &                           & slp   & 0.917503 & 0.001383 & 0.909845  & 0.002659 & 0.925296 & 0.000865 \\ \cline{2-9} 
+                              & \multirow{6}{*}{producer} & lr    & 0.906045 & 0.002643 & 0.898064  & 0.005640 & 0.914192 & 0.000826 \\
+                              &                           & lsvm  & 0.905975 & 0.003885 & 0.894173  & 0.006799 & 0.918114 & 0.001219 \\
+                              &                           & mlp   & \textbf{0.909398} & 0.002913 & 0.894253  & 0.007249 & 0.925119 & 0.003188 \\
+                              &                           & nb    & 0.898657 & 0.004254 & 0.842785  & 0.008230 & \textbf{0.962525} & 0.001450 \\
+                              &                           & rf    & 0.906239 & 0.004720 & 0.895270  & 0.008984 & 0.917553 & 0.005214 \\
+                              &                           & slp   & 0.905526 & 0.002380 & \textbf{0.903146}  & 0.006456 & 0.907958 & 0.001993 \\ \cline{2-9} 
+                              & \multirow{6}{*}{writer}   & lr    & 0.928108 & 0.002082 & 0.924621  & 0.001792 & 0.931635 & 0.004264 \\
+                              &                           & lsvm  & 0.928606 & 0.001983 & 0.919005  & 0.002274 & 0.938421 & 0.003574 \\
+                              &                           & mlp   & \textbf{0.930302} & 0.002571 & 0.924571  & 0.003714 & 0.936149 & 0.006365 \\
+                              &                           & nb    & 0.922121 & 0.002580 & 0.882778  & 0.004051 & \textbf{0.965145} & 0.002172 \\
+                              &                           & rf    & 0.929301 & 0.002919 & 0.922216  & 0.004160 & 0.936508 & 0.003393 \\
+                              &                           & slp   & 0.927724 & 0.001915 & \textbf{0.924983}  & 0.002891 & 0.930499 & 0.003970 \\ \hline
+\multirow{12}{*}{musicbrainz} & \multirow{6}{*}{band}     & lr    & 0.918022 & 0.002327 & 0.937643  & 0.002251 & 0.899217 & 0.003973 \\
+                              &                           & lsvm  & 0.913877 & 0.001689 & \textbf{0.961199}  & 0.003976 & 0.871046 & 0.006050 \\
+                              &                           & mlp   & \textbf{0.921134} & 0.002588 & 0.926546  & 0.004402 & \textbf{0.915818} & 0.004989 \\
+                              &                           & nb    & 0.907094 & 0.001994 & 0.953012  & 0.001335 & 0.865401 & 0.002974 \\
+                              &                           & rf    & 0.918844 & 0.002231 & 0.938321  & 0.005419 & 0.900192 & 0.003714 \\
+                              &                           & slp   & 0.915977 & 0.002302 & 0.946439  & 0.002538 & 0.887441 & 0.005184 \\ \cline{2-9} 
+                              & \multirow{6}{*}{musician} & lr    & 0.953083 & 0.001301 & 0.943755  & 0.002042 & 0.962600 & 0.001165 \\
+                              &                           & lsvm  & 0.954410 & 0.001406 & 0.942882  & 0.002112 & 0.966225 & 0.001090 \\
+                              &                           & mlp   & \textbf{0.957375} & 0.001629 & 0.944146  & 0.004491 & \textbf{0.971004} & 0.002647 \\
+                              &                           & nb    & 0.952783 & 0.001847 & \textbf{0.953561}  & 0.002394 & 0.952008 & 0.001847 \\
+                              &                           & rf    & 0.953673 & 0.001146 & 0.943972  & 0.001591 & 0.963577 & 0.001052 \\
+                              &                           & slp   & 0.953054 & 0.001383 & 0.943662  & 0.002094 & 0.962638 & 0.001341 \\ \hline
 \end{longtable}
 
 
@@ -3026,7 +3038,7 @@ It can also be appreciated that while \textit{mlp} almost always has the best pe
 \section{Ensemble Evaluation}
 \label{sec:ensemble-evaluation}
 
-This section presents the results obtained during the 5-fold cross validation procedure when applied to the ensemble models presented in \autoref{sec:ensemble-models}. The results are presented once for each concrete entity and model. Note that the names of the ensemble classifiers have been shortened to make the table fit properly. Below is the mapping from the full names of the classifiers to their shortened version/ 
+This section presents the results obtained during the 5-fold cross validation procedure when applied to the ensemble models presented in \autoref{sec:ensemble-models}. The results are presented once for each concrete entity and model and the mean values in bold show the best value obtained for said concrete entity. Note that the names of the ensemble classifiers have been shortened to make the table fit properly. Below is the mapping from the full names of the classifiers to their shortened version/ 
 
 \begin{itemize}
     \item Gated Classifier : gc
@@ -3038,43 +3050,43 @@ This section presents the results obtained during the 5-fold cross validation pr
 
 \begin{longtable}{|l|l|l|l|l|l|l|l|l|}
 \hline
-Catalog     & Entity   & Model & F1.Mean  & F1.STD   & Prec.Mean & Prec.STD & Rec.Mean & Rec.STD  \\ \hline
-discogs     & musician & gc    & 0.936638 & 0.002652 & 0.922472  & 0.004920 & 0.951308 & 0.006874 \\
-discogs     & band     & gc    & 0.927455 & 0.001522 & 0.912845  & 0.002324 & 0.942566 & 0.004981 \\
-imdb        & actor    & gc    & 0.897257 & 0.002191 & 0.895105  & 0.003315 & 0.899486 & 0.007650 \\
-imdb        & director & gc    & 0.918505 & 0.001411 & 0.900678  & 0.002997 & 0.937067 & 0.003067 \\
-imdb        & musician & gc    & 0.924625 & 0.002018 & 0.943199  & 0.010644 & 0.906929 & 0.007107 \\
-imdb        & producer & gc    & 0.910555 & 0.003934 & 0.902453  & 0.007668 & 0.918955 & 0.010547 \\
-imdb        & writer   & gc    & 0.931719 & 0.002789 & 0.928561  & 0.007822 & 0.934984 & 0.005804 \\
-musicbrainz & musician & gc    & 0.955526 & 0.001926 & 0.951364  & 0.006050 & 0.959821 & 0.007915 \\ 
-musicbrainz & band     & gc    & 0.918238 & 0.003816 & 0.948221  & 0.012288 & 0.890520 & 0.016863 \\ \hline
-discogs     & musician & sc    & 0.938836 & 0.002473 & 0.917001  & 0.002568 & 0.961746 & 0.003667 \\
-discogs     & band     & sc    & 0.927771 & 0.001080 & 0.911809  & 0.006866 & 0.944456 & 0.009776 \\
-imdb        & actor    & sc    & 0.890012 & 0.007978 & 0.907933  & 0.016179 & 0.873941 & 0.029767 \\
-imdb        & director & sc    & 0.917923 & 0.001777 & 0.901563  & 0.004736 & 0.934969 & 0.007596 \\
-imdb        & musician & sc    & 0.924930 & 0.001915 & 0.947724  & 0.003561 & 0.903238 & 0.004935 \\
-imdb        & producer & sc    & 0.904998 & 0.008882 & 0.899323  & 0.020682 & 0.912508 & 0.035943 \\
-imdb        & writer   & sc    & 0.931043 & 0.003075 & 0.929588  & 0.007946 & 0.932652 & 0.009692 \\
-musicbrainz & musician & sc    & 0.955643 & 0.001373 & 0.955374  & 0.003750 & 0.955933 & 0.003327 \\
-musicbrainz & band     & sc    & 0.919791 & 0.003254 & 0.941948  & 0.011043 & 0.898935 & 0.013037 \\ \hline
-discogs     & musician & vh    & 0.939658 & 0.001932 & 0.913881  & 0.002899 & 0.966938 & 0.002004 \\
-discogs     & band     & vh    & 0.926795 & 0.001145 & 0.905189  & 0.001827 & 0.949465 & 0.002661 \\
-imdb        & actor    & vh    & 0.897184 & 0.000752 & 0.882077  & 0.009962 & 0.913098 & 0.012148 \\
-imdb        & director & vh    & 0.918177 & 0.001400 & 0.890278  & 0.004667 & 0.947915 & 0.003379 \\
-imdb        & musician & vh    & 0.921577 & 0.002711 & 0.918733  & 0.022289 & 0.925297 & 0.017423 \\
-imdb        & producer & vh    & 0.907517 & 0.004611 & 0.901155  & 0.004867 & 0.914052 & 0.009619 \\
-imdb        & writer   & vh    & 0.931065 & 0.002249 & 0.920422  & 0.007199 & 0.942038 & 0.005549 \\
-musicbrainz & musician & vh    & 0.956088 & 0.001293 & 0.946047  & 0.003334 & 0.966356 & 0.001537 \\
-musicbrainz & band     & vh    & 0.917456 & 0.002139 & 0.953082  & 0.007505 & 0.884490 & 0.006698 \\ \hline
-discogs     & musician & vs    & 0.938896 & 0.001494 & 0.909274  & 0.004537 & 0.970543 & 0.003097 \\
-discogs     & band     & vs    & 0.927576 & 0.001300 & 0.904116  & 0.002522 & 0.952312 & 0.004592 \\
-imdb        & actor    & vs    & 0.899699 & 0.001028 & 0.887665  & 0.005118 & 0.912139 & 0.006529 \\
-imdb        & director & vs    & 0.919262 & 0.001497 & 0.894902  & 0.008123 & 0.945108 & 0.006606 \\
-imdb        & musician & vs    & 0.926019 & 0.001244 & 0.939099  & 0.007632 & 0.913418 & 0.007684 \\
-imdb        & producer & vs    & 0.909610 & 0.003182 & 0.905090  & 0.005243 & 0.914192 & 0.002709 \\
-imdb        & writer   & vs    & 0.931617 & 0.002161 & 0.929887  & 0.004030 & 0.933369 & 0.002867 \\
-musicbrainz & musician & vs    & 0.954936 & 0.001831 & 0.955208  & 0.002438 & 0.954666 & 0.001676 \\
-musicbrainz & band     & vs    & 0.916297 & 0.002493 & 0.954029  & 0.002458 & 0.881462 & 0.005454 \\ \hline
+Catalog                      & Entity                    & Model & F1.Mean           & F1.STD   & Prec.Mean         & Prec.STD & Rec.Mean          & Rec.STD  \\ \hline
+\multirow{8}{*}{discogs}     & \multirow{4}{*}{band}     & gc    & 0.927455          & 0.001522 & \textbf{0.912845} & 0.002324 & 0.942566          & 0.004981 \\
+                             &                           & sc    & \textbf{0.927771} & 0.001080 & 0.911809          & 0.006866 & 0.944456          & 0.009776 \\
+                             &                           & vh    & 0.926795          & 0.001145 & 0.905189          & 0.001827 & 0.949465          & 0.002661 \\
+                             &                           & vs    & 0.927576          & 0.001300 & 0.904116          & 0.002522 & \textbf{0.952312} & 0.004592 \\ \cline{2-9} 
+                             & \multirow{4}{*}{musician} & gc    & 0.936638          & 0.002652 & \textbf{0.922472} & 0.004920 & 0.951308          & 0.006874 \\
+                             &                           & sc    & 0.938836          & 0.002473 & 0.917001          & 0.002568 & 0.961746          & 0.003667 \\
+                             &                           & vh    & \textbf{0.939658} & 0.001932 & 0.913881          & 0.002899 & 0.966938          & 0.002004 \\
+                             &                           & vs    & 0.938896          & 0.001494 & 0.909274          & 0.004537 & \textbf{0.970543} & 0.003097 \\ \hline
+\multirow{20}{*}{imdb}       & \multirow{4}{*}{actor}    & gc    & 0.897257          & 0.002191 & 0.895105          & 0.003315 & 0.899486          & 0.007650 \\
+                             &                           & sc    & 0.890012          & 0.007978 & \textbf{0.907933} & 0.016179 & 0.873941          & 0.029767 \\
+                             &                           & vh    & 0.897184          & 0.000752 & 0.882077          & 0.009962 & \textbf{0.913098} & 0.012148 \\
+                             &                           & vs    & \textbf{0.899699} & 0.001028 & 0.887665          & 0.005118 & 0.912139          & 0.006529 \\ \cline{2-9} 
+                             & \multirow{4}{*}{director} & gc    & 0.918505          & 0.001411 & 0.900678          & 0.002997 & 0.937067          & 0.003067 \\
+                             &                           & sc    & 0.917923          & 0.001777 & \textbf{0.901563} & 0.004736 & 0.934969          & 0.007596 \\
+                             &                           & vh    & 0.918177          & 0.001400 & 0.890278          & 0.004667 & \textbf{0.947915} & 0.003379 \\
+                             &                           & vs    & \textbf{0.919262} & 0.001497 & 0.894902          & 0.008123 & 0.945108          & 0.006606 \\ \cline{2-9} 
+                             & \multirow{4}{*}{musician} & gc    & 0.924625          & 0.002018 & 0.943199          & 0.010644 & 0.906929          & 0.007107 \\
+                             &                           & sc    & 0.924930          & 0.001915 & \textbf{0.947724} & 0.003561 & 0.903238          & 0.004935 \\
+                             &                           & vh    & 0.921577          & 0.002711 & 0.918733          & 0.022289 & \textbf{0.925297} & 0.017423 \\
+                             &                           & vs    & \textbf{0.926019} & 0.001244 & 0.939099          & 0.007632 & 0.913418          & 0.007684 \\ \cline{2-9} 
+                             & \multirow{4}{*}{producer} & gc    & \textbf{0.910555} & 0.003934 & 0.902453          & 0.007668 & \textbf{0.918955} & 0.010547 \\
+                             &                           & sc    & 0.904998          & 0.008882 & 0.899323          & 0.020682 & 0.912508          & 0.035943 \\
+                             &                           & vh    & 0.907517          & 0.004611 & 0.901155          & 0.004867 & 0.914052          & 0.009619 \\
+                             &                           & vs    & 0.909610          & 0.003182 & \textbf{0.905090} & 0.005243 & 0.914192          & 0.002709 \\ \cline{2-9} 
+                             & \multirow{4}{*}{writer}   & gc    & \textbf{0.931719} & 0.002789 & 0.928561          & 0.007822 & 0.934984          & 0.005804 \\
+                             &                           & sc    & 0.931043          & 0.003075 & 0.929588          & 0.007946 & 0.932652          & 0.009692 \\
+                             &                           & vh    & 0.931065          & 0.002249 & 0.920422          & 0.007199 & \textbf{0.942038} & 0.005549 \\
+                             &                           & vs    & 0.931617          & 0.002161 & \textbf{0.929887} & 0.004030 & 0.933369          & 0.002867 \\ \hline
+\multirow{8}{*}{musicbrainz} & \multirow{4}{*}{band}     & gc    & 0.918238          & 0.003816 & 0.948221          & 0.012288 & 0.890520          & 0.016863 \\
+                             &                           & sc    & \textbf{0.919791} & 0.003254 & 0.941948          & 0.011043 & \textbf{0.898935} & 0.013037 \\
+                             &                           & vh    & 0.917456          & 0.002139 & 0.953082          & 0.007505 & 0.884490          & 0.006698 \\
+                             &                           & vs    & 0.916297          & 0.002493 & \textbf{0.954029} & 0.002458 & 0.881462          & 0.005454 \\ \cline{2-9} 
+                             & \multirow{4}{*}{musician} & gc    & 0.955526          & 0.001926 & 0.951364          & 0.006050 & 0.959821          & 0.007915 \\
+                             &                           & sc    & 0.955643          & 0.001373 & \textbf{0.955374} & 0.003750 & 0.955933          & 0.003327 \\
+                             &                           & vh    & \textbf{0.956088} & 0.001293 & 0.946047          & 0.003334 & \textbf{0.966356} & 0.001537 \\
+                             &                           & vs    & 0.954936          & 0.001831 & 0.955208          & 0.002438 & 0.954666          & 0.001676 \\ \hline
 \end{longtable}
 
 
@@ -3182,7 +3194,7 @@ The table below shows the best three models for each metric, each cell (which co
 \begin{tabular}{|l|l|ll|ll|ll|}
 \hline
 Catalog                      & Entity                    & Model & F1.Mean  & Model & Prec.Mean & Model                & Recall.Mean \\ \hline
-\multirow{6}{*}{di$sc^*$ogs}     & \multirow{3}{*}{band}     & $mlp^+$  & 0.928931 & $mlp^+$   & 0.915249  & $lsvm^+$                 & 0.956090    \\
+\multirow{6}{*}{discogs}     & \multirow{3}{*}{band}     & $mlp^+$  & 0.928931 & $mlp^+$   & 0.915249  & $lsvm^+$                 & 0.956090    \\
                              &                           & $sc^*$    & 0.927771 & $gc^*$    & 0.912845  & $nb^+$                   & 0.955542    \\
                              &                           & $vs^*$    & 0.927576 & $sc^*$    & 0.911809  & $vs^*$                   & 0.952312    \\ \cline{2-8} 
                              & \multirow{3}{*}{musician} & $mlp^+$   & 0.940715 & $gc^*$    & 0.922472  & $lsvm^+$                 & 0.970741    \\
@@ -3336,14 +3348,14 @@ The grid search procedure to find the optimal hyperparameters of the baseline cl
 \titleformat{\chapter} {\normalfont\Huge\bfseries}{Apendix \thechapter}{1em}{}
 
 \appendix
-\chapter{Appendix}
+\chapter{Apendix}
 
-\subsection{Glossary}
+\section{Glossary}
 \label{sec:apx-glossary}
 
 This section will review the terminology which is extensively used in this work when talking about data and it's sources.
 
-\subsubsection{Entity}
+\subsection{Entity}
 \label{sec:rl-term-entity}
 
 An entity refers to a single data point in a dataset (catalog). \textit{Entities} are what is matched when performing record linkage. An entity is composed of one identifier, and a collection of fields (either quantitative or qualitative) which are specific to each problem. 
@@ -3351,7 +3363,7 @@ An entity refers to a single data point in a dataset (catalog). \textit{Entities
 In the people use case, the entities will most likely have fields representing personal information \textit{(name, birth date, death date, etc.)}. If, on the other hand there is a problem where its necessary to perform record linkage on houses, then it would probably have fields like \texttt{total area, number of floors, number of rooms, etc}.
 
 
-\subsubsection{Catalog}
+\subsection{Catalog}
 \label{sec:rl-term-catalog}
 
 In the present work, any source of entities is called a \textit{catalog}. The terms \textit{catalog} and  \textit{dataset} are synonyms. Any source of data can be a catalog: books, databases, spreadsheets, etc. 
@@ -3365,7 +3377,7 @@ As stated before, entities are always assigned an identifier. This said identifi
 When performing record linkage, it is desirable to end up with a list of identifiers pairs, where each pair describes a single real-world entity, and its identifiers tells us which record in the corresponding dataset has information on the specific entity.
 
 
-\subsubsection{Source and Target}
+\subsection{Source and Target}
 \label{sec:rl-term-source-and-target}
 
 As stated before, the goal is to take Wikidata entities and find their corresponding links in external catalogs. The relation between these two can be captured by the terms \textit{source} and \textit{target}. \textit{Source} is the catalog where the entities that should be matched are taken from (i.e. \textit{Wikidata}), and \textit{target} is the catalog against which the entities from the source should be matched (i.e. the external catalogs).
@@ -3410,8 +3422,6 @@ It is also interesting to note that in most plots, but especially in those for t
 For the training set distributions there is a bit more variations, and feature values are also higher feature values are more common. Here it can be noted that the \textit{exact} features are much more prominent than in the classification set. 
 
 Comparing the positive and negative training distributions one can notice that for the positive distributions, in all cases, the exact matches measures are much higher than the others.
-
-\todo[inline]{finish or remove section. exact measures squash all the others, but removing them would mean they should be presented in some other way.. might leverage the already presented table of percentages of zero values, the complement is the percentage of 1s (since exact is only 1/0)}
 
 \begin{figure}[H]
   \centering \includegraphics[width=\textwidth]{classification_feature_distribution} 
