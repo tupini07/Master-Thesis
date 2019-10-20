@@ -1,5 +1,11 @@
-#+title: soweego: ene--
+#+title: Soweego: Ensemble learning applied to Record Linkage
+
+#+BEAMER_HEADER: \titlegraphic{\includegraphics[width=.5\textwidth]{../graphics/logo_unitn.png}}
+
 #+author: Andrea Tupini
+#+EMAIL:    andrea.tupini@studenti.unitn.it 
+#+DATE:     2019-10-23
+
 #+options: H:2 toc:t num:t
 #+latex_class: beamer
 #+LATEX_CLASS_OPTIONS: [presentation]
@@ -10,28 +16,269 @@
 #+beamer_inner_theme:
 #+beamer_outer_theme:
 #+beamer_header:
+#+latex_header: \AtBeginSection[]{\begin{frame}<beamer>\frametitle{Topic}\tableofcontents[currentsection, hideothersubsections, sectionstyle=show/shaded, subsectionstyle=hide]\end{frame}}
+ 
+* Problem
+** What is Wikidata
+   
+   Collection of *items*, each of which is associated with some *statements*.
 
-
-* This is the first structural section
-
-** Frame 1
-*** Thanks to Eric Fraga                                           :B_block:
+** Missing References                                              
+   
+*** Missing References                                              :B_frame:
     :PROPERTIES:
-    :BEAMER_COL: 0.48
-    :BEAMER_ENV: block
+    :BEAMER_env: frame
     :END:
-    for the first viable Beamer setup in Org
-*** Thanks to everyone else                                        :B_block:
+
+    There are a total of /744.4 million/ *statements*
+    
+    - /200.5 million/ are unreferenced (26%)
+
+*** Graphana Info                                                   :B_frame:
     :PROPERTIES:
-    :BEAMER_COL: 0.48
-    :BEAMER_ACT: <2->
-    :BEAMER_ENV: block
+    :BEAMER_env: frame
     :END:
-    for contributing to the discussion
-**** This will be formatted as a beamer note                       :B_note:
+
+   #+ATTR_LATEX: :width 0.75\textwidth
+   [[../graphics/graphana_screenshot.png]]
+
+** Data quality and trust
+   
+*** Quality
+    identifiers enable feedback loop
+*** Trust
+    references to external reliable sources
+
+** Example
+   
+
+*** In Wikidata and IMDb                                            :B_frame:
+    :PROPERTIES:
+    :BEAMER_env: frame
+    :END:
+
+
+   Actor in Wikidata
+
+   Actor in IMDb
+
+   Maybe unreferenced so we can use this example below as well
+
+* Soweego Introduction
+
+  
+** What is soweego?
+
+   - Open source project of the /Wikimedia Foundation/
+   - Uses record linkage and supervised machine learning to link Wikidata entities with external /catalogs/
+
+** Some terminology
+
+   - *Catalog* collection of information
+     - A *Target catalog* refers to any collection of information which is not Wikidata
+     - *Source catalog* = Wikidata
+   - *Entity* is a specific item in a catalog
+
+** Overview of soweego
+
+    - Input: pairs of /entities/
+      - source = Wikidata
+      - target = target catalog 
+    - Output: *links* as Wikidata identifier statements
+    # - Output: *probability* that each pair represents the same entity 
+
+
+** Example
+
+*** In Wikidata and IMDb                                            :B_frame:
+    :PROPERTIES:
+    :BEAMER_env: frame
+    :END:
+
+
+    Same example as above
+
+    Actor in Wikidata
+
+    Actor in IMDb
+
+*** Respective property in Wikidata                                 :B_frame:
+    :PROPERTIES:
+    :BEAMER_env: frame
+    :END:
+    
+    image
+
+
+** External Catalogs
+
+*** IMDb                                                            :B_frame:
+    :PROPERTIES:
+    :BEAMER_env: frame
+    :END:
+    
+    | Entity   | Training | Classification |
+    |----------+----------+----------------|
+    | Actor    | 177,417  | 89,081         |
+    | Director | 46,904   | 8,407          |
+    | Musician | 61,034   | 210,017        |
+    | Producer | 19,861   | 2,075          |
+    | Writer   | 41,373   | 15,143         |
+
+
+*** Musicbrainz                                                     :B_frame:
+    :PROPERTIES:
+    :BEAMER_env: frame
+    :END:
+
+    | Entity   | Training | Classification |
+    |----------+----------+----------------|
+    | Band     | 47,096   | 32,407         |
+    | Musician | 118,107  | 153,437        |
+
+*** Discogs                                                         :B_frame:
+    :PROPERTIES:
+    :BEAMER_env: frame
+    :END:
+
+    | Entity   | Training | Classification |
+    |----------+----------+----------------|
+    | Band     | 43,428   | 36,200         |
+    | Musician | 88,069   | 183,483        |
+
+* Soweego Pipeline
+
+** Pipeline steps
+
+   - Importer
+   - Blocking
+   - Data preprocessing
+   - Feature extraction
+   - Linker
+   - Upload results
+
+** Importer
+   
+   - Download data from catalogs
+   - Transform it into a common structure
+   - Save it into soweego's internal database
+
+** Blocking
+
+   - Reduces complexity
+   - Only compare pairs of entities which have a similar name
+
+** Data preprocessing
+   
+   - Normalize
+   - Tokenize
+   - Handle dates
+   - Clean datasets
+
+** Feature extraction
+
+*** Definition                                                      :B_frame:
+    :PROPERTIES:
+    :BEAMER_env: frame
+    :END:
+
+   - Field pair comparison
+   - Fields \rightarrow Similarity Function \rightarrow Score
+   - One feature vector which characterizes similarity between pair
+
+*** Comparison functions                                            :B_frame:
+    :PROPERTIES:
+    :BEAMER_env: frame
+    :END:
+
+    
+**** Left                                                          :B_column:
      :PROPERTIES:
-     :BEAMER_env: note
+     :BEAMER_col: 0.5
+     :BEAMER_env: column
      :END:
-** Frame 2 (where we will not use columns)
-*** Request
-    Please test this stuff!
+     
+     - Exact match
+     - Similar strings
+       - Levenshtein
+       - Cosine
+
+**** Right                                                         :B_column:
+     :PROPERTIES:
+     :BEAMER_col: 0.5
+     :BEAMER_env: column
+     :END:
+
+     - Similar dates
+     - Shared tokens
+     - Shared occupations
+
+** Linking
+
+   - Take feature vectors and returns probability that pair is a match
+
+** Upload results
+   
+   Define /upper/ t_U and /lower/ t_L thresholds.
+ 
+   - *non-match*, if /prob \leq t_L/
+   - *potential-match*, if /t_L < prob < t_U/
+   - *match*, if /t_U \leq prob/
+
+
+* Algorithms
+
+** Baseline classifiers
+
+   - Linear SVM
+   - Naive Bayes
+   - Logistic Regression
+   - Random Forest
+   - Single-Layer Perceptron
+   - Multi-Layer Perceptron
+
+** Ensemble classifiers
+
+   - Soft Voting Classifier
+   - Hard Voting Classifier
+   - Gated Ensemble
+   - Stacked Ensemble
+   
+* Results
+
+** How are results presented
+   
+   The results will be presented in terms of the following metrics:
+
+   - Precision
+   - Recall
+   - F1 Score
+
+** Baseline results
+
+   | Model                   | Precision |   Recall |       F1 |
+   |-------------------------+-----------+----------+----------|
+   | Multi-Layer Perceptron  |  *0.9166* |   0.9349 | *0.9349* |
+   |-------------------------+-----------+----------+----------|
+   | Random Forest           |    0.9145 |   0.9307 |   0.9223 |
+   |-------------------------+-----------+----------+----------|
+   | Logistic Regression     |    0.9121 |   0.9314 |   0.9215 |
+   |-------------------------+-----------+----------+----------|
+   | Single-Layer Perceptron |    0.9145 |   0.9284 |   0.9212 |
+   |-------------------------+-----------+----------+----------|
+   | Linear SVM              |    0.9093 |   0.9342 |   0.9210 |
+   |-------------------------+-----------+----------+----------|
+   | Naive Bayes             |    0.8863 | *0.9490* |   0.9151 |
+
+
+** Ensemble results
+
+** 5 best classifiers
+
+
+* Discussion
+
+** Soweego usage
+
+* Future work
+
