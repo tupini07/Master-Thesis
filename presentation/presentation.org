@@ -373,6 +373,9 @@
 
    - Repeated executions
    - Next execution gets output of previous one
+     
+** Better conclusions
+   TODO make better conclusions
 
 * Future work                                                       
 
@@ -380,6 +383,4 @@
 
   - Better construction of base classifiers
   - Leverage relations among entities
-  - Explore other ensembling techniques
-  - Explore how performance varies using other kinds of entities
     
