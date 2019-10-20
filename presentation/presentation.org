@@ -1,10 +1,11 @@
+#+STARTUP: beamer
 #+title: Soweego: Ensemble learning applied to Record Linkage
 
-#+BEAMER_HEADER: \titlegraphic{\includegraphics[width=.5\textwidth]{../graphics/logo_unitn.png}}
+#+BEAMER_HEADER: \titlegraphic{\includegraphics[width=.4\textwidth]{../graphics/logo_unitn.png}}
 
 #+author: Andrea Tupini
-#+EMAIL:    andrea.tupini@studenti.unitn.it 
-#+DATE:     2019-10-23
+#+EMAIL:  andrea.tupini@studenti.unitn.it 
+#+DATE:   2019-10-23
 
 #+latex_header: \usepackage{multicol}
 #+options: H:2 toc:nil num:t
@@ -21,51 +22,110 @@
  
 
 * Problem
-** What is Wikidata
+** Wikidata
    
-   Collection of *items*, each of which is associated with some *statements*.
+   - Powers Wikimedia Foundation projects
+   - Collection of *items*, each of which is associated with some *statements*.
 
-** Missing References                                              
-   
-*** Missing References                                              :B_frame:
+*** Notes                                                            :B_note:
     :PROPERTIES:
-    :BEAMER_env: frame
+    :BEAMER_env: note
     :END:
-
-    There are a total of /744.4 million/ *statements*
     
-    - /200.5 million/ are unreferenced (26%)
+    Wikidata is one of the biggest knowledge bases in the web. It powers the
+    Wikipedia free encyclopedia, as well as all the of the other Wikimedia
+    foundation projects.
+    
+    Wikidata contains information, or claims, about different /items/. In
+    Wikidata lingo, these claims are called /statements/. 
 
-*** Graphana                                                        :B_frame:
-    :PROPERTIES:
-    :BEAMER_env: frame
-    :END:
-
-   #+ATTR_LATEX: :width 0.75\textwidth
-   [[../graphics/graphana_screenshot.png]]
+    An example of such statement can be /when or where a person was born/.
 
 ** Data quality and trust
    
 *** Quality
-    identifiers enable feedback loop
+    Identifiers enable feedback loop
+
 *** Trust
-    references to external reliable sources
+    References to external reliable sources
 
-** Example
-   
-
-*** In Wikidata and IMDb                                            :B_frame:
+*** Notes                                                            :B_note:
     :PROPERTIES:
-    :BEAMER_env: frame
+    :BEAMER_env: note
+    :END:
+
+    Wikidata strives to have the highest possible data quality and
+    trustworthiness. 
+
+    If a claim about an item is backed up by an external reference then users
+    can go and check this reference and corroborate that the information stated
+    in Wikidata is actually correct.
+
+    If, on the other hand, the information is in any way incorrect then the
+    statements in Wikidata can be flagged or directly fixed by the community.
+
+  
+** Example
+
+
+*** Left                                                           :B_column:
+    :PROPERTIES:
+    :BEAMER_env: column
+    :BEAMER_col: 0.5
+    :END:
+
+    #    #+ATTR_LATEX: :width 0.3\textwidth
+    #    [[../graphics/Wikidata-logo-en.png]]
+
+    #+caption: Wikidata (Q42)
+    #+ATTR_LATEX: :width 0.6\textwidth
+    [[../graphics/douglas_adams_headshot_wikidata.jpg]]
+
+
+*** Right                                                          :B_column:
+    :PROPERTIES:
+    :BEAMER_env: column
+    :BEAMER_col: 0.5
+    :END:
+
+    #    #+ATTR_LATEX: :width 0.3\textwidth
+    #    [[../graphics/imdb_logo.png]]
+
+    #+caption: IMDb (nm0010930)
+    #+ATTR_LATEX: :width 0.6\textwidth
+    [[../graphics/douglas_adams_headshot_imdb.png]]
+
+
+*** Notes                                                            :B_note:
+    :PROPERTIES:
+    :BEAMER_env: note
     :END:
 
 
-   Actor in Wikidata
+** Missing References                                              
 
-   Actor in IMDb
+   There are a total of /744.4 million/ *statements*
+    
+   - /200.5 million/ are unreferenced (26%)
+    
+   TODO: Piechart
 
-   Maybe unreferenced so we can use this example below as well
+   #  #+ATTR_LATEX: :width 0.6\textwidth
+   #  [[../graphics/graphana_screenshot.png]]
 
+*** Notes                                                            :B_note:
+    :PROPERTIES:
+    :BEAMER_env: note
+    :END:
+
+    It is very important for Wikidata to have proper references. However, around
+    26% of Wikidata statements are unreferenced.
+     
+    This means that users have no way of verifying if the information claimed by
+    these statements is actually correct, since there is no trusted, external
+    source of data they can go and check.
+
+    
 * Soweego Introduction
 
   
@@ -73,6 +133,13 @@
 
    - Open source project of the /Wikimedia Foundation/
    - Uses record linkage and supervised machine learning to link Wikidata entities with external /catalogs/
+
+*** Note                                                             :B_note:
+    :PROPERTIES:
+    :BEAMER_env: note
+    :END:
+
+    Soweego 
 
 ** Some terminology
 
@@ -92,27 +159,23 @@
 
 ** Example
 
-*** In Wikidata and IMDb                                            :B_frame:
-    :PROPERTIES:
-    :BEAMER_env: frame
-    :END:
+    #+ATTR_LATEX: :width \textwidth
+    [[../graphics/douglas_adams_Wikidata_head.png]]
 
 
-    Same example as above
-
-    Actor in Wikidata
-
-    Actor in IMDb
-
-*** Respective property in Wikidata                                 :B_frame:
-    :PROPERTIES:
-    :BEAMER_env: frame
-    :END:
-    
-    image
+    #+ATTR_LATEX: :width \textwidth
+    [[../graphics/douglas_adams_Wikidata_imdb_identifier.png]]
 
 
 ** External Catalogs
+
+*** Used catalogs                                                   :B_frame:
+    :PROPERTIES:
+    :BEAMER_env: frame
+    :END:
+
+    - As a starting point, /soweego/ focuses on the domain of *people*
+    - According to Wikidata Statistics, around 10% of all entities are people
 
 *** IMDb                                                            :B_frame:
     :PROPERTIES:
@@ -302,8 +365,21 @@
 * Discussion
 
 ** Soweego usage 
+   
+   - We don't want to degrade the quality of the data
+   - Unsure matches can be uploaded to Mix'n'Match
 
 ** Iterative training
 
-* Future work
+   - Repeated executions
+   - Next execution gets output of previous one
 
+* Future work                                                       
+
+** Future Work
+
+  - Better construction of base classifiers
+  - Leverage relations among entities
+  - Explore other ensembling techniques
+  - Explore how performance varies using other kinds of entities
+    
