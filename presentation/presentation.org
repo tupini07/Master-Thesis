@@ -6,7 +6,8 @@
 #+EMAIL:    andrea.tupini@studenti.unitn.it 
 #+DATE:     2019-10-23
 
-#+options: H:2 toc:t num:t
+#+latex_header: \usepackage{multicol}
+#+options: H:2 toc:nil num:t
 #+latex_class: beamer
 #+LATEX_CLASS_OPTIONS: [presentation]
 #+columns: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
@@ -16,8 +17,9 @@
 #+beamer_inner_theme:
 #+beamer_outer_theme:
 #+beamer_header:
-#+latex_header: \AtBeginSection[]{\begin{frame}<beamer>\frametitle{Topic}\tableofcontents[currentsection, hideothersubsections, sectionstyle=show/shaded, subsectionstyle=hide]\end{frame}}
+#+latex_header: \AtBeginSection[] {\begin{frame}{Outline} \begin{multicols}{2} \tableofcontents[currentsection,hideallsubsections,sectionstyle=show/shaded] \end{multicols} \end{frame}} }
  
+
 * Problem
 ** What is Wikidata
    
@@ -34,7 +36,7 @@
     
     - /200.5 million/ are unreferenced (26%)
 
-*** Graphana Info                                                   :B_frame:
+*** Graphana                                                        :B_frame:
     :PROPERTIES:
     :BEAMER_env: frame
     :END:
@@ -273,12 +275,35 @@
 
 ** Ensemble results
 
+   | Model            | Precision |   Recall |       F1 |
+   |------------------+-----------+----------+----------|
+   | Soft Voting      |    0.9199 | *0.9308* | *0.9248* |
+   |------------------+-----------+----------+----------|
+   | Gate Classifier  |    0.9227 |   0.9268 |   0.9245 |
+   |------------------+-----------+----------+----------|
+   | Hard Voting      |    0.9145 |   0.9344 |   0.9239 |
+   |------------------+-----------+----------+----------|
+   | Stack Classifier |  *0.9235* |   0.9242 |   0.9234 |
+
 ** 5 best classifiers
 
+   | Model                  | Precision    | Recall       | F1           |
+   |------------------------+--------------+--------------+--------------|
+   | Multi-Layer Perceptron | 0.9166 (4)   | *0.9349* (1) | *0.9255* (1) |
+   |------------------------+--------------+--------------+--------------|
+   | Soft Voting            | 0.9199 (3)   | 0.9308 (3)   | 0.9248 (2)   |
+   |------------------------+--------------+--------------+--------------|
+   | Gate Classifier        | 0.9227 (2)   | 0.9268 (4)   | 0.9245 (3)   |
+   |------------------------+--------------+--------------+--------------|
+   | Hard Voting            | 0.9145 (5)   | 0.9344 (2)   | 0.9239 (4)   |
+   |------------------------+--------------+--------------+--------------|
+   | Stack Classifier       | *0.9235* (1) | 0.9242 (5)   | 0.9234 (5)   |
 
 * Discussion
 
-** Soweego usage
+** Soweego usage 
+
+** Iterative training
 
 * Future work
 
