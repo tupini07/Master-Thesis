@@ -161,7 +161,7 @@
    - Open source project of the /Wikimedia Foundation/
    - Uses record linkage and supervised machine learning to link Wikidata entities with external /catalogs/
 
-*** Note                                                             :B_note:
+*** Notes                                                            :B_note:
     :PROPERTIES:
     :BEAMER_env: note
     :END:
@@ -447,7 +447,7 @@
      - Shared tokens
      - Shared occupations
 
-**** Note                                                            :B_note:
+**** Notes                                                           :B_note:
      :PROPERTIES:
      :BEAMER_env: note
      :END:
@@ -462,7 +462,7 @@
 
    - Takes feature vectors and returns probability that pair is a match
 
-*** Note                                                             :B_note:
+*** Notes                                                            :B_note:
     :PROPERTIES:
     :BEAMER_env: note
     :END:
@@ -481,7 +481,7 @@
    - *potential-match*, if /t_L < prob < t_U/
    - *match*, if /t_U \leq prob/
 
-*** Note                                                             :B_note:
+*** Notes                                                            :B_note:
     :PROPERTIES:
     :BEAMER_env: note
     :END:
@@ -510,12 +510,21 @@
    - Single-Layer Perceptron
    - Multi-Layer Perceptron
 
-*** Note                                                            :B_note:
+*** Notes                                                            :B_note:
     :PROPERTIES:
     :BEAMER_env: note
     :END:
 
-    
+    These are the algorithms that soweego was originally conceived to use. 
+
+    However, after implementing and evaluating them, we asked ourselves if there
+    was a way to improve the performance by mixing the opinions of some of them.
+
+    This is why we considered using ensemble models. In ensemble models, we use a pool
+    of base classifiers and mix the predictions of these base classifiers. 
+
+    For our case, all the baseline classifiers, except for linear support vector
+    machines, were used as the pool of base classifiers.
 
 ** Ensemble classifiers
 
@@ -524,6 +533,38 @@
    - Gated Ensemble
    - Stacked Ensemble
    
+*** Notes                                                            :B_note:
+    :PROPERTIES:
+    :BEAMER_env: note
+    :END:
+
+    These are the ensemble models implemented for soweego. 
+
+    The soft voting classifier basically takes the average of the predictions
+    given by all base classifiers. 
+
+    In hard voting classifier, the final prediction is obtained by having each
+    base classifier voting for either match or non match. The label which had
+    the most votes is the one predicted by the ensemble.
+
+    Gated ensemble and stacked ensembles are stack based ensembles. This
+    technique basically allows us to stack classifiers in layers, in which the
+    next layer will get as input the predictions given by the previous layer of
+    classifiers.
+
+    The last layer in this kind of ensembles is called the meta layer, and is
+    another classifier in charge of learning how to join the predictions it
+    receives from lower layers.
+
+    The gated ensemble is basically composed of the baseline classifiers, and
+    then a single layer perceptron as the meta layer. The idea for this is for
+    the single layer perceptron to find the optimal weight to assign to each
+    base classifier. 
+
+    A stacked based ensemble is very similar. The difference is that now we have
+    two layers of base classifiers, followed by a single layer perceptron as a
+    meta layer.
+
 * Results
 
 ** How are results presented
@@ -533,6 +574,20 @@
    - Precision
    - Recall
    - F1 Score
+
+*** Notes                                                            :B_note:
+    :PROPERTIES:
+    :BEAMER_env: note
+    :END:
+
+    We present the results in terms of precision, recall, and F1 score.
+
+    The results presented here were obtained by evaluating the performance of
+    each classifier on all entity types and then averaging the performances. So
+    they were evaluated for linking Wikidata with IMDb/Actors,
+    Discogs/Musicians, etc..
+
+
 
 ** Baseline results
 
@@ -550,6 +605,18 @@
    |-------------------------+-----------+----------+----------|
    | Naive Bayes             |    0.8863 | *0.9490* |   0.9151 |
 
+*** Notes                                                            :B_note:
+    :PROPERTIES:
+    :BEAMER_env: note
+    :END:
+
+    For the baseline results, we see that multi layer perceptron is the one that
+    has the best average precision and F1 score, and it is also the second best
+    with respect to recall. The best recall score is obtained by the naive bayes
+    classifier, although this also has the worst precision and F1 scores.
+
+    Baseline classifiers give quite good results, but there is still some room
+    for improvement, especially when it comes to the precision.
 
 ** Ensemble results
 
@@ -557,11 +624,22 @@
    |------------------+-----------+----------+----------|
    | Soft Voting      |    0.9199 | *0.9308* | *0.9248* |
    |------------------+-----------+----------+----------|
-   | Gate Classifier  |    0.9227 |   0.9268 |   0.9245 |
+   | Gated Ensemble   |    0.9227 |   0.9268 |   0.9245 |
    |------------------+-----------+----------+----------|
    | Hard Voting      |    0.9145 |   0.9344 |   0.9239 |
    |------------------+-----------+----------+----------|
-   | Stack Classifier |  *0.9235* |   0.9242 |   0.9234 |
+   | Stacked ensemble |  *0.9235* |   0.9242 |   0.9234 |
+
+*** Notes                                                            :B_note:
+    :PROPERTIES:
+    :BEAMER_env: note
+    :END:
+
+    For ensemble models we see that they tend to have a higher precision and
+    lower recall than the baseline classifiers. 
+
+    Stacked ensemble is the one that gate the highest precision. While soft
+    voting ensemble is the one with the highest recall and F1 score. 
 
 ** 5 best classifiers
 
@@ -571,19 +649,32 @@
    |------------------------+--------------+--------------+--------------|
    | Soft Voting            | 0.9199 (3)   | 0.9308 (3)   | 0.9248 (2)   |
    |------------------------+--------------+--------------+--------------|
-   | Gate Classifier        | 0.9227 (2)   | 0.9268 (4)   | 0.9245 (3)   |
+   | Gated Ensemble         | 0.9227 (2)   | 0.9268 (4)   | 0.9245 (3)   |
    |------------------------+--------------+--------------+--------------|
    | Hard Voting            | 0.9145 (5)   | 0.9344 (2)   | 0.9239 (4)   |
    |------------------------+--------------+--------------+--------------|
-   | Stack Classifier       | *0.9235* (1) | 0.9242 (5)   | 0.9234 (5)   |
+   | Stacked Ensemble       | *0.9235* (1) | 0.9242 (5)   | 0.9234 (5)   |
 
 *** Notes                                                            :B_note:
     :PROPERTIES:
     :BEAMER_env: note
     :END:
     
-    We can see that all of the top 5 algorithms get a pretty good evaluation
-    performance.
+    If we consider the top five classifiers among all of these, ensembles and
+    baseline, we get this table. It is ordered by F1 score, in decreasing order,
+    and the number to the right of each score states the relative position of
+    the classifier for that metric. 
+
+    So, we can see that multi layer perceptron performs pretty well. It has the
+    highest recall and F1 score. But is the second worst when it comes to
+    precision. 
+
+    Stacked ensemble is, among all, the one which has the best average
+    precision. 
+
+    Also note that all of the four ensemble classifiers used appear among the
+    top 5.
+
 
 * Discussion
 
@@ -592,37 +683,82 @@
    - We don't want to degrade the quality of the data
    - Unsure matches can be uploaded to Mix'n'Match
 
+*** Notes                                                            :B_note:
+    :PROPERTIES:
+    :BEAMER_env: note
+    :END:
+
+    Even though multi layer perceptron has the highest F1 score, in the case of
+    soweego we want to upload to wikidata only those links which we are sure
+    about, since we want to impact the data quality as least as possible. This
+    means that we prefer to use a classifier which has a higher precision.
+
+    Links of which the classifier predicts as potential matches, can still be
+    uploaded to mix'n'match for manual classification, so that none of the links
+    are lost. 
+
 ** Iterative training
 
    - Repeated executions
    - Next execution gets output of previous one
      
-** TODO Conclusions
+*** Notes                                                            :B_note:
+    :PROPERTIES:
+    :BEAMER_env: note
+    :END:
 
-   - Link Wikidata to external catalogs
-   - Record linkage as supervised machine learning
-   - Favor high precision to avoid degrading data quality
-   - Effective /in vitro/ performance
-     - /In situ/ evaluation is happening right now
+    Also note that we've talked until now about a single execution of soweego.
+    In reality, soweego is meant to be executed repeatedly after a certain
+    period of time. For example, it will be executed once a month. 
 
-   # make better conclusions
+    In the next iteration, soweego will get as part of its training data,
+    predictions which it uploaded in the past iteration. Meaning that every time
+    the training set will be larger. 
 
-   # Maybe move this to its own chapter *conclusions* and also put /future work/
-   # inside it.
+    This is another reason to prefer a high precision classifier, since
+    uploading incorrect links to Wikidata means that the training set in the
+    next iteration may contain more of these incorrect examples.
 
-   Soweego links wikidata to external catalogs. By using an ensemble algorithm
-   or other high precision classifier, we ensure that the information uploaded
-   to wikidata is as trustworthy as possible.
+    Also, during these intervals, the community will review the links uploaded
+    by soweego and clean out some of the ones that are not correct.
 
-   The evaluation metrics presented here are only on the training set. However,
-   the training set is not really a correct representation of the classification
-   set. Evaluation of the final predictions, made on the classification set, is
-   currently being done by the community.
+* Conclusions
 
-* Future work                                                       
+
+** Conclusions
+
+  - Link Wikidata to external catalogs
+  - Record linkage as supervised machine learning
+  - Favor high precision to avoid degrading data quality
+  - Effective /in vitro/ performance
+    - /In situ/ evaluation is happening right now
+    
+*** Notes                                                            :B_note:
+    :PROPERTIES:
+    :BEAMER_env: note
+    :END:
+    
+    # make better conclusions
+  
+    # Maybe move this to its own chapter *conclusions* and also put /future
+    # work/ inside it.
+
+    Soweego links wikidata to external catalogs. By using an ensemble algorithm
+    or other high precision classifier, we ensure that the information uploaded
+    to wikidata is as trustworthy as possible.
+  
+    The evaluation metrics presented here are only on the training set. However,
+    the training set is not really a correct representation of the
+    classification set. Evaluation of the final predictions, made on the
+    classification set, is currently being done by the community.
+
 
 ** Future Work
 
   - Better construction of base classifiers
   - Leverage relations among entities
     
+*** Notes                                                            :B_note:
+    :PROPERTIES:
+    :BEAMER_env: note
+    :END:
