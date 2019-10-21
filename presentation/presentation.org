@@ -103,15 +103,25 @@
 
 
 ** Missing References                                              
+    
+*** Left
+    :PROPERTIES:
+    :BEAMER_env: column
+    :BEAMER_col: 0.5
+    :END:
 
    There are a total of /744.4 million/ *statements*
     
    - /200.5 million/ are unreferenced (26%)
-    
-   TODO: Piechart
 
-   #  #+ATTR_LATEX: :width 0.6\textwidth
-   #  [[../graphics/graphana_screenshot.png]]
+*** Right                                                          :B_column:
+    :PROPERTIES:
+    :BEAMER_env: column
+    :BEAMER_col: 0.5
+    :END:
+
+   #+ATTR_LATEX: :width \textwidth
+   [[../graphics/pie_wikidata_referenced_unreferenced.png]]
 
 *** Notes                                                            :B_note:
     :PROPERTIES:
@@ -374,8 +384,27 @@
    - Repeated executions
    - Next execution gets output of previous one
      
-** Better conclusions
-   TODO make better conclusions
+** TODO Conclusions
+
+   - Link Wikidata to external catalogs
+   - Record linkage as supervised machine learning
+   - Favor high precision to avoid degrading data quality
+   - Effective /in vitro/ performance
+     - /In situ/ evaluation is happening right now
+
+   # make better conclusions
+
+   # Maybe move this to its own chapter *conclusions* and also put /future work/
+   # inside it.
+
+   Soweego links wikidata to external catalogs. By using an ensemble algorithm
+   or other high precision classifier, we ensure that the information uploaded
+   to wikidata is as trustworthy as possible.
+
+   The evaluation metrics presented here are only on the training set. However,
+   the training set is not really a correct representation of the classification
+   set. Evaluation of the final predictions, made on the classification set, is
+   currently being done by the community.
 
 * Future work                                                       
 
