@@ -32,9 +32,15 @@
     :BEAMER_env: note
     :END:
     
+    Good morning, my name is Andrea Tupini. I'm here to discuss my thesis
+    dissertation. The topic of my thesis is /Soweego: ensemble learning applied
+    to record linkage/.
+
+    This project was made for Wikidata. But what is Wikidata?
+
     Wikidata is one of the biggest knowledge bases in the web. It powers the
     Wikipedia free encyclopedia, as well as all the of the other Wikimedia
-    foundation projects.
+    foundation projects, including Wikipedia the free encyclopedia.
     
     Wikidata contains information, or claims, about different /items/. In
     Wikidata lingo, these claims are called /statements/. 
@@ -56,6 +62,9 @@
 
     Wikidata strives to have the highest possible data quality and
     trustworthiness. 
+
+    An important part of this is having references from Wikidata to trusted
+    external sources.
 
     If a claim about an item is backed up by an external reference then users
     can go and check this reference and corroborate that the information stated
@@ -95,12 +104,19 @@
     #+ATTR_LATEX: :width 0.6\textwidth
     [[../graphics/douglas_adams_headshot_imdb.png]]
 
-
+    
 *** Notes                                                            :B_note:
     :PROPERTIES:
     :BEAMER_env: note
     :END:
-
+    
+    For example, we have the items, which are also called entities, representing
+    the writer /Douglas Adams/, who is the writer of the book /hitchikers guide
+    to the galaxy/. Say we go to Wikidata to check when he was born. In Wikidata
+    we see that there is a link to the entity in another dataset, which is also
+    called a catalog, namely in /IMDb/. If for some reason we have doubts about
+    the claims made in Wikidata we can then go ahead and check if in IMDb the
+    same claims are made.
 
 ** Missing References                                              
     
@@ -128,9 +144,10 @@
     :BEAMER_env: note
     :END:
 
-    It is very important for Wikidata to have proper references. However, around
-    26% of Wikidata statements are unreferenced.
-     
+    Even though having references is very important for data quality and
+    trustworthiness, around 26% of all statements in Wikidata are missing
+    references.
+
     This means that users have no way of verifying if the information claimed by
     these statements is actually correct, since there is no trusted, external
     source of data they can go and check.
@@ -149,14 +166,23 @@
     :BEAMER_env: note
     :END:
 
-    Soweego 
+    Soweego was conceived with the goal of improving the existing situation in
+    Wikidata by automatically adding external references. Soweego will take
+    wikidata entities, which are the different items in wikidata, and link them
+    with entities in other databases.
 
-** Some terminology
+    For example, soweego would link /douglas adams/ with the respective /douglas
+    adams/ in imdb. 
 
-   - *Catalog* collection of information
-     - A *Target catalog* refers to any collection of information which is not Wikidata
-     - *Source catalog* = Wikidata
-   - *Entity* is a specific item in a catalog
+    More formally, Soweego is an open source project for the Wikimedia
+    Foundation. It uses the technique of record linkage to find matching entity
+    pairs between Wikidata and another external dataset. And supervised machine
+    learning classifiers to tell it when a pair of entities is actually a match
+    or not.
+
+    We say that Wikidata is our /source catalog/, the source of the entities
+    we're interested in linking. And the external dataset is said to be our
+    /target catalog/, that is, the dataset we want to link Wikidata to.
 
 ** Overview of soweego
 
@@ -166,6 +192,14 @@
     - Output: *links* as Wikidata identifier statements
     # - Output: *probability* that each pair represents the same entity 
 
+*** Notes                                                            :B_note:
+    :PROPERTIES:
+    :BEAMER_env: note
+    :END:
+
+    The way in which soweego works is that it gets as input a target catalog we
+    want to link Wikidata with. And we then get as an output, statements in
+    wikidata linking each entity with the respective target entity.
 
 ** Example
 
@@ -176,6 +210,15 @@
     #+ATTR_LATEX: :width \textwidth
     [[../graphics/douglas_adams_Wikidata_imdb_identifier.png]]
 
+*** Notes                                                            :B_note:
+    :PROPERTIES:
+    :BEAMER_env: note
+    :END:
+
+    For example, in the case of /Douglas Adamas/, here we have his page on
+    wikidata. At the top we can see his ID in Wikidata, and the information
+    below tells us which is his ID in IMDb. In this way, Wikidata entities can
+    be linked with any number of external catalogs.
 
 ** External Catalogs
 
@@ -184,53 +227,115 @@
     :BEAMER_env: frame
     :END:
 
-    - As a starting point, /soweego/ focuses on the domain of *people*
-    - According to Wikidata Statistics, around 10% of all entities are people
+    As a starting point, /soweego/ focuses on the domain of *people*, which
+    according to Wikidata Statistics represent around 10% of all entities.
+    
+    \hfill
+    
+    Targets used:
+
+    - IMDb
+    - Musicbrainz
+    - Discogs
+
+**** Notes                                                           :B_note:
+     :PROPERTIES:
+     :BEAMER_env: note
+     :END:
+
+     In principle soweego can be used to link Wikidata with any catalogs, of any
+     kinds of entities. But for the purpose of the project, the scope was
+     constrained to only work with people. 
+
+     This was manly because people, according to the wikipedia statistics page,
+     represent around 10% all of the entities in Wikidata. Which is quite a big
+     chunk.
+
+     Specifically, soweego starts by linking wikidata entities with the target catalogs
+     of imdb, musicbrainz, and discogs.
 
 *** IMDb                                                            :B_frame:
     :PROPERTIES:
     :BEAMER_env: frame
     :END:
     
-    | Entity   | Training | Classification |
-    |----------+----------+----------------|
-    | Actor    | 177,417  | 89,081         |
-    | Director | 46,904   | 8,407          |
-    | Musician | 61,034   | 210,017        |
-    | Producer | 19,861   | 2,075          |
-    | Writer   | 41,373   | 15,143         |
+    | Entity Type | Training | Classification |
+    |-------------+----------+----------------|
+    | Actor       | 177,417  | 89,081         |
+    | Director    | 46,904   | 8,407          |
+    | Musician    | 61,034   | 210,017        |
+    | Producer    | 19,861   | 2,075          |
+    | Writer      | 41,373   | 15,143         |
 
+**** Notes                                                           :B_note:
+     :PROPERTIES:
+     :BEAMER_env: note
+     :END:
+     
+     So, IMDb is the internet movie database. From it we get information about
+     entities which are actors, directors, musicians, producers, and writers.
+
+     In the table we see how many training and classification examples we have
+     available for each of these IMDb entity types.
 
 *** Musicbrainz                                                     :B_frame:
     :PROPERTIES:
     :BEAMER_env: frame
     :END:
 
-    | Entity   | Training | Classification |
-    |----------+----------+----------------|
-    | Band     | 47,096   | 32,407         |
-    | Musician | 118,107  | 153,437        |
+    | Entity Type | Training | Classification |
+    |-------------+----------+----------------|
+    | Band        | 47,096   | 32,407         |
+    | Musician    | 118,107  | 153,437        |
+
+**** Notes                                                           :B_note:
+     :PROPERTIES:
+     :BEAMER_env: note
+     :END:
+
+     Musicbrainz is a catalog which contains information about musicians and
+     bands, and the relation among them. 
+
+     Here we can also see how many training and classification samples we have
+     for each entity type.
 
 *** Discogs                                                         :B_frame:
     :PROPERTIES:
     :BEAMER_env: frame
     :END:
 
-    | Entity   | Training | Classification |
-    |----------+----------+----------------|
-    | Band     | 43,428   | 36,200         |
-    | Musician | 88,069   | 183,483        |
+    | Entity Type | Training | Classification |
+    |-------------+----------+----------------|
+    | Band        | 43,428   | 36,200         |
+    | Musician    | 88,069   | 183,483        |
+
+**** Notes                                                           :B_note:
+     :PROPERTIES:
+     :BEAMER_env: note
+     :END:
+
+     Finally, Discogs is also a catalog which has information about musicians,
+     bands, and the relation among them.
 
 * Soweego Pipeline
 
 ** Pipeline steps
 
-   - Importer
-   - Blocking
-   - Data preprocessing
-   - Feature extraction
-   - Linker
-   - Upload results
+   1) Importer
+   2) Blocking
+   3) Data preprocessing
+   4) Feature extraction
+   5) Linker
+   6) Upload results
+
+*** Notes                                                            :B_note:
+    :PROPERTIES:
+    :BEAMER_env: note
+    :END:
+    
+    The inner workings of soweego can be represented as a pipeline of six steps.
+    Namely, these are: importer, blocking, data preprocessing, feature
+    extraction, linker, and uploading the results to Wikidata.
 
 ** Importer
    
@@ -238,17 +343,57 @@
    - Transform it into a common structure
    - Save it into soweego's internal database
 
+*** Notes                                                            :B_note:
+    :PROPERTIES:
+    :BEAMER_env: note
+    :END:
+
+    The importer is in charge of downloading the dataset from the external
+    catalog, transforms it into a standardized representation, and finally it
+    saves the data to soweego's internal database.
+
 ** Blocking
 
    - Reduces complexity
    - Only compare pairs of entities which have a similar name
 
+*** Notes                                                            :B_note:
+    :PROPERTIES:
+    :BEAMER_env: note
+    :END:
+
+    Blocking allows us to reduce the complexity of the process since if we were
+    to compare an entity in Wikidata against every entity in IMDb, for example,
+    then we would need to do N comparisons, where N is the number of entities in
+    IMDb.
+
+    Blocking allows us to compare only a subset of all the entities by using a
+    blocking rule to choose which entities in the target catalog may be a
+    potential match. In soweego, we compare against the wikidata entity, only
+    those target entities which share a part of the name. For example, /douglas
+    adams/ would be compared with all those entities in IMDb which have either
+    /douglas/ or /adams/ as part of their name.
+
+    This greatly reduces the number of comparisons that need to be made.
+
+    The output of blocking is a list of all pairs which might be a potential
+    match according to the blocking rule.
+
 ** Data preprocessing
    
-   - Normalize
-   - Tokenize
-   - Handle dates
+   - Normalize: strip \rightarrow ASCII \rightarrow lowercase
+   - Tokenize: split \rightarrow no 1-character \rightarrow stopwords
+   - Handle dates: parse \rightarrow pair precision
    - Clean datasets
+
+*** Notes                                                            :B_note:
+    :PROPERTIES:
+    :BEAMER_env: note
+    :END:
+    
+    In data preprocessing, we normalize and tokenize text, we standardize dates
+    to a common format, and we drop any entities, or attributes of those
+    entities, which are empty. 
 
 ** Feature extraction
 
@@ -260,6 +405,20 @@
    - Field pair comparison
    - Fields \rightarrow Similarity Function \rightarrow Score
    - One feature vector which characterizes similarity between pair
+
+**** Notes                                                           :B_note:
+     :PROPERTIES:
+     :BEAMER_env: note
+     :END:
+
+     In feature extraction we get as input the preprocessed pairs of potential
+     matches from the previous step. For each of these we extract a feature
+     vector, where each value in the feature vector is the result of applying a
+     comparison function on a pair of attributes.
+
+     Comparison functions tell us, as a percentage, how similar a pair of fields
+     is. Where zero means the attributes are completely different, and one means
+     they are exactly the same.
 
 *** Comparison functions                                            :B_frame:
     :PROPERTIES:
@@ -288,9 +447,31 @@
      - Shared tokens
      - Shared occupations
 
+**** Note                                                            :B_note:
+     :PROPERTIES:
+     :BEAMER_env: note
+     :END:
+
+     For soweego, we use the following comparison functions to check the
+     similarity among attributes. 
+
+     We check if fields are an exact match, we also check similar strings and
+     dates, and the percentage of shared text tokens and occupations.
+
 ** Linking
 
-   - Take feature vectors and returns probability that pair is a match
+   - Takes feature vectors and returns probability that pair is a match
+
+*** Note                                                             :B_note:
+    :PROPERTIES:
+    :BEAMER_env: note
+    :END:
+
+    The next step is linking. Here a supervised machine learning algorithm takes
+    the feature vectors extracted in the previous step and tells the probability
+    that this feature vector corresponds to a pair of entities which is a match.
+
+    The focus of this dissertation is on implementing the linking procedure.
 
 ** Upload results
    
@@ -300,6 +481,23 @@
    - *potential-match*, if /t_L < prob < t_U/
    - *match*, if /t_U \leq prob/
 
+*** Note                                                             :B_note:
+    :PROPERTIES:
+    :BEAMER_env: note
+    :END:
+
+    For this step, we get the probability that a pair is a match. And depending
+    these thresholds the pair is classified as a match, non-match, or potential
+    match.
+
+    In the case of a match, the appropriate statement is created on the wikidata
+    entity. 
+
+    If it is a non-match, then the prediction is simply dropped. 
+
+    If it is a potential match then the pair is uploaded to a service called
+    Mix'n'Match which is a service where volunteers can manually review the
+    pairs and manually mark them as matches or non-matches.
 
 * Algorithms
 
@@ -311,6 +509,13 @@
    - Random Forest
    - Single-Layer Perceptron
    - Multi-Layer Perceptron
+
+*** Note                                                            :B_note:
+    :PROPERTIES:
+    :BEAMER_env: note
+    :END:
+
+    
 
 ** Ensemble classifiers
 
@@ -371,6 +576,14 @@
    | Hard Voting            | 0.9145 (5)   | 0.9344 (2)   | 0.9239 (4)   |
    |------------------------+--------------+--------------+--------------|
    | Stack Classifier       | *0.9235* (1) | 0.9242 (5)   | 0.9234 (5)   |
+
+*** Notes                                                            :B_note:
+    :PROPERTIES:
+    :BEAMER_env: note
+    :END:
+    
+    We can see that all of the top 5 algorithms get a pretty good evaluation
+    performance.
 
 * Discussion
 
