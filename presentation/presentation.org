@@ -87,7 +87,8 @@
 
     #+caption: Wikidata (Q42)
     #+ATTR_LATEX: :width 0.6\textwidth
-    [[../graphics/douglas_adams_headshot_wikidata.jpg]]
+    [[../graphics/douglas_adams_headshot_wikidata.p]]
+
 
 
 *** Right                                                          :B_column:
@@ -320,12 +321,10 @@
 
 ** Pipeline steps
 
-   1) Importer
-   2) Blocking
-   3) Data preprocessing
-   4) Feature extraction
-   5) Linker
-   6) Upload results
+   
+   #+ATTR_LATEX: :width \textwidth
+   [[../graphics/pipeline_nice_icons.png]]
+
 
 *** Notes                                                            :B_note:
     :PROPERTIES:
