@@ -32,15 +32,14 @@
     :BEAMER_env: note
     :END:
     
-    Good morning, my name is Andrea Tupini. I'm here to discuss my thesis
-    dissertation. The topic of my thesis is /Soweego: ensemble learning applied
-    to record linkage/.
+    Good morning, my name is Andrea Tupini. The title of my dissertation is
+    /Soweego: ensemble learning applied to record linkage/.
 
     This project was made for Wikidata. But what is Wikidata?
 
     Wikidata is one of the biggest knowledge bases in the web. It powers the
     Wikipedia free encyclopedia, as well as all the of the other Wikimedia
-    foundation projects, including Wikipedia the free encyclopedia.
+    foundation projects.
     
     Wikidata contains information, or claims, about different /items/. In
     Wikidata lingo, these claims are called /statements/. 
@@ -176,7 +175,7 @@
 
     More formally, Soweego is an open source project for the Wikimedia
     Foundation. It uses the technique of record linkage to find matching entity
-    pairs between Wikidata and another external dataset. And supervised machine
+    pairs between Wikidata and other external dataset. And supervised machine
     learning classifiers to tell it when a pair of entities is actually a match
     or not.
 
@@ -738,15 +737,16 @@
     :BEAMER_env: note
     :END:
     
-    # make better conclusions
-  
-    # Maybe move this to its own chapter *conclusions* and also put /future
-    # work/ inside it.
+    As we've seen, Soweego links wikidata to external catalogs by using record
+    linkage and supervised machine learning classifiers. 
 
-    Soweego links wikidata to external catalogs. By using an ensemble algorithm
-    or other high precision classifier, we ensure that the information uploaded
-    to wikidata is as trustworthy as possible.
+    Using an ensemble algorithm or other high precision classifier, ensures that
+    the information uploaded to wikidata is as trustworthy as possible.
   
+    Ensemble classifiers, at least with respect to the results obtained in this
+    project, seem to actually improve the performance, and specifically the
+    precision. 
+    
     The evaluation metrics presented here are only on the training set. However,
     the training set is not really a correct representation of the
     classification set. Evaluation of the final predictions, made on the
@@ -762,3 +762,13 @@
     :PROPERTIES:
     :BEAMER_env: note
     :END:
+
+    As always there is still some room for improvement. 
+
+    For instance, we can do a better choice of which are the base classifiers for the
+    ensembles instead of using all the baseline classifiers.
+
+    In our data we also have some information about the relation among entities.
+    For instance, which musicians are part of which bands, or which actors
+    appeared in which movies. This relation information could be leveraged to
+    make better predictions. 
