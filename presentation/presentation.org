@@ -5,7 +5,7 @@
 
 #+author: Andrea Tupini
 #+EMAIL:  andrea.tupini@studenti.unitn.it 
-#+DATE:   2019-10-23
+#+DATE:   23-10-2019
 
 #+latex_header: \usepackage{multicol}
 #+options: H:2 toc:nil num:t
@@ -46,6 +46,7 @@
 
     An example of such statement can be /when or where a person was born/.
 
+
 ** Data quality and trust
    
 *** Quality
@@ -75,7 +76,6 @@
   
 ** Example
 
-
 *** Left                                                           :B_column:
     :PROPERTIES:
     :BEAMER_env: column
@@ -85,11 +85,9 @@
     #    #+ATTR_LATEX: :width 0.3\textwidth
     #    [[../graphics/Wikidata-logo-en.png]]
 
-    #+caption: Wikidata (Q42)
+    #+caption: ID: Q42
     #+ATTR_LATEX: :width 0.6\textwidth
-    [[../graphics/douglas_adams_headshot_wikidata.p]]
-
-
+    [[../graphics/douglas_adams_headshot_wikidata.png]]
 
 *** Right                                                          :B_column:
     :PROPERTIES:
@@ -100,11 +98,10 @@
     #    #+ATTR_LATEX: :width 0.3\textwidth
     #    [[../graphics/imdb_logo.png]]
 
-    #+caption: IMDb (nm0010930)
+    #+caption: ID: nm0010930
     #+ATTR_LATEX: :width 0.6\textwidth
     [[../graphics/douglas_adams_headshot_imdb.png]]
 
-    
 *** Notes                                                            :B_note:
     :PROPERTIES:
     :BEAMER_env: note
@@ -118,9 +115,10 @@
     the claims made in Wikidata we can then go ahead and check if in IMDb the
     same claims are made.
 
+    
 ** Missing References                                              
     
-*** Left
+*** Left                                                           :B_column:
     :PROPERTIES:
     :BEAMER_env: column
     :BEAMER_col: 0.5
@@ -155,7 +153,6 @@
     
 * Soweego Introduction
 
-  
 ** What is soweego?
 
    - Open source project of the /Wikimedia Foundation/
@@ -184,6 +181,7 @@
     we're interested in linking. And the external dataset is said to be our
     /target catalog/, that is, the dataset we want to link Wikidata to.
 
+    
 ** Overview of soweego
 
     - Input: pairs of /entities/
@@ -201,6 +199,7 @@
     want to link Wikidata with. And we then get as an output, statements in
     wikidata linking each entity with the respective target entity.
 
+    
 ** Example
 
     #+ATTR_LATEX: :width \textwidth
@@ -220,6 +219,7 @@
     below tells us which is his ID in IMDb. In this way, Wikidata entities can
     be linked with any number of external catalogs.
 
+    
 ** External Catalogs
 
 *** Used catalogs                                                   :B_frame:
@@ -317,6 +317,7 @@
      Finally, Discogs is also a catalog which has information about musicians,
      bands, and the relation among them.
 
+     
 * Soweego Pipeline
 
 ** Pipeline steps
@@ -324,7 +325,6 @@
    
    #+ATTR_LATEX: :width \textwidth
    [[../graphics/pipeline_nice_icons.png]]
-
 
 *** Notes                                                            :B_note:
     :PROPERTIES:
@@ -335,6 +335,7 @@
     Namely, these are: importer, blocking, data preprocessing, feature
     extraction, linker, and uploading the results to Wikidata.
 
+    
 ** Importer
    
    - Download data from catalogs
@@ -349,6 +350,7 @@
     The importer is in charge of downloading the dataset from the external
     catalog, transforms it into a standardized representation, and finally it
     saves the data to soweego's internal database.
+
 
 ** Blocking
 
@@ -377,6 +379,7 @@
     The output of blocking is a list of all pairs which might be a potential
     match according to the blocking rule.
 
+
 ** Data preprocessing
    
    - Normalize: strip \rightarrow ASCII \rightarrow lowercase
@@ -393,69 +396,62 @@
     to a common format, and we drop any entities, or attributes of those
     entities, which are empty. 
 
-** Feature extraction
 
-*** Definition                                                      :B_frame:
-    :PROPERTIES:
-    :BEAMER_env: frame
-    :END:
+** Feature extraction                                              
 
    - Field pair comparison
    - Fields \rightarrow Similarity Function \rightarrow Score
    - One feature vector which characterizes similarity between pair
-
-**** Notes                                                           :B_note:
-     :PROPERTIES:
-     :BEAMER_env: note
-     :END:
-
-     In feature extraction we get as input the preprocessed pairs of potential
-     matches from the previous step. For each of these we extract a feature
-     vector, where each value in the feature vector is the result of applying a
-     comparison function on a pair of attributes.
-
-     Comparison functions tell us, as a percentage, how similar a pair of fields
-     is. Where zero means the attributes are completely different, and one means
-     they are exactly the same.
-
-*** Comparison functions                                            :B_frame:
+     
+*** Notes                                                            :B_note:
     :PROPERTIES:
-    :BEAMER_env: frame
+    :BEAMER_env: note
     :END:
 
+    In feature extraction we get as input the preprocessed pairs of potential
+    matches from the previous step. For each of these we extract a feature
+    vector, where each value in the feature vector is the result of applying a
+    comparison function on a pair of attributes.
+
+    Comparison functions tell us, as a percentage, how similar a pair of fields
+    is. Where zero means the attributes are completely different, and one means
+    they are exactly the same.
+
     
-**** Left                                                          :B_column:
-     :PROPERTIES:
-     :BEAMER_col: 0.5
-     :BEAMER_env: column
-     :END:
+** Comparison functions                                            
+*** Left                                                           :B_column:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :BEAMER_env: column
+    :END:
      
-     - Exact match
-     - Similar strings
-       - Levenshtein
-       - Cosine
+    - Exact match
+    - Similar strings
+      - Levenshtein
+      - Cosine
 
-**** Right                                                         :B_column:
-     :PROPERTIES:
-     :BEAMER_col: 0.5
-     :BEAMER_env: column
-     :END:
+*** Right                                                          :B_column:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :BEAMER_env: column
+    :END:
 
-     - Similar dates
-     - Shared tokens
-     - Shared occupations
+    - Similar dates
+    - Shared tokens
+    - Shared occupations
 
-**** Notes                                                           :B_note:
-     :PROPERTIES:
-     :BEAMER_env: note
-     :END:
+*** Notes                                                            :B_note:
+    :PROPERTIES:
+    :BEAMER_env: note
+    :END:
 
-     For soweego, we use the following comparison functions to check the
-     similarity among attributes. 
+    For soweego, we use the following comparison functions to check the
+    similarity among attributes. 
 
-     We check if fields are an exact match, we also check similar strings and
-     dates, and the percentage of shared text tokens and occupations.
+    We check if fields are an exact match, we also check similar strings and
+    dates, and the percentage of shared text tokens and occupations.
 
+     
 ** Linking
 
    - Takes feature vectors and returns probability that pair is a match
@@ -470,6 +466,7 @@
     that this feature vector corresponds to a pair of entities which is a match.
 
     The focus of this dissertation is on implementing the linking procedure.
+
 
 ** Upload results
    
@@ -497,6 +494,7 @@
     Mix'n'Match which is a service where volunteers can manually review the
     pairs and manually mark them as matches or non-matches.
 
+
 * Algorithms
 
 ** Baseline classifiers
@@ -523,6 +521,7 @@
 
     For our case, all the baseline classifiers, except for linear support vector
     machines, were used as the pool of base classifiers.
+
 
 ** Ensemble classifiers
 
@@ -563,6 +562,7 @@
     two layers of base classifiers, followed by a single layer perceptron as a
     meta layer.
 
+
 * Results
 
 ** How are results presented
@@ -586,7 +586,7 @@
     Discogs/Musicians, etc..
 
 
-
+    
 ** Baseline results
 
    | Model                   | Precision |   Recall |       F1 |
@@ -616,15 +616,16 @@
     Baseline classifiers give quite good results, but there is still some room
     for improvement, especially when it comes to the precision.
 
+
 ** Ensemble results
 
    | Model            | Precision |   Recall |       F1 |
    |------------------+-----------+----------+----------|
-   | Soft Voting      |    0.9199 | *0.9308* | *0.9248* |
+   | Soft Voting      |    0.9199 |   0.9308 | *0.9248* |
    |------------------+-----------+----------+----------|
    | Gated Ensemble   |    0.9227 |   0.9268 |   0.9245 |
    |------------------+-----------+----------+----------|
-   | Hard Voting      |    0.9145 |   0.9344 |   0.9239 |
+   | Hard Voting      |    0.9145 | *0.9344* |   0.9239 |
    |------------------+-----------+----------+----------|
    | Stacked ensemble |  *0.9235* |   0.9242 |   0.9234 |
 
@@ -633,11 +634,9 @@
     :BEAMER_env: note
     :END:
 
-    For ensemble models we see that they tend to have a higher precision and
-    lower recall than the baseline classifiers. 
-
     Stacked ensemble is the one that gate the highest precision. While soft
     voting ensemble is the one with the highest recall and F1 score. 
+
 
 ** 5 best classifiers
 
@@ -674,13 +673,14 @@
     top 5.
 
 
-* Discussion
+* Conclusions
 
 ** Soweego usage 
    
    - We don't want to degrade the quality of the data
-   - Unsure matches can be uploaded to Mix'n'Match
-
+   - Unsure matches can be uploaded to /Mix'n'Match/
+   - Favor high precision to avoid degrading data quality
+   
 *** Notes                                                            :B_note:
     :PROPERTIES:
     :BEAMER_env: note
@@ -694,6 +694,7 @@
     Links of which the classifier predicts as potential matches, can still be
     uploaded to mix'n'match for manual classification, so that none of the links
     are lost. 
+
 
 ** Iterative training
 
@@ -720,37 +721,6 @@
     Also, during these intervals, the community will review the links uploaded
     by soweego and clean out some of the ones that are not correct.
 
-* Conclusions
-
-
-** Conclusions
-
-  - Link Wikidata to external catalogs
-  - Record linkage as supervised machine learning
-  - Favor high precision to avoid degrading data quality
-  - Effective /in vitro/ performance
-    - /In situ/ evaluation is happening right now
-    
-*** Notes                                                            :B_note:
-    :PROPERTIES:
-    :BEAMER_env: note
-    :END:
-    
-    As we've seen, Soweego links wikidata to external catalogs by using record
-    linkage and supervised machine learning classifiers. 
-
-    Using an ensemble algorithm or other high precision classifier, ensures that
-    the information uploaded to wikidata is as trustworthy as possible.
-  
-    Ensemble classifiers, at least with respect to the results obtained in this
-    project, seem to actually improve the performance, and specifically the
-    precision. 
-    
-    The evaluation metrics presented here are only on the training set. However,
-    the training set is not really a correct representation of the
-    classification set. Evaluation of the final predictions, made on the
-    classification set, is currently being done by the community.
-
 
 ** Future Work
 
@@ -771,3 +741,4 @@
     For instance, which musicians are part of which bands, or which actors
     appeared in which movies. This relation information could be leveraged to
     make better predictions. 
+    
